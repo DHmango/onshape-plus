@@ -1,0 +1,34 @@
+{
+    "manifest_version": 3,
+    "name": "OnshapePlus",
+    "version": "1.0.0",
+
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "@fakeID",
+            "data_collection_permissions": {
+                "required": ["none"]
+            }
+        }
+    },
+    "content_scripts": [
+    {
+        "matches": [ "*://*.onshape.com/*" ],
+        "js": ["/onshape_script.js" ],
+        "css": ["/onshape_style.css"]
+    }
+    ],
+
+    "action": {
+        "default_icon": {
+            "48":"/onshape-favicon.png"
+        },
+        "default_title": "OnshapePlus",
+        "default_popup": "/popup.html"
+
+    },
+
+    "permissions": [
+        
+    ]
+}
