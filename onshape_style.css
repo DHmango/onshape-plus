@@ -1,6 +1,6 @@
 :root,
 [data-os-theme] {
-  --os-color-aquarium:#ff0000; 
+  --os-color-aquarium:#00ff00; 
   --os-color-aquarium-rgba10:#ff0000;
   --os-color-aquarium-rgba90:#ff0000;
   --os-color-blue-hills-500:#ff0000;
@@ -1046,7 +1046,7 @@
   --os-welcome-mat-text:var(--os-text-primary)
 }
 :root,
-[data-os-theme=light] {
+[data-os-theme=light] { /*this block seems to have the interesting things*/
   --os-axis-x-color:var(--os-color-crimson);
   --os-axis-y-color:var(--os-color-clover-500);
   --os-axis-z-color:var(--os-color-blue-hills-500);
