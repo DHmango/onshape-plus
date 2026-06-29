@@ -2784,15 +2784,15 @@ const rules = `
 [data-os-theme=light]{ --os-version-graph-branch-8-faded:#f8ddd4 !important;}
 
 
+[data-os-theme=dark]{ --zero-state-background:#f1f5fa !important;}
+
+[data-os-theme=light]{ --zero-state-background:#2c2c2c !important;}
+
+[data-os-theme=light]{ color-scheme:dark !important;}
 
 
 
-
-
-
-
-
-
+[data-os-theme=dark]{ color-shceme:light !important;}
 `
 
 styleSheet.textContent = rules

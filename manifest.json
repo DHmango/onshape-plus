@@ -14,8 +14,7 @@
     "content_scripts": [
     {
         "matches": [ "*://*.onshape.com/*" ],
-        "js": ["/onshape_script.js"]//,
-        //"css": ["/onshape_style.css"]
+        "js": ["/onshape_script.js"]
     }
     ],
 
