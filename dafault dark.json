@@ -1,5 +1,6 @@
 {
 "version": "0.1",
+"what": "onshape theme",
 "name": "dark default",
 "rules":[
 [
@@ -5586,13 +5587,13 @@
 "o",
 ".os-select-field img",
 "filter",
-"1"
+"invert(1)"
 ],
 [
 "o",
 "img.standard-content-imageblock",
 "filter",
-"1"
+"invert(1)"
 ],
 [
 "c",

@@ -29,5 +29,7 @@
 
     "permissions": [
         "storage"
-    ]
+    ],
+
+    "homepage_url": "https://github.com/dhmango/"//what?
 }
