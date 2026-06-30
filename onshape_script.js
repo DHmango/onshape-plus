@@ -3,15 +3,36 @@
 //see active themes
 const styleSheet = document.createElement('style')
 let CSSRules = ''
-for (const lightnessMode of ['light','dark']){
-    console.log(JSON.parse(await browser.storage.local.get(`${lightnessMode}Theme`)))
-    const theme = json2css(JSON.parse(await browser.storage.local.get(`${lightnessMode}Theme`)),lightnessMode)
-    CSSRules += theme.css
+//
+const rulePromises = []
+rulePromises.push(new Promise)
+//CORE OF WHAT NEEDS TO HAPPEN
+//get the keys for light and dark theme
+//retrieve the values based on those keys with proper formatting
+//convert each of those into css (json2css)
+//combine them
+//put them into the new stylesheet
+//apply it
+for (const lightnessMode of ['light','dark']){ //this sucks.
+    const which = browser.storage.local.get(`${lightnessMode}Theme`)
+    which.then((value)=>{
+        const data = browser.storage.local.get(value[`${lightnessMode}Theme`])
+        data.then((value) => {
+            console.log(Object.values(value)[0])
+            rulePromises.push(json2css(JSON.parse(data),lightnessMode)) //i'm sure this isn't the right way to do it...
+        })
+    })
 }
+rulePromises.push(Promise())
+Promise.allSettled(rulePromises).then(()=>{
+    for (const rule of rulePromises){
+        CSSRules+=rulePromises.css
+    }
+    styleSheet.textContent = CSSRules
+    console.log(rulePromises)
+    document.head.appendChild(styleSheet)
+})
 
-styleSheet.textContent = CSSRules
-
-document.head.appendChild(styleSheet)
 
 //styleSheet.insertRule('osx-welcome-mat-section{display: none !important;}')
 
