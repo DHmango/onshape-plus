@@ -1,6 +1,21 @@
-// Put all the javascript code here, that you want to execute after page load.
-//const welcomeMat = document.querySelector("osx-welcome-mat-section")//[[show-spinner]='showWelcomeMatDocumentSpinner']")
-//welcomeMat.remove()
+// Script that runs when onshape loads
+
+//see active themes
+const styleSheet = document.createElement('style')
+let CSSRules = ''
+for (const lightnessMode of ['light','dark']){
+    console.log(JSON.parse(await browser.storage.local.get(`${lightnessMode}Theme`)))
+    const theme = json2css(JSON.parse(await browser.storage.local.get(`${lightnessMode}Theme`)),lightnessMode)
+    CSSRules += theme.css
+}
+
+styleSheet.textContent = CSSRules
+
+document.head.appendChild(styleSheet)
+
+//styleSheet.insertRule('osx-welcome-mat-section{display: none !important;}')
+
+
 function json2css(json,mode){
     let cssOutput = ''
     let jsOutput = ''
@@ -38,15 +53,3 @@ function json2css(json,mode){
         console.log(`could not process file: ${error}`)
     }
 }
-
-const styleSheet = document.createElement('style') //CSSStyleSheet(); //chooses the first existing stylesheet it sees
-
-const rules = json2css
-
-styleSheet.textContent = rules
-
-document.head.appendChild(styleSheet)
-
-//styleSheet.insertRule('osx-welcome-mat-section{display: none !important;}')
-
-
