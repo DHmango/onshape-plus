@@ -1,7 +1,7 @@
 {
 "version": "0.1",
 "what": "onshape theme",
-"name": "light default",
+"name": "Onshape light",
 "rules": [
 [
 "c",
@@ -5581,19 +5581,19 @@
 "o",
 "",
 "--osx-inverted-background",
-"0"
+"invert(0)"
 ],
 [
 "o",
 ".os-select-field img",
 "filter",
-"0"
+"invert(0)"
 ],
 [
 "o",
 "img.standard-content-imageblock",
 "filter",
-"0"
+"invert(0)"
 ],
 [
 "c",
