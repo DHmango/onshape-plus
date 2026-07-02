@@ -5600,6 +5600,30 @@
 "",
 "--osx-inspection-table-filter-background",
 "#90cef1"
+],
+[
+"o",
+"img[src=\"/images/logo-onshape-gray-green-nav-bar.svg\"]",
+"filter",
+"brightness(1) grayscale(0)"
+],
+[
+"o",
+"img[src=\"/images/logo-onshape-gray-green_medium.svg\"]",
+"filter",
+"brightness(1) grayscale(0)"
+],
+[
+"o",
+"osx-svg-icon[icon=logo-onshape-gray-green-nav-bar]",
+"filter",
+"brightness(1) grayscale(0)"
+],
+[
+"o",
+"osx-welcome-mat-section",
+"display",
+"none"
 ]
 ]
 }

@@ -1,8 +1,5 @@
 // Script that runs when onshape loads
-console.log('outside of async');
 (async () => {
-//see active themes
-console.log('inside async')
 const styleSheet = document.createElement('style')
 let CSSRules = ''
 //CORE OF WHAT NEEDS TO HAPPEN
@@ -15,16 +12,13 @@ let CSSRules = ''
 for (const lightnessMode of ['light','dark']){ //this sucks.
     const which = await browser.storage.local.get(`${lightnessMode}Theme`)
     const data = await browser.storage.local.get(which[`${lightnessMode}Theme`])
-    console.log(JSON.parse(data[which[`${lightnessMode}Theme`]]))
+    console.timeLog()
     CSSRules+=json2css(JSON.parse(data[which[`${lightnessMode}Theme`]]),lightnessMode).css
     }
 styleSheet.textContent = CSSRules
 console.log(CSSRules)
 document.head.appendChild(styleSheet)
-
-
-//styleSheet.insertRule('osx-welcome-mat-section{display: none !important;}')
-
+//styleSheet.insertRule('osx-welcome-mat-section{display: none !important;}')x
 
 function json2css(json,mode){
     let cssOutput = ''
@@ -38,16 +32,16 @@ function json2css(json,mode){
         }
         for (const rule of json.rules){
             if (rule[0]=='c'){
-                cssOutput += `[data-os-theme=${mode}]${rule[1]}{${rule[2]}:${rule[3]} !important} 
+                cssOutput += `[data-os-theme=${mode}] ${rule[1]}{${rule[2]}:${rule[3]} !important} 
 `
             } else if (rule[0]=='px' || rule[0]=='p'){
-                cssOutput += `[data-os-theme=${mode}]${rule[1]}{${rule[2]}:${rule[3]} !important}
+                cssOutput += `[data-os-theme=${mode}] ${rule[1]}{${rule[2]}:${rule[3]} !important}
 `
             } else if (rule[0]=='d'){
-                cssOutput += `[data-os-theme=${mode}]${rule[1]}{${rule[2]}:${rule[3]} !important}
+                cssOutput += `[data-os-theme=${mode}] ${rule[1]}{${rule[2]}:${rule[3]} !important}
 `
             } else if (rule[0]=='o'){
-                cssOutput += `[data-os-theme=${mode}]${rule[1]}{${rule[2]}:${rule[3]} !important}
+                cssOutput += `[data-os-theme=${mode}] ${rule[1]}{${rule[2]}:${rule[3]} !important}
 `
             } else if (rule[0]=='j'){
                 jsOutput+=`${rule[3]}
