@@ -3,12 +3,25 @@ import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import './App.css'
+import RulesCard from './RulesCard'
 
-function App() {
+export default function App() {
   const [count, setCount] = useState(0)
-  
+  const rulesList = [
+    ['c','',"--os-accent-nonary","#a64dff"],
+    ["c","","--os-accent-octonary","#def1fb"],
+  ]
+  const [ruleValues, setRuleValues] = useState<unknown>({
+    [rulesList[0][2]]: {selector:rulesList[0][2], value:rulesList[0][3]}
+  })
+  const whenInputChanged = (id: string, value:string) => {
+    setRuleValues(({prevValues}:{prevValues:object}) => ({
+      ...prevValues, [id]:value,
+    }))
+  }
   return (
     <>
+      <RulesCard reportBack={whenInputChanged} dataType='c' selector='' ruleKey='--test' ruleValue='#ff00ff'></RulesCard>
       <section id="center">
         <div className="hero">
           <img src={heroImg} className="base" width="170" height="179" alt="" />
@@ -118,5 +131,3 @@ function App() {
     </>
   )
 }
-
-export default App

@@ -10,8 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.3.2",
+    "antd": "^6.5.0",
     "react": "^19.2.7",
-    "react-dom": "^19.2.7"
+    "react-aria-components": "^1.19.0",
+    "react-dom": "^19.2.7",
+    "tailwindcss": "^4.3.2"
   },
   "devDependencies": {
     "@types/node": "^24.13.2",
