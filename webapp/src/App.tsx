@@ -7,6 +7,7 @@ export default function App() {
   //['c','',"--os-accent-nonary","#a64dff"],
   //  ["c","","--os-accent-octonary","#def1fb"],
   //]
+
   const [ruleValues, setRuleValues] = useState<Record<string, string[]>>({'--test': ['c','','#a64dff'], 'hello':['c','','#123456']})
   const whenInputChanged = (id: string, value:string) => {
     setRuleValues((prevValues) => ({
@@ -15,9 +16,11 @@ export default function App() {
   }
   return (
     <>
+    <div className='w-full min-h-screen bg-[#202017]'>
       {Object.entries(ruleValues).map(([ruleKey, ruleData]) => (
         <RulesCard reportBack={whenInputChanged} ruleKey={ruleKey} ruleValue={ruleData[2]} dataType={ruleData[0]} selector={ruleData[1]}/>
       ))}
+    </div>
     </>
   )
 }
