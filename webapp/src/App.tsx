@@ -8,7 +8,7 @@ export default function App() {
   //  ["c","","--os-accent-octonary","#def1fb"],
   //]
 
-  const [ruleValues, setRuleValues] = useState<Record<string, string[]>>({'--test': ['c','','#a64dff'], 'hello':['c','','#123456']})
+  const [ruleValues, setRuleValues] = useState<Record<string, string[]>>({'--test3': ['c','','oklch(0.6 0.1 90/0.7)'],'--test': ['c','','#a64dff'], '--fakeTest': ['c','','rgb(90,60,90)'],'hello':['c','','#123456']})
   const whenInputChanged = (id: string, value:string) => {
     setRuleValues((prevValues) => ({
       ...prevValues, [id]:prevValues[id].map((oldValue, index) => index===2 ? value : oldValue),//map sets every array value to the result of what you givt it. index 2 means it only changes the index 2 thing in the array 'key':['c','','THIS']
@@ -16,7 +16,7 @@ export default function App() {
   }
   return (
     <>
-    <div className='w-full min-h-screen bg-[#202017]'>
+    <div className='w-full min-h-screen bg-[#202020]'>
       {Object.entries(ruleValues).map(([ruleKey, ruleData]) => (
         <RulesCard reportBack={whenInputChanged} ruleKey={ruleKey} ruleValue={ruleData[2]} dataType={ruleData[0]} selector={ruleData[1]}/>
       ))}
