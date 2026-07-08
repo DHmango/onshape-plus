@@ -8,8 +8,6 @@ export default function App() {
   //['c','',"--os-accent-nonary","#a64dff"],
   //  ["c","","--os-accent-octonary","#def1fb"],
   //]
-  function fake() {}
-  fake();
 
   const myRef = useRef<HTMLDivElement>(null);
 
@@ -17,7 +15,7 @@ export default function App() {
     event: unknown,
     info: { offset: { x: number; y: number } },
   ) {
-    console.log(info.offset.x, info.offset.y);
+    console.log(info.offset.x, info.offset.y, event);
   }
 
   const [ruleValues, setRuleValues] = useState<string[][]>([
@@ -5645,10 +5643,10 @@ export default function App() {
 ]
   ]);
 
-  const whenInputChanged = (id: number, value: string) => {
+  const whenInputChanged = (ruleID: string[], value: string) => {
     setRuleValues((prevValues) =>
-      prevValues.map((rule, index) =>
-        index === id
+      prevValues.map((rule) => // a rule looks like ['c','',"--os-accent-nonary","#a64dff"]
+        rule[2] === ruleID[2] && rule[1] === ruleID[1] && rule[0] === ruleID[0] //checks if all key parts of the rule match, stopping as soon as one doesn't
           ? rule.map((oldValue, dataIndex) =>
               dataIndex === 3 ? value : oldValue,
             )
@@ -5660,10 +5658,10 @@ export default function App() {
   return (
     <>
       <div className="w-full min-h-screen bg-[#202020]">
-        {ruleValues.map((ruleData, index) => (
-          <RulesCard
+        {ruleValues.map((ruleData) => (
+          <RulesCard 
+            key={ruleData[0]+'_㊫_'+ruleData[1]+'_㊫_'+ruleData[2]} //㊫ is u+32ab. 32ab = 12971. ['c','',"--os-accent-nonary","#a64dff"] becomes c_㊫__㊫_--os-accent-nonary
             reportBack={whenInputChanged}
-            ruleIndex={index}
             dataType={ruleData[0]}
             selector={ruleData[1]}
             ruleKey={ruleData[2]}

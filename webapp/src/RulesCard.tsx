@@ -1,17 +1,17 @@
 import convert from "color-convert";
 //import { useRef } from "react";
 
+//I NEED TO MAKE IT SO THAT SETTING THE ALPHA TO SOMETHING DOESN'T MESS UP THE COLORPICKER!!! LIKE IF YOU SAY #f081 THATS CURRENTLY DIFFERENT THAN #f08f 
+
 // this thing doesn't store any data its self, its instead passed data from its parent, and calls back to it when it changes.
 export default function RulesCard({
   reportBack,
-  ruleIndex,
   dataType,
   selector,
   ruleKey,
   ruleValue,
 }: {
-  reportBack: (id: number, value: string) => void;
-  ruleIndex: number;
+  reportBack: (ruleID: string[], value: string) => void;
   dataType: string;
   selector: string;
   ruleKey: string;
@@ -50,27 +50,32 @@ export default function RulesCard({
               <input
                 value={ruleValue}
                 className="w-40 focus:outline-1.5 outline-mist-100 bg-gray-900 rounded-md mr-1 hover:bg-[#171720] border-black pl-1 inset-shadow-md/40"
-                onChange={(e) => reportBack(ruleIndex, e.target.value)}
+                onChange={(e) => reportBack([dataType, selector, ruleKey], e.target.value)}
               />
             </label>
             <code className="text-gray-300 text-xs font-mono">
               {fakeStyle.color}
             </code>
-            <div
-              className="mt-1 bg-linear-to-r from-white to-(--hueColor)"
-              style={
-                {
-                  "--hueColor": `hsl(${colorHSL[0]} 100 50)`,
-                } as React.CSSProperties
-              }
-            >
-              <div className="bg-linear-to-t from-black to-[#0000]">
-                <div className="bg-white visible bg-[conic-gradient(transparent_25%,#ccc_25%_50%,transparent_50%_75%,#ccc_75%)] bg-size-[18px_18px] group-hover:invisible transition duration-100">
-                  <div
-                    className="flex-auto h-19"
-                    style={{ backgroundColor: cardColor }}
-                  />
+            <div className="flex mt-1 flex-row">
+              <div
+                className="flex-2 bg-linear-to-r from-white to-(--hueColor)"
+                style={
+                  {
+                    "--hueColor": `hsl(${colorHSL[0]} 100 50)`,
+                  } as React.CSSProperties
+                }
+              >
+                <div className="bg-linear-to-t from-black to-[#0000]">
+                  <div className="bg-white visible bg-[conic-gradient(transparent_25%,#ccc_25%_50%,transparent_50%_75%,#ccc_75%)] bg-size-[18px_18px] group-hover:invisible transition duration-100">
+                    <div
+                      className="flex-auto h-19"
+                      style={{ backgroundColor: cardColor }}
+                    />
+                  </div>
                 </div>
+              </div>
+              <div className="flex-1 bg-amber-950 h-19">
+                beep
               </div>
             </div>
           </div>
