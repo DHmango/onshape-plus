@@ -41,22 +41,32 @@ export default function RulesCard({
     return (
       <>
         <div className="animate-none h-9 ease-in-out flex transition-all group hover:h-27 duration-100 overflow-hidden bg-white bg-[conic-gradient(#ccc_25%,transparent_25%_50%,#ccc_50%_75%,transparent_75%)] bg-size-[18px_18px]">
-          <div className="flex-col text-nowrap w-200 pt-1 shrink-0  float-start bg-gray-800 text-gray-50">
-            <label className="flex-start m-1">
-              <span className="text-xs text-gray-300">
-                color: {selector}&nbsp;
+          <div className="flex-col text-nowrap w-120  shrink-0  float-start bg-gray-800 text-gray-50">
+            <label title={ruleKey} className="justify-between flex flex-start m-1">
+              <span className="overflow-hidden text-ellipsis">
+                <span className="text-xs text-gray-300">
+                  color: {selector}&nbsp;
+                </span>
+                <span className="font-bold">{ruleKey}</span>&nbsp;
               </span>
-              <span className="font-bold">{ruleKey}</span>&nbsp;
               <input
                 value={ruleValue}
                 className="w-40 focus:outline-1.5 outline-mist-100 bg-gray-900 rounded-md mr-1 hover:bg-[#171720] border-black pl-1 inset-shadow-md/40"
                 onChange={(e) => reportBack([dataType, selector, ruleKey], e.target.value)}
               />
             </label>
-            <code className="text-gray-300 text-xs font-mono">
-              {fakeStyle.color}
-            </code>
-            <div className="flex mt-1 flex-row">
+              {/*
+              <code className="text-gray-300 text-xs font-mono">
+                {fakeStyle.color}
+              </code>
+              */}
+              <div className=" bg-white visible bg-[conic-gradient(transparent_25%,#ccc_25%_50%,transparent_50%_75%,#ccc_75%)] bg-size-[18px_18px] group-hover:invisible">
+                    <div
+                      className="flex-auto h-19"
+                      style={{ backgroundColor: cardColor }}
+                    />
+                  </div>
+            <div className="flex -mt-19 flex-row invisible group-hover:visible">
               <div
                 className="flex-2 bg-linear-to-r from-white to-(--hueColor)"
                 style={
@@ -65,22 +75,17 @@ export default function RulesCard({
                   } as React.CSSProperties
                 }
               >
-                <div className="bg-linear-to-t from-black to-[#0000]">
-                  <div className="bg-white visible bg-[conic-gradient(transparent_25%,#ccc_25%_50%,transparent_50%_75%,#ccc_75%)] bg-size-[18px_18px] group-hover:invisible transition duration-100">
-                    <div
-                      className="flex-auto h-19"
-                      style={{ backgroundColor: cardColor }}
-                    />
-                  </div>
+                {/* maybe i can set the opacity of the outer div to whatever alpha is an have another grid behind it */}
+                <div className="cursor-crosshair bg-linear-to-t from-black to-[#0000] h-19">
                 </div>
               </div>
-              <div className="flex-1 bg-amber-950 h-19">
-                beep
+              <div className="invisible group-hover:visible flex-1 h-19">
+                alpha and hue sliders
               </div>
             </div>
           </div>
           <div
-            className="flex-1 justify-end"
+            className="flex-1 justify-end "
             style={{ backgroundColor: cardColor }}
           ></div>
         </div>

@@ -5674,10 +5674,11 @@ export default function App() {
             drag
             dragElastic={0}
             dragMomentum={false}
-            className="rounded-full w-10 h-10 bg-blue-600"
+            className="rounded-full w-10 h-10 -m-5 bg-blue-600"
             dragConstraints={myRef}
           />
         </motion.div>
+        {/* we not using drag. will switch to using mouse coords   */}
       </div>
     </>
   );
