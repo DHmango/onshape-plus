@@ -1,7 +1,7 @@
 import convert from "color-convert";
-//import { useRef } from "react";
+import { useState } from "react";
 
-//I NEED TO MAKE IT SO THAT SETTING THE ALPHA TO SOMETHING DOESN'T MESS UP THE COLORPICKER!!! LIKE IF YOU SAY #f081 THATS CURRENTLY DIFFERENT THAN #f08f 
+//I NEED TO MAKE IT SO THAT SETTING THE ALPHA TO SOMETHING DOESN'T MESS UP THE COLORPICKER!!! LIKE IF YOU SAY #f081 THATS CURRENTLY DIFFERENT THAN #f08f
 
 // this thing doesn't store any data its self, its instead passed data from its parent, and calls back to it when it changes.
 export default function RulesCard({
@@ -19,6 +19,8 @@ export default function RulesCard({
 }) {
   if (dataType === "c") {
     let cardColor = ruleValue;
+    
+    const [colorPos, setColorPos] = useState({ x: 0, y: 0 }); // Note: These are to be expressed as ratios, not coordinates (ex: 0.5 = halfway)
 
     const colorCanvas = document.createElement("canvas");
     colorCanvas.width = colorCanvas.height = 1;
@@ -42,7 +44,10 @@ export default function RulesCard({
       <>
         <div className="animate-none h-9 ease-in-out flex transition-all group hover:h-27 duration-100 overflow-hidden bg-white bg-[conic-gradient(#ccc_25%,transparent_25%_50%,#ccc_50%_75%,transparent_75%)] bg-size-[18px_18px]">
           <div className="flex-col text-nowrap w-120  shrink-0  float-start bg-gray-800 text-gray-50">
-            <label title={ruleKey} className="justify-between flex flex-start m-1">
+            <label
+              title={ruleKey}
+              className="justify-between flex flex-start m-1"
+            >
               <span className="overflow-hidden text-ellipsis">
                 <span className="text-xs text-gray-300">
                   color: {selector}&nbsp;
@@ -52,20 +57,22 @@ export default function RulesCard({
               <input
                 value={ruleValue}
                 className="w-40 focus:outline-1.5 outline-mist-100 bg-gray-900 rounded-md mr-1 hover:bg-[#171720] border-black pl-1 inset-shadow-md/40"
-                onChange={(e) => reportBack([dataType, selector, ruleKey], e.target.value)}
+                onChange={(e) =>
+                  reportBack([dataType, selector, ruleKey], e.target.value)
+                }
               />
             </label>
-              {/*
+            {/*
               <code className="text-gray-300 text-xs font-mono">
                 {fakeStyle.color}
               </code>
               */}
-              <div className=" bg-white visible bg-[conic-gradient(transparent_25%,#ccc_25%_50%,transparent_50%_75%,#ccc_75%)] bg-size-[18px_18px] group-hover:invisible">
-                    <div
-                      className="flex-auto h-19"
-                      style={{ backgroundColor: cardColor }}
-                    />
-                  </div>
+            <div className=" bg-white visible bg-[conic-gradient(transparent_25%,#ccc_25%_50%,transparent_50%_75%,#ccc_75%)] bg-size-[18px_18px] group-hover:invisible">
+              <div
+                className="flex-auto h-19"
+                style={{ backgroundColor: cardColor }}
+              />
+            </div>
             <div className="flex -mt-19 flex-row invisible group-hover:visible">
               <div
                 className="flex-2 bg-linear-to-r from-white to-(--hueColor)"
@@ -77,10 +84,33 @@ export default function RulesCard({
               >
                 {/* maybe i can set the opacity of the outer div to whatever alpha is an have another grid behind it */}
                 <div className="cursor-crosshair bg-linear-to-t from-black to-[#0000] h-19">
+                  <div
+                    onMouseMove={(e) => {
+                      console.log('yayy!')
+                      if (e.buttons === 1) {
+                        setColorPos({ x: 0.5, y: 0.5 });
+                      }
+                    }}
+                    onMouseDown={(e) => {
+                      console.log('yayy!')
+                      setColorPos({ x: 0.5, y: 0.5 });
+                    }}
+                    className="relative flex-1 bg-[#0ff3] h-19 w-80"
+                  >
+                    <div
+                      style={
+                        {
+                          "--xPos": `${colorPos.x*100}%`,
+                          "--yPos": `${colorPos.y*100}%`,
+                        } as React.CSSProperties
+                      }
+                      className="-translate-x-1/2 -translate-y-1/2 bg-black rounded-full h-5 w-5 absolute top-(--yPos) left-(--xPos)"
+                    ></div>
+                  </div>
                 </div>
               </div>
               <div className="invisible group-hover:visible flex-1 h-19">
-                alpha and hue sliders
+                {JSON.stringify(colorPos)} alpha and hue sliders
               </div>
             </div>
           </div>

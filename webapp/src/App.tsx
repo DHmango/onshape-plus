@@ -5660,7 +5660,7 @@ export default function App() {
       <div className="w-full min-h-screen bg-[#202020]">
         {ruleValues.map((ruleData) => (
           <RulesCard 
-            key={ruleData[0]+'_㊫_'+ruleData[1]+'_㊫_'+ruleData[2]} //㊫ is u+32ab. 32ab = 12971. ['c','',"--os-accent-nonary","#a64dff"] becomes c_㊫__㊫_--os-accent-nonary
+            key={ruleData[0]+'_㊫_'+ruleData[1]+'_㊫_'+ruleData[2]} // ['c','',"--os-accent-nonary","#a64dff"] becomes c_㊫__㊫_--os-accent-nonary
             reportBack={whenInputChanged}
             dataType={ruleData[0]}
             selector={ruleData[1]}
