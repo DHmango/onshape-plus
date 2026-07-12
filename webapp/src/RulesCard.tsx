@@ -18,9 +18,19 @@ export default function RulesCard({
   ruleValue: string;
 }) {
   if (dataType === "c") {
+
+
     let cardColor = ruleValue;
+
+    const [liveColor, setLiveColor] = useState('#000')
+    const [activelyChangingColor, setActivelyChangingColor] = useState(false)
+
+    if (activelyChangingColor){
+      cardColor = liveColor
+      //Basically, it needs to use a color while you are dragging, and only send it to the central array when you stop. 
+    }
+
     
-    const [colorPos, setColorPos] = useState({ x: 0, y: 0 }); // Note: These are to be expressed as ratios, not coordinates (ex: 0.5 = halfway)
 
     const colorCanvas = document.createElement("canvas");
     colorCanvas.width = colorCanvas.height = 1;
@@ -30,13 +40,17 @@ export default function RulesCard({
     let colorRGBA = new Uint8ClampedArray([0, 0, 0, 0]);
     let colorHSL = [0, 0, 0];
     if (colorCanvasContext !== null) {
-      colorCanvasContext.fillStyle = ruleValue;
+      colorCanvasContext.fillStyle = cardColor;
       colorCanvasContext.fillRect(0, 0, 1, 1);
       colorRGBA = colorCanvasContext.getImageData(0, 0, 1, 1).data;
       colorHSL = convert.rgb.hsl(colorRGBA[0], colorRGBA[1], colorRGBA[2]);
     }
+    const colorHSV = convert.hsl.hsv(colorHSL[0],colorHSL[1],colorHSL[2])
+
+    const [colorPos, setColorPos] = useState({x:colorHSV[1]/100, y:1-colorHSV[2]/100}); // Note: These are to be expressed as ratios, not coordinates (ex: 0.5 = halfway)
+
     const fakeStyle = new Option().style;
-    fakeStyle.color = ruleValue; // sets the color to the color provided. it won't stay if invalid. ty stack overflow.
+    fakeStyle.color = cardColor; // sets the color to the color provided. it won't stay if invalid. ty stack overflow.
     if (fakeStyle.color == "") {
       cardColor = "#0000";
     }
@@ -88,29 +102,55 @@ export default function RulesCard({
                     onMouseMove={(e) => {
                       console.log('yayy!')
                       if (e.buttons === 1) {
-                        setColorPos({ x: 0.5, y: 0.5 });
+                        const pickerRegion = e.currentTarget.getBoundingClientRect()
+                        setColorPos({ x: (e.clientX-pickerRegion.x)/pickerRegion.width, y: (e.clientY-pickerRegion.y)/pickerRegion.height })
+                        const color = convert.hsv.hsl(0, colorPos.x*100, (1-colorPos.y)*100)
+                        
+                        setLiveColor(`hsl(${colorHSL[0]} ${color[1]} ${color[2]})`)
+                        setActivelyChangingColor(true)
+                        // mamybe i can make some thing where while its dragging it doesn't use reportback
+                      } else{
+                        if (activelyChangingColor){
+                          setActivelyChangingColor(false)
+                          reportBack([dataType, selector, ruleKey],liveColor)
+                        }
                       }
                     }}
                     onMouseDown={(e) => {
-                      console.log('yayy!')
-                      setColorPos({ x: 0.5, y: 0.5 });
+                      const pickerRegion = e.currentTarget.getBoundingClientRect()
+                      setColorPos({ x: (e.clientX-pickerRegion.x)/pickerRegion.width, y: (e.clientY-pickerRegion.y)/pickerRegion.height })
+                      const color = convert.hsv.hsl(colorHSL[0], colorPos.x*100, (1-colorPos.y)*100)
+
+                      setLiveColor(`hsl(${colorHSL[0]} ${color[1]} ${color[2]})`)
+                      setActivelyChangingColor(true)
+                      }}
+                    className="relative flex-1 bg-[#0ff0] h-19 w-80"
+                    onMouseUp={() => {
+                      if (activelyChangingColor){
+                          setActivelyChangingColor(false)
+                          reportBack([dataType, selector, ruleKey],liveColor)
+                      }
                     }}
-                    className="relative flex-1 bg-[#0ff3] h-19 w-80"
                   >
                     <div
                       style={
                         {
                           "--xPos": `${colorPos.x*100}%`,
                           "--yPos": `${colorPos.y*100}%`,
+                          "--selectedColor" : `${cardColor}`
                         } as React.CSSProperties
                       }
-                      className="-translate-x-1/2 -translate-y-1/2 bg-black rounded-full h-5 w-5 absolute top-(--yPos) left-(--xPos)"
+                      className="-translate-x-1/2 -translate-y-1/2 bg-(--selectedColor) rounded-full h-3 w-3 border border-white absolute top-(--yPos) left-(--xPos)"
                     ></div>
                   </div>
                 </div>
               </div>
               <div className="invisible group-hover:visible flex-1 h-19">
                 {JSON.stringify(colorPos)} alpha and hue sliders
+                <br></br>
+                {cardColor}
+                <br/>
+                {`${activelyChangingColor}`}
               </div>
             </div>
           </div>
