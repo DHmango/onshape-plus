@@ -2,10 +2,10 @@ import convert from "color-convert";
 import { useState } from "react";
 
 // I NEED TO MAKE IT SO THAT SETTING THE ALPHA TO SOMETHING DOESN'T MESS UP THE COLORPICKER!!! LIKE IF YOU SAY #f081 THATS CURRENTLY DIFFERENT THAN #f08f
-// ALSO MAYBE SOMEHOW YOU DON'T SELECT TEXT AND STUFF WHILE DOING THAT [DRAGGING]
+// ALSO MAYBE SOMEHOW YOU DON'T SELECT TEXT AND STUFF WHILE DOING THAT [DRAGGING] - idrk, but what could be nice is if it snaps to the nearest in bounds place instead of stopping but that seems hard because mouseMove is only triggered over the thing but idk maybe using activelyChangingColor over the whole thing would work idk
 // SOME VALUES LIKE #88F IF INPUTED LOOK LIKE THEY DON'T FIT WHERE THEY ARE ON THE COLOR PICKER... MAYBE THIS FIX WILL GO WITH THE ALPHA THING
-// ^ Related: if you move to a low saturation  place, the hue will change because its changing it to other format or something idrk
-// 
+// ^ Related?: if you move to a low saturation  place, the hue will change because its changing it to other format or something idrk
+// basically just make it so hue doesn't change for this^
 
 // this thing doesn't store any data its self, its instead passed data from its parent, and calls back to it when it changes.
 export default function RulesCard({
@@ -45,7 +45,7 @@ export default function RulesCard({
       colorCanvasContext.fillRect(0, 0, 1, 1);
       colorRGBA = colorCanvasContext.getImageData(0, 0, 1, 1).data;
       colorHSL = convert.rgb.hsl.raw(colorRGBA[0], colorRGBA[1], colorRGBA[2]);
-    }
+    } //
     const colorHSV = convert.hsl.hsv.raw(colorHSL[0], colorHSL[1], colorHSL[2]);
 
     const colorThumbPos = {
@@ -93,6 +93,7 @@ export default function RulesCard({
 
             <div
               className={` bg-white ${activelyChangingColor ? "invisible" : "visible"} bg-[conic-gradient(transparent_25%,#ccc_25%_50%,transparent_50%_75%,#ccc_75%)] bg-size-[18px_18px] group-hover:invisible`}
+              // for some reason this one has to be opposite grid as the other for them to line up
             >
               <div
                 className="flex-auto h-19"
@@ -195,12 +196,37 @@ export default function RulesCard({
                 </div>
               </div>
               <div
-                className={`${activelyChangingColor ? "visible" : "invisible"} group-hover:visible flex-1 h-19`}
+                className={`flex flex-col ${activelyChangingColor ? "visible" : "invisible"} group-hover:visible flex-1 h-19 mr-0.4`}
               >
-                {JSON.stringify(colorThumbPos)} alpha and hue sliders
-                <br></br>
-                {cardColor}
-                <br />
+                <div className="relative flex-1 m-1 rounded-md bg-linear-to-r/[in_hsl_longer_hue] from-[#ff0000] to-[#ff0000]">
+                  <div
+                    style={
+                      {
+                        "--xPos": `${colorHSL[0] / 3.6}%`,
+                      } as React.CSSProperties
+                    }
+                    className="-translate-x-1/2 -translate-y-1/2 bg-0% rounded-md h-7 w-1 border-2 border-white absolute top-[50%] left-(--xPos)"
+                  ></div>
+                </div>
+                <div className="flex-1 flex bg-[conic-gradient(#fff_25%,#ccc_25%_50%,#fff_50%_75%,#ccc_75%)] bg-size-[15px_15px] m-1 rounded-md">
+                  <div
+                    style={
+                      {
+                        "--selectedColor": `${cardColor}`,
+                      } as React.CSSProperties
+                    }
+                    className="relative flex-1 bg-linear-to-r from-transparent to-(--selectedColor)" // this needs to not include the alpha for the to-(). Surely this will all come in the great alpha overhall. also for some reaosn the coreners aren't rounded on the right
+                  >
+                    <div
+                    style={
+                      {
+                        "--xPos": `50%`, //...glup
+                      } as React.CSSProperties
+                    }
+                    className="-translate-x-1/2 -translate-y-1/2 bg-0% rounded-md h-7 w-1 border-2 border-white absolute top-[50%] left-(--xPos)"
+                  ></div>
+                  </div>
+                </div>
                 <code className="text-gray-300 text-xs font-mono">
                   {fakeStyle.color}
                 </code>

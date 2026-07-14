@@ -5657,7 +5657,7 @@ export default function App() {
   };
   return (
     <>
-      <div className="w-full min-h-screen bg-[#202020]">
+      <div className="w-full min-h-screen bg-[#202020]"> 
         {ruleValues.map((ruleData) => (
           <RulesCard 
             key={ruleData[0]+'_㊫_'+ruleData[1]+'_㊫_'+ruleData[2]} // ['c','',"--os-accent-nonary","#a64dff"] becomes c_㊫__㊫_--os-accent-nonary
@@ -5668,17 +5668,9 @@ export default function App() {
             ruleValue={ruleData[3]}
           />
         ))}
-        <motion.div ref={myRef} className="w-100 h-100 bg-amber-50">
-          <motion.div
-            onDrag={onColorDragged}
-            drag
-            dragElastic={0}
-            dragMomentum={false}
-            className="rounded-full w-10 h-10 -m-5 bg-blue-600"
-            dragConstraints={myRef}
-          />
-        </motion.div>
-        {/* we not using drag. will switch to using mouse coords   */}
+        <div className="bg-[#ccc] h-40 overflow-auto tracking-tight text-xs/tight wrap-anywhere">
+          <code className="select-all font-mono">{JSON.stringify(ruleValues)}\</code>
+        </div>
       </div>
     </>
   );
