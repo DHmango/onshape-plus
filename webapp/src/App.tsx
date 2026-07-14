@@ -1,23 +1,10 @@
-import { useState, useRef } from "react";
+import { useState, } from "react";
 import "./App.css";
 import RulesCard from "./RulesCard";
-import { motion } from "motion/react";
 
 export default function App() {
-  //const rulesList = [
-  //['c','',"--os-accent-nonary","#a64dff"],
-  //  ["c","","--os-accent-octonary","#def1fb"],
-  //]
 
-  const myRef = useRef<HTMLDivElement>(null);
-
-  function onColorDragged(
-    event: unknown,
-    info: { offset: { x: number; y: number } },
-  ) {
-    console.log(info.offset.x, info.offset.y, event);
-  }
-
+  //add a way to sort them by whatever
   const [ruleValues, setRuleValues] = useState<string[][]>([
 [
 "c",
