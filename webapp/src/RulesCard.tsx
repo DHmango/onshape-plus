@@ -7,6 +7,61 @@ import { useState } from "react";
 // ^ Related?: if you move to a low saturation  place, the hue will change because its changing it to other format or something idrk
 // basically just make it so hue doesn't change for this^
 
+function colorStringToRGBA(colorString: string) {
+  // the reason i can't wholly rely on the fakestyle method is that some things, like oklch(0.1 0.1 100 /0.5) will not be converted to rgba
+
+  let toReturn = [0, 0, 0, 0];
+
+  //check if its valid using the fakeStyle method
+  const fakeStyle = new Option().style;
+  fakeStyle.color = colorString; // sets the color to the color provided. it won't stay if invalid. ty stack overflow.
+  if (fakeStyle.color == "") {
+  } else {
+    const cleanedString = fakeStyle.color;
+    //if it starts with a #, check the length- 5 or 9 characters has alpha nvm, cleaned uses rgba :sob:
+    if (cleanedString.includes("rgba(")) {
+      const rgb = cleanedString.slice(5, -1).split(", "); //takes away rgba() and splits it
+      toReturn[0] = parseInt(rgb[0], 10);
+      toReturn[1] = parseInt(rgb[1], 10);
+      toReturn[2] = parseInt(rgb[2], 10);
+      toReturn[3] = parseInt(rgb[3], 10);// shut up shut up shut up shut up shut
+      // if it doesn't, check if it has a slash. I'm p sure all other alphas have a slash. replace slash and beyond with ")" and feed that into canvas method. whats after the slash, you should check if its percent or decimal, and blah blah
+    } else if (cleanedString.includes("/")) {
+      const colorCanvas = document.createElement("canvas"); // copied from similar thing in main body... but maybe thats gone as you read this
+      colorCanvas.width = colorCanvas.height = 1;
+      const colorCanvasContext = colorCanvas.getContext("2d", {
+        willReadFrequently: true,
+      });
+      if (colorCanvasContext !== null) {
+        // to appease the ts gods... theres no backup plan
+        colorCanvasContext.fillStyle = `${cleanedString.split("/")[0]})`;
+        colorCanvasContext.fillRect(0, 0, 1, 1);
+        const rgb = colorCanvasContext.getImageData(0, 0, 1, 1).data;
+        toReturn[0] = rgb[0];
+        toReturn[1] = rgb[1];
+        toReturn[2] = rgb[2];
+      }
+      toReturn[3] = parseInt(cleanedString.split("/")[1].slice(0, -1), 10);
+    } else {
+      const colorCanvas = document.createElement("canvas"); // copied from similar thing in main body... but maybe thats gone as you read this
+      colorCanvas.width = colorCanvas.height = 1;
+      const colorCanvasContext = colorCanvas.getContext("2d", {
+        willReadFrequently: true,
+      });
+      if (colorCanvasContext !== null) {
+        colorCanvasContext.fillStyle = cleanedString;
+        colorCanvasContext.fillRect(0, 0, 1, 1);
+        const rgb = colorCanvasContext.getImageData(0, 0, 1, 1).data;
+        toReturn[0] = rgb[0];
+        toReturn[1] = rgb[1];
+        toReturn[2] = rgb[2];
+      }
+      toReturn[3] = 1;
+    }
+  }
+  return(toReturn)
+}
+
 // this thing doesn't store any data its self, its instead passed data from its parent, and calls back to it when it changes.
 export default function RulesCard({
   reportBack, //the thing used to change the centralized array of data
@@ -218,17 +273,17 @@ export default function RulesCard({
                     className="relative flex-1 bg-linear-to-r from-transparent to-(--selectedColor)" // this needs to not include the alpha for the to-(). Surely this will all come in the great alpha overhall. also for some reaosn the coreners aren't rounded on the right
                   >
                     <div
-                    style={
-                      {
-                        "--xPos": `50%`, //...glup
-                      } as React.CSSProperties
-                    }
-                    className="-translate-x-1/2 -translate-y-1/2 bg-0% rounded-md h-7 w-1 border-2 border-white absolute top-[50%] left-(--xPos)"
-                  ></div>
+                      style={
+                        {
+                          "--xPos": `50%`, //...glup
+                        } as React.CSSProperties
+                      }
+                      className="-translate-x-1/2 -translate-y-1/2 bg-0% rounded-md h-7 w-1 border-2 border-white absolute top-[50%] left-(--xPos)"
+                    ></div>
                   </div>
                 </div>
                 <code className="text-gray-300 text-xs font-mono">
-                  {fakeStyle.color}
+                  {JSON.stringify(colorStringToRGBA(ruleValue))}
                 </code>
               </div>
             </div>
