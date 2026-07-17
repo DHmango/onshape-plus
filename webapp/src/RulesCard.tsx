@@ -23,6 +23,7 @@ export default function RulesCard({
 
     const [liveColor, setLiveColor] = useState("#000"); // the color while you are dragging it, local to this card instead of in the bigger array
     const [activelyChangingColor, setActivelyChangingColor] = useState(false); // whether or not you are actively changing the color
+    
 
     if (activelyChangingColor) {
       cardColor = liveColor; // sets the color shown on the card to the active live color
@@ -167,6 +168,12 @@ export default function RulesCard({
                         setActivelyChangingColor(true);
                       }
                     }}
+                    onMouseLeave={() => {
+                      if (activelyChangingColor) {
+                        setActivelyChangingColor(false);
+                        reportBack([dataType, selector, ruleKey], liveColor);
+                      }
+                    }}
                     className="relative flex-1 bg-[#0ff0] h-19 w-80"
                     onMouseUp={() => {
                       if (activelyChangingColor) {
@@ -213,7 +220,7 @@ export default function RulesCard({
                     <div
                       style={
                         {
-                          "--xPos": `${100 * colorRGBA[3]}%`, //...glup
+                          "--xPos": `${100 * colorRGBA[3]}%`,
                         } as React.CSSProperties
                       }
                       className="-translate-x-1/2 -translate-y-1/2 bg-0% rounded-md h-7 w-1 border-2 border-white absolute top-[50%] left-(--xPos)"
