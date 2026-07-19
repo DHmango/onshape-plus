@@ -2,6 +2,9 @@ import convert from "color-convert";
 import colorStringToRGBA from "./colorStringToRGBA";
 import { useState } from "react";
 
+//End of day: Something really weird is going on where if you set the hue or alpha value using the slider it changes the sv by a seemingly random ammount once.
+//Something is suspicious about these so-called dead value...
+
 // this thing doesn't store any data its self, its instead passed data from its parent, and calls back to it when it changes.
 export default function RulesCard({
   reportBack, //the thing used to change the centralized array of data
@@ -59,7 +62,7 @@ export default function RulesCard({
       x: colorHSV[1] / 100,
       y: 1 - colorHSV[2] / 100,
     };
-    const hueThumbPos = colorHSV[0]
+    const hueThumbPos = colorHSV[0];
 
     return (
       <>
@@ -284,7 +287,66 @@ export default function RulesCard({
                   ></div>
                 </div>
                 {/* alpha */}
-                <div className="flex-1 flex bg-[conic-gradient(#fff_25%,#ccc_25%_50%,#fff_50%_75%,#ccc_75%)] bg-size-[15px_15px] m-1 rounded-md">
+                <div 
+                onMouseMove={(e) => {
+                    if (e.buttons === 1) {
+                      if (wasMouseDownA) {
+                        const pickerRegion =
+                          e.currentTarget.getBoundingClientRect();
+                        let relativeX =
+                          (e.clientX - pickerRegion.x) / pickerRegion.width;
+                        // I'm not sure if this stuff down here is necessary but whatever
+                        if (relativeX > 1) {
+                          relativeX = 1;
+                        }
+                        if (relativeX < 0) {
+                          relativeX = 0;
+                        }
+                        setLiveColor(
+                          `hsl(${deadHSV[0].toFixed(2)} ${deadHSV[1].toFixed(2)} ${deadHSV[2].toFixed(2)} / ${relativeX.toFixed(2)})`,
+                        );
+                        setActivelyChangingA(true);
+                      }
+                    }
+                  }}
+                  onMouseEnter={() => setWasMouseDownA(false)}
+                  onMouseDown={(e) => {
+                    // ^ v ^ v These are the mostly the same
+                    setWasMouseDownA(true);
+                    if (e.buttons === 1) {
+                      if (wasMouseDownA) {
+                        const pickerRegion =
+                          e.currentTarget.getBoundingClientRect();
+                        let relativeX =
+                          (e.clientX - pickerRegion.x) / pickerRegion.width;
+                        // I'm not sure if this stuff down here is necessary but whatever
+                        if (relativeX > 1) {
+                          relativeX = 1;
+                        }
+                        if (relativeX < 0) {
+                          relativeX = 0;
+                        }
+                        setLiveColor(
+                          `hsl(${deadHSV[0].toFixed(2)} ${deadHSV[1].toFixed(2)} ${deadHSV[2].toFixed(2)} / ${relativeX.toFixed(2)})`,
+                        );
+                        setActivelyChangingA(true);
+                      }
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    setWasMouseDownA(false);
+                    if (activelyChangingA) {
+                      setActivelyChangingA(false);
+                      reportBack([dataType, selector, ruleKey], liveColor);
+                    }
+                  }}
+                  onMouseUp={() => {
+                    if (activelyChangingA) {
+                      setActivelyChangingA(false);
+                      reportBack([dataType, selector, ruleKey], liveColor);
+                    }
+                  }}
+                className="flex-1 flex bg-[conic-gradient(#fff_25%,#ccc_25%_50%,#fff_50%_75%,#ccc_75%)] bg-size-[15px_15px] m-1 rounded-md">
                   <div
                     style={
                       {
@@ -304,7 +366,7 @@ export default function RulesCard({
                   </div>
                 </div>
                 <code className="text-gray-300 text-xs font-mono">
-                  {/*JSON.stringify(colorRGBA)*/}
+                  {JSON.stringify(deadHSV[1])}
                 </code>
               </div>
             </div>
