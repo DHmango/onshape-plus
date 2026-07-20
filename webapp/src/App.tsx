@@ -5,30 +5,27 @@ import RulesCard from "./RulesCard";
 export default function App() {
   //add a way to sort them by whatever
   const [ruleValues, setRuleValues] = useState<string[][]>([]);
-  const [justCopied, setJustCopied] = useState(false)
-  const themeJSON = `{
+  const [justCopied, setJustCopied] = useState(false);
+  const [textAreaJSON, setTextAreaJson] = useState("");
+
+  const whenInputChanged = (ruleID: string[], value: string) => {
+    const newRuleValues = ruleValues.map(
+      (
+        rule, // a rule looks like ['c','',"--os-accent-nonary","#a64dff"]
+      ) =>
+        rule[2] === ruleID[2] && rule[1] === ruleID[1] && rule[0] === ruleID[0] //checks if all key parts of the rule match, stopping as soon as one doesn't
+          ? rule.map((oldValue, dataIndex) =>
+              dataIndex === 3 ? value : oldValue,
+            )
+          : rule,
+    );
+    //map sets every array value to the result of what you givt it. index 2 means it only changes the index 2 thing in the array 'key':['c','','THIS']
+    setRuleValues(newRuleValues);
+    setTextAreaJson(`{
 "version": "0.1",
 "what": "onshape theme",
 "name": "Onshape light",
-"rules": ${JSON.stringify(ruleValues)}}`;
-
-  const whenInputChanged = (ruleID: string[], value: string) => {
-    setRuleValues(
-      (prevValues) =>
-        prevValues.map(
-          (
-            rule, // a rule looks like ['c','',"--os-accent-nonary","#a64dff"]
-          ) =>
-            rule[2] === ruleID[2] &&
-            rule[1] === ruleID[1] &&
-            rule[0] === ruleID[0] //checks if all key parts of the rule match, stopping as soon as one doesn't
-              ? rule.map((oldValue, dataIndex) =>
-                  dataIndex === 3 ? value : oldValue,
-                )
-              : rule,
-        ),
-      //map sets every array value to the result of what you givt it. index 2 means it only changes the index 2 thing in the array 'key':['c','','THIS']
-    );
+"rules": ${JSON.stringify(newRuleValues)}}`);
   };
   return (
     <>
@@ -36,7 +33,7 @@ export default function App() {
         <div className="flex flex-1 place-content-between">
           <div className="flex-col flex flex-none fixed right-0 h-screen bg-[#aaa] w-30">
             Hi
-            <button
+            {/* <button
               className="flex-row flex bg-gray-800 m-1 p-1 rounded-lg text-gray-100"
               onClick={() => {}
               }
@@ -71,14 +68,15 @@ export default function App() {
               <p className="flex-3 text-xs text-gray-300 self-center">
                 Sort value
               </p>
-            </button>
+            </button> This is NOT happening... for now?*/}
             <button
               className="flex-row flex bg-gray-800 m-1 p-1 rounded-lg text-gray-100"
-              onClick={() => {navigator.clipboard.writeText(themeJSON)
-                setJustCopied(true)
-                setTimeout(()=>{
-                  setJustCopied(false)
-                }, 1500)
+              onClick={() => {
+                navigator.clipboard.writeText(textAreaJSON);
+                setJustCopied(true);
+                setTimeout(() => {
+                  setJustCopied(false);
+                }, 1500);
               }}
             >
               <svg
@@ -96,21 +94,70 @@ export default function App() {
                 />
               </svg>
               <p className="flex-3 text-xs text-gray-300 self-center">
-                {justCopied? 'Copied!' : 'Copy'}
+                {justCopied ? "Copied!" : "Copy"}
               </p>
             </button>
             <textarea
               spellCheck="false"
-              value={themeJSON}
-              onChange={(event)=>{setRuleValues(JSON.parse(event.target.value).rules)}}
+              value={textAreaJSON}
+              onBlur={(event) => {
+                /* get it? because blur is the opposite of focus !*/
+                try {
+                  const rulesString = JSON.stringify(
+                    JSON.parse(event.target.value).rules,
+                  );
+                  setRuleValues(JSON.parse(event.target.value).rules);
+                  setTextAreaJson(`{
+  "version": "0.1",
+  "what": "onshape theme",
+  "name": "Onshape light",
+  "rules": ${rulesString}}`);
+                } catch (error) {
+                  setTextAreaJson(
+                    "The JSON you typed was invalid! modify a rule on the left to revert this",
+                  );
+                }
+              }}
               onFocus={(event) => {
-                event.target.select();                
+                event.target.select();
+              }}
+              onChange={(event) => {
+                setTextAreaJson(event.target.value);
               }}
               className="break-all resize-none flex-none select-all font-mono bg-[#ccc] h-40 overflow-auto tracking-tight text-[9px]/tight wrap-anywhere scrollbar-thin"
-            ></textarea>  
+            ></textarea>
+            <div className="flex flex-row flex-nowrap max-w-full">
+              <button
+                className="flex-row flex flex-1 bg-gray-800 m-1 p-1 rounded-lg text-gray-100"
+                onClick={() => {}}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="size-4"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9 8.25H7.5a2.25 2.25 0 0 0-2.25 2.25v9a2.25 2.25 0 0 0 2.25 2.25h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25H15M9 12l3 3m0 0 3-3m-3 3V2.25"
+                  />
+                </svg>
+
+                <p className="flex-3 text-xs text-gray-300 self-center">Load</p>
+              </button>
+              <select className="min-w-0 flex-1 overflow-hidden text-ellipsis bg-gray-800 m-1 ml-0 p-1 rounded-lg text-gray-100 text-xs">
+                <option value={'hehehe'}>placeholder</option>
+                <option>beep</option>
+              </select>
+            </div>
           </div>
           <div className="relative flex-1 overflow-x-hidden overflow-y-scroll h-full mr-30 scrollbar-thumb-slate-400/50 scrollbar-track-black/50">
-            <div className="w-full h-full bg-zinc-500 text-center p-5 text-xl text-mauve-800">No rules yet. Load a preset using the sidebar</div>
+            <div className="w-full h-full bg-zinc-500 text-center p-5 text-xl text-mauve-800">
+              No rules yet. Load a preset using the sidebar
+            </div>
             <div className="top-0 left-0 absolute w-full z-10">
               {ruleValues.map((ruleData) => (
                 <RulesCard

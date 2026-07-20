@@ -50,7 +50,7 @@ export default function RulesCard({
       cardColor = "#0000";
     }
 
-    const deadHSV = convert.rgb.hsv.raw(deadRGBA[0], deadRGBA[1], deadRGBA[2]);
+    const deadHSL = convert.rgb.hsl.raw(deadRGBA[0], deadRGBA[1], deadRGBA[2]);
 
     const colorHSV = convert.rgb.hsv.raw(
       colorRGBA[0],
@@ -62,7 +62,7 @@ export default function RulesCard({
       x: colorHSV[1] / 100,
       y: 1 - colorHSV[2] / 100,
     };
-    const hueThumbPos = colorHSV[0];
+    const hueThumbPos = activelyChangingSV ? deadHSL[0]:colorHSV[0]
 
     return (
       <>
@@ -106,7 +106,7 @@ export default function RulesCard({
                 className="flex-2 bg-linear-to-r from-white to-(--hueColor)"
                 style={
                   {
-                    "--hueColor": `hsl(${deadHSV[0]} 100 50)`,
+                    "--hueColor": `hsl(${activelyChangingSV ? deadHSL[0]:colorHSV[0]} 100 50)`,
                   } as React.CSSProperties
                 }
               >
@@ -141,7 +141,7 @@ export default function RulesCard({
                           );
 
                           setLiveColor(
-                            `hsl(${deadHSV[0].toFixed(2)} ${color[1].toFixed(2)} ${color[2].toFixed(2)} / ${deadRGBA[3].toFixed(2)})`,
+                            `hsl(${deadHSL[0].toFixed(2)} ${color[1].toFixed(2)} ${color[2].toFixed(2)} / ${deadRGBA[3].toFixed(2)})`,
                           );
                           setActivelyChangingSV(true);
                         }
@@ -178,7 +178,7 @@ export default function RulesCard({
                         );
 
                         setLiveColor(
-                          `hsl(${deadHSV[0].toFixed(2)} ${color[1].toFixed(2)} ${color[2].toFixed(2)} / ${deadRGBA[3].toFixed(2)})`,
+                          `hsl(${deadHSL[0].toFixed(2)} ${color[1].toFixed(2)} ${color[2].toFixed(2)} / ${deadRGBA[3].toFixed(2)})`,
                         );
                         setActivelyChangingSV(true);
                       }
@@ -232,7 +232,7 @@ export default function RulesCard({
                           relativeX = 0;
                         }
                         setLiveColor(
-                          `hsl(${(relativeX * 360).toFixed(2)} ${deadHSV[1].toFixed(2)} ${deadHSV[2].toFixed(2)} / ${deadRGBA[3].toFixed(2)})`,
+                          `hsl(${(relativeX * 360).toFixed(2)} ${deadHSL[1].toFixed(2)} ${deadHSL[2].toFixed(2)} / ${deadRGBA[3].toFixed(2)})`,
                         );
                         setActivelyChangingH(true);
                       }
@@ -243,23 +243,21 @@ export default function RulesCard({
                     // ^ v ^ v These are the mostly the same
                     setWasMouseDownH(true);
                     if (e.buttons === 1) {
-                      if (wasMouseDownH) {
-                        const pickerRegion =
-                          e.currentTarget.getBoundingClientRect();
-                        let relativeX =
-                          (e.clientX - pickerRegion.x) / pickerRegion.width;
-                        // I'm not sure if this stuff down here is necessary but whatever
-                        if (relativeX > 1) {
-                          relativeX = 1;
-                        }
-                        if (relativeX < 0) {
-                          relativeX = 0;
-                        }
-                        setLiveColor(
-                          `hsl(${(relativeX * 360).toFixed(2)} ${deadHSV[1].toFixed(2)} ${deadHSV[2].toFixed(2)} / ${deadRGBA[3].toFixed(2)})`,
-                        );
-                        setActivelyChangingH(true);
+                      const pickerRegion =
+                        e.currentTarget.getBoundingClientRect();
+                      let relativeX =
+                        (e.clientX - pickerRegion.x) / pickerRegion.width;
+                      // I'm not sure if this stuff down here is necessary but whatever
+                      if (relativeX > 1) {
+                        relativeX = 1;
                       }
+                      if (relativeX < 0) {
+                        relativeX = 0;
+                      }
+                      setLiveColor(
+                        `hsl(${(relativeX * 360).toFixed(2)} ${deadHSL[1].toFixed(2)} ${deadHSL[2].toFixed(2)} / ${deadRGBA[3].toFixed(2)})`,
+                      );
+                      setActivelyChangingH(true);
                     }
                   }}
                   onMouseLeave={() => {
@@ -275,7 +273,7 @@ export default function RulesCard({
                       reportBack([dataType, selector, ruleKey], liveColor);
                     }
                   }}
-                  className="relative flex-1 m-1 rounded-md bg-linear-to-r/[in_hsl_longer_hue] from-[#ff0000] to-[#ff0000]"
+                  className="cursor-col-resize relative flex-1 m-1 rounded-md bg-linear-to-r/[in_hsl_longer_hue] from-[#ff0000] to-[#ff0000]"
                 >
                   <div
                     style={
@@ -303,7 +301,7 @@ export default function RulesCard({
                           relativeX = 0;
                         }
                         setLiveColor(
-                          `hsl(${deadHSV[0].toFixed(2)} ${deadHSV[1].toFixed(2)} ${deadHSV[2].toFixed(2)} / ${relativeX.toFixed(2)})`,
+                          `hsl(${deadHSL[0].toFixed(2)} ${deadHSL[1].toFixed(2)} ${deadHSL[2].toFixed(2)} / ${relativeX.toFixed(2)})`,
                         );
                         setActivelyChangingA(true);
                       }
@@ -327,7 +325,7 @@ export default function RulesCard({
                           relativeX = 0;
                         }
                         setLiveColor(
-                          `hsl(${deadHSV[0].toFixed(2)} ${deadHSV[1].toFixed(2)} ${deadHSV[2].toFixed(2)} / ${relativeX.toFixed(2)})`,
+                          `hsl(${deadHSL[0].toFixed(2)} ${deadHSL[1].toFixed(2)} ${deadHSL[2].toFixed(2)} / ${relativeX.toFixed(2)})`,
                         );
                         setActivelyChangingA(true);
                       }
@@ -346,7 +344,7 @@ export default function RulesCard({
                       reportBack([dataType, selector, ruleKey], liveColor);
                     }
                   }}
-                className="flex-1 flex bg-[conic-gradient(#fff_25%,#ccc_25%_50%,#fff_50%_75%,#ccc_75%)] bg-size-[15px_15px] m-1 rounded-md">
+                className="cursor-col-resize flex-1 flex bg-[conic-gradient(#fff_25%,#ccc_25%_50%,#fff_50%_75%,#ccc_75%)] bg-size-[15px_15px] m-1 rounded-md">
                   <div
                     style={
                       {
@@ -366,7 +364,7 @@ export default function RulesCard({
                   </div>
                 </div>
                 <code className="text-gray-300 text-xs font-mono">
-                  {JSON.stringify(deadHSV[1])}
+                  {JSON.stringify(deadHSL[1])}
                 </code>
               </div>
             </div>
