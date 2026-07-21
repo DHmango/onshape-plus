@@ -6,7 +6,25 @@ export default function App() {
   //add a way to sort them by whatever
   const [ruleValues, setRuleValues] = useState<string[][]>([]);
   const [justCopied, setJustCopied] = useState(false);
-  const [textAreaJSON, setTextAreaJson] = useState("");
+  const [textAreaJSON, setTextAreaJSON] = useState("");
+  const [selectedPreset, setSelectedPreset] = useState(
+    "https://raw.githubusercontent.com/DHmango/onshape-plus/main/themes/Onshape_dark.json",
+  );
+
+  async function loadTheme(address: string) {
+    //this is basically the same as the background_script.js
+    try {
+      const response = await fetch(address);
+      if (!response.ok) {
+        throw new Error(`${response.status}`);
+      }
+      const jsonned = await response.json();
+      setTextAreaJSON(JSON.stringify(jsonned));
+      setRuleValues(jsonned.rules);
+    } catch (error) {
+      console.log(`could not fetch theme: ${error}`);
+    }
+  }
 
   const whenInputChanged = (ruleID: string[], value: string) => {
     const newRuleValues = ruleValues.map(
@@ -21,7 +39,7 @@ export default function App() {
     );
     //map sets every array value to the result of what you givt it. index 2 means it only changes the index 2 thing in the array 'key':['c','','THIS']
     setRuleValues(newRuleValues);
-    setTextAreaJson(`{
+    setTextAreaJSON(`{
 "version": "0.1",
 "what": "onshape theme",
 "name": "Onshape light",
@@ -32,7 +50,21 @@ export default function App() {
       <div className="flex w-full overflow-hidden h-screen bg-[#202020]">
         <div className="flex flex-1 place-content-between">
           <div className="flex-col flex flex-none fixed right-0 h-screen bg-[#aaa] w-30">
-            Hi
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="size-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"
+              />
+            </svg>
+
             {/* <button
               className="flex-row flex bg-gray-800 m-1 p-1 rounded-lg text-gray-100"
               onClick={() => {}
@@ -107,13 +139,13 @@ export default function App() {
                     JSON.parse(event.target.value).rules,
                   );
                   setRuleValues(JSON.parse(event.target.value).rules);
-                  setTextAreaJson(`{
-  "version": "0.1",
-  "what": "onshape theme",
-  "name": "Onshape light",
-  "rules": ${rulesString}}`);
+                  setTextAreaJSON(`{
+"version": "0.1",
+"what": "onshape theme",
+"name": "Onshape light",
+"rules": ${rulesString}}`);
                 } catch (error) {
-                  setTextAreaJson(
+                  setTextAreaJSON(
                     "The JSON you typed was invalid! modify a rule on the left to revert this",
                   );
                 }
@@ -122,14 +154,18 @@ export default function App() {
                 event.target.select();
               }}
               onChange={(event) => {
-                setTextAreaJson(event.target.value);
+                setTextAreaJSON(event.target.value);
               }}
               className="break-all resize-none flex-none select-all font-mono bg-[#ccc] h-40 overflow-auto tracking-tight text-[9px]/tight wrap-anywhere scrollbar-thin"
             ></textarea>
             <div className="flex flex-row flex-nowrap max-w-full">
               <button
                 className="flex-row flex flex-1 bg-gray-800 m-1 p-1 rounded-lg text-gray-100"
-                onClick={() => {}}
+                onClick={() => {
+                  if (confirm("Really load theme?")) {
+                    loadTheme(selectedPreset);
+                  }
+                }}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -148,10 +184,30 @@ export default function App() {
 
                 <p className="flex-3 text-xs text-gray-300 self-center">Load</p>
               </button>
-              <select className="min-w-0 flex-1 overflow-hidden text-ellipsis bg-gray-800 m-1 ml-0 p-1 rounded-lg text-gray-100 text-xs">
-                <option value={'hehehe'}>placeholder</option>
-                <option>beep</option>
+              <select
+                onChange={(event) => {
+                  setSelectedPreset(event.target.value);
+                }}
+                className="min-w-0 flex-1 overflow-hidden text-ellipsis bg-gray-800 m-1 ml-0 p-1 rounded-lg text-gray-100 text-xs"
+              >
+                <option
+                  value={
+                    "https://raw.githubusercontent.com/DHmango/onshape-plus/main/themes/Onshape_dark.json" /*if you change this link, make the usestate default to it, too */
+                  }
+                >
+                  Onshape Dark
+                </option>
+                <option
+                  value={
+                    "https://raw.githubusercontent.com/DHmango/onshape-plus/main/themes/Onshape_light.json"
+                  }
+                >
+                  Onshape Light
+                </option>
               </select>
+            </div>
+            <div>
+              add rule
             </div>
           </div>
           <div className="relative flex-1 overflow-x-hidden overflow-y-scroll h-full mr-30 scrollbar-thumb-slate-400/50 scrollbar-track-black/50">
