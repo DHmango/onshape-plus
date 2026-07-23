@@ -33,17 +33,34 @@ export default function App() {
       const jsonned = await response.json();
       setTextAreaJSON(JSON.stringify(jsonned));
       setRuleValues(jsonned.rules);
-      sendAllRulesToHSL(jsonned.rules)
+      sendAllRulesToHSL(jsonned.rules);
     } catch (error) {
       console.log(`could not fetch theme: ${error}`);
     }
   }
 
+  function HSLOverRules(HSLs: hslPlusItem[], rules: string[]) {
+    const newRules = rules.map((rule) => {
+      if (rule[0] === "c") {
+        for (const hsl of HSLs) {
+          if (hsl.id === `${rule[0] + "_㊫_" + rule[1] + "_㊫_" + rule[2]}`){ // is this inefficient?
+            //TOFODIOUJ
+
+
+            //todo dont forget
+          }
+        }
+      } else{
+        return rule
+      }
+    });
+  } //I think you are supposed to have functions be totally isolated so starting now I will
+
   function sendAllRulesToHSL(allRules: string[][]) {
     const newColorsHSL = [];
     for (const rule of allRules) {
-      console.log(rule)
-      if (rule[0] === 'c') {
+      console.log(rule);
+      if (rule[0] === "c") {
         const colorRGBA = colorStringToRGBA(rule[3]);
         const colorHSL = convert.rgb.hsl(
           colorRGBA[0],
@@ -192,7 +209,7 @@ export default function App() {
                 /* get it? because blur is the opposite of focus !*/
                 try {
                   const rules = JSON.parse(event.target.value).rules;
-                  sendAllRulesToHSL(rules)
+                  sendAllRulesToHSL(rules);
                   const rulesString = JSON.stringify(rules);
                   setRuleValues(rules);
                   setTextAreaJSON(`{
