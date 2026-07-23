@@ -1,5 +1,5 @@
 # onshape-plus
 
-### Credits
+This is not done yet. Check back end of summer?
 
-https://extensionworkshop.com/documentation/develop/browser-extension-development-tools/
+### Credits

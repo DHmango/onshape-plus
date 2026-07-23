@@ -2,9 +2,6 @@ import convert from "color-convert";
 import colorStringToRGBA from "./colorStringToRGBA";
 import { useState } from "react";
 
-//End of day: Something really weird is going on where if you set the hue or alpha value using the slider it changes the sv by a seemingly random ammount once.
-//Something is suspicious about these so-called dead value...
-
 // this thing doesn't store any data its self, its instead passed data from its parent, and calls back to it when it changes.
 export default function RulesCard({
   reportBack, //the thing used to change the centralized array of data
@@ -364,7 +361,7 @@ export default function RulesCard({
                   </div>
                 </div>
                 <code className="text-gray-300 text-xs font-mono">
-                  {JSON.stringify(deadHSL[1])}
+                  {JSON.stringify(colorRGBA)}
                 </code>
               </div>
             </div>

@@ -1,10 +1,22 @@
 import { useState } from "react";
 import "./App.css";
 import RulesCard from "./RulesCard";
+import colorStringToRGBA from "./colorStringToRGBA";
+import convert from "color-convert";
+
+interface hslPlusItem {
+  id: string;
+  h: number;
+  s: number;
+  l: number;
+  a: number;
+} // from now i will do it this way, the right way
 
 export default function App() {
   //add a way to sort them by whatever
+  // last 4 are h s l a I will store them beyond their range limits internally and limit it when actually setting
   const [ruleValues, setRuleValues] = useState<string[][]>([]);
+  const [colorsHSL, setColorsHSL] = useState<hslPlusItem[]>([]);
   const [justCopied, setJustCopied] = useState(false);
   const [textAreaJSON, setTextAreaJSON] = useState("");
   const [selectedPreset, setSelectedPreset] = useState(
@@ -21,11 +33,35 @@ export default function App() {
       const jsonned = await response.json();
       setTextAreaJSON(JSON.stringify(jsonned));
       setRuleValues(jsonned.rules);
+      sendAllRulesToHSL(jsonned.rules)
     } catch (error) {
       console.log(`could not fetch theme: ${error}`);
     }
   }
 
+  function sendAllRulesToHSL(allRules: string[][]) {
+    const newColorsHSL = [];
+    for (const rule of allRules) {
+      console.log(rule)
+      if (rule[0] === 'c') {
+        const colorRGBA = colorStringToRGBA(rule[3]);
+        const colorHSL = convert.rgb.hsl(
+          colorRGBA[0],
+          colorRGBA[1],
+          colorRGBA[2],
+        );
+        const colorID = `${rule[0] + "_㊫_" + rule[1] + "_㊫_" + rule[2]}`;
+        newColorsHSL.push({
+          id: colorID,
+          h: colorHSL[0],
+          s: colorHSL[1],
+          l: colorHSL[2],
+          a: colorRGBA[3],
+        });
+      }
+    }
+    setColorsHSL(newColorsHSL);
+  }
   const whenInputChanged = (ruleID: string[], value: string) => {
     const newRuleValues = ruleValues.map(
       (
@@ -35,8 +71,28 @@ export default function App() {
           ? rule.map((oldValue, dataIndex) =>
               dataIndex === 3 ? value : oldValue,
             )
-          : rule,
+          : rule, // holy one liner whyd i do that
     );
+    const colorRGBA = colorStringToRGBA(value);
+    const colorHSL = convert.rgb.hsl(colorRGBA[0], colorRGBA[1], colorRGBA[2]);
+    const newColorsHSL = colorsHSL.map(
+      (
+        color, //looks like ['c_㊫__㊫_--os-accent-nonary',360,100,100,1]
+      ) => {
+        if (color.id === ruleID[0] + "_㊫_" + ruleID[1] + "_㊫_" + ruleID[2]) {
+          return {
+            id: color.id,
+            h: colorHSL[0],
+            s: colorHSL[1],
+            l: colorHSL[2],
+            a: colorRGBA[3],
+          };
+        } else {
+          return color;
+        }
+      },
+    );
+    setColorsHSL(newColorsHSL);
     //map sets every array value to the result of what you givt it. index 2 means it only changes the index 2 thing in the array 'key':['c','','THIS']
     setRuleValues(newRuleValues);
     setTextAreaJSON(`{
@@ -135,10 +191,10 @@ export default function App() {
               onBlur={(event) => {
                 /* get it? because blur is the opposite of focus !*/
                 try {
-                  const rulesString = JSON.stringify(
-                    JSON.parse(event.target.value).rules,
-                  );
-                  setRuleValues(JSON.parse(event.target.value).rules);
+                  const rules = JSON.parse(event.target.value).rules;
+                  sendAllRulesToHSL(rules)
+                  const rulesString = JSON.stringify(rules);
+                  setRuleValues(rules);
                   setTextAreaJSON(`{
 "version": "0.1",
 "what": "onshape theme",
@@ -208,7 +264,28 @@ export default function App() {
             </div>
             <div>
               add rule
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="size-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 4.5v15m7.5-7.5h-15"
+                />
+              </svg>
+              <input className="bg-amber-400"></input>
+              <input className="bg-indigo-400"></input>
+              <select>
+                <option value={"c"}>color</option>
+                <option value={"o"}>other</option>
+              </select>
             </div>
+            <span>{JSON.stringify(colorsHSL)}</span>
           </div>
           <div className="relative flex-1 overflow-x-hidden overflow-y-scroll h-full mr-30 scrollbar-thumb-slate-400/50 scrollbar-track-black/50">
             <div className="w-full h-full bg-zinc-500 text-center p-5 text-xl text-mauve-800">
