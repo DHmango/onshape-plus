@@ -1,5 +1,6 @@
 {
   "devDependencies": {
+    "@types/firefox-webext-browser": "^143.0.0",
     "web-ext-plugin": "^2.13.0"
   },
   "dependencies": {
