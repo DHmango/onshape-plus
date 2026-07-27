@@ -279,7 +279,7 @@ export default function App() {
                 </option>
               </select>
             </div>
-            <div>
+            {/* <div>
               add rule
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -301,8 +301,7 @@ export default function App() {
                 <option value={"c"}>color</option>
                 <option value={"o"}>other</option>
               </select>
-            </div>
-            <span>{JSON.stringify(colorsHSL)}</span>
+            </div> TODO*/}
           </div>
           <div className="relative flex-1 overflow-x-hidden overflow-y-scroll h-full mr-30 scrollbar-thumb-slate-400/50 scrollbar-track-black/50">
             <div className="w-full h-full bg-zinc-500 text-center p-5 text-xl text-mauve-800">

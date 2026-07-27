@@ -2,13 +2,6 @@
 (async () => {
 const styleSheet = document.createElement('style')
 let CSSRules = ''
-//CORE OF WHAT NEEDS TO HAPPEN
-//get the keys for light and dark theme
-//retrieve the values based on those keys with proper formatting
-//convert each of those into css (json2css)
-//combine them
-//put them into the new stylesheet
-//apply it
 for (const lightnessMode of ['light','dark']){ //this sucks.
     const which = await browser.storage.local.get(`${lightnessMode}Theme`)
     const data = await browser.storage.local.get(which[`${lightnessMode}Theme`])
@@ -18,7 +11,6 @@ for (const lightnessMode of ['light','dark']){ //this sucks.
 styleSheet.textContent = CSSRules
 console.log(CSSRules)
 document.head.appendChild(styleSheet)
-//styleSheet.insertRule('osx-welcome-mat-section{display: none !important;}')x
 
 function json2css(json,mode){
     let cssOutput = ''

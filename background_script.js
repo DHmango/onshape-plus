@@ -1,6 +1,5 @@
 // Put all the javascript code here, that you want to execute in background.
 browser.runtime.onInstalled.addListener(preloadThemes)
-console.log('hi im a service worker or something')
 
 async function preloadThemes(){ // loads the built in themes
     await browser.storage.local.set({
