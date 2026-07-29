@@ -27,3 +27,11 @@ saveButton.addEventListener("click", function () {
     darkTheme: darkSelect.value,
   });
 });
+
+const manageButton = document.getElementById("manageButton")
+manageButton.addEventListener("click", function(){
+  browser.tabs.create({
+    url: "/webapp/dist/index.html"
+
+  })
+})

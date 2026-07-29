@@ -22,6 +22,7 @@ export default function App() {
   const [selectedPreset, setSelectedPreset] = useState(
     "https://raw.githubusercontent.com/DHmango/onshape-plus/main/themes/Onshape_dark.json",
   );
+  const [themeName, setThemeName] = useState('')
 
   async function loadTheme(address: string) {
     //this is basically the same as the background_script.js
@@ -32,6 +33,7 @@ export default function App() {
       }
       const jsonned = await response.json();
       setTextAreaJSON(JSON.stringify(jsonned));
+      setThemeName(jsonned.name)
       setRuleValues(jsonned.rules);
       sendAllRulesToHSL(jsonned.rules);
     } catch (error) {
@@ -39,27 +41,26 @@ export default function App() {
     }
   }
 
-  function HSLOverRules(HSLs: hslPlusItem[], rules: string[]) {
-    const newRules = rules.map((rule) => {
-      if (rule[0] === "c") {
-        for (const hsl of HSLs) {
-          if (hsl.id === `${rule[0] + "_㊫_" + rule[1] + "_㊫_" + rule[2]}`){ // is this inefficient?
-            //TOFODIOUJ
+  // function HSLOverRules(HSLs: hslPlusItem[], rules: string[]) {
+  //   const newRules = rules.map((rule) => {
+  //     if (rule[0] === "c") {
+  //       for (const hsl of HSLs) {
+  //         if (hsl.id === `${rule[0] + "_㊫_" + rule[1] + "_㊫_" + rule[2]}`){ // is this inefficient?
+  //           //TOFODIOUJ
 
-
-            //todo dont forget
-          }
-        }
-      } else{
-        return rule
-      }
-    });
-  } //I think you are supposed to have functions be totally isolated so starting now I will
+  //           //todo dont forget
+  //         }
+  //       }
+  //     } else{
+  //       return rule
+  //     }
+  //   });
+  // }
+  //I think you are supposed to have functions be totally isolated so starting now I will
 
   function sendAllRulesToHSL(allRules: string[][]) {
     const newColorsHSL = [];
     for (const rule of allRules) {
-      console.log(rule);
       if (rule[0] === "c") {
         const colorRGBA = colorStringToRGBA(rule[3]);
         const colorHSL = convert.rgb.hsl(
@@ -122,7 +123,7 @@ export default function App() {
     <>
       <div className="flex w-full overflow-hidden h-screen bg-[#202020]">
         <div className="flex flex-1 place-content-between">
-          <div className="flex-col flex flex-none fixed right-0 h-screen bg-[#aaa] w-30">
+          <div className="z-50 shadow-2xl/50 flex-col flex flex-none fixed right-0 h-screen bg-[#aaa] w-30">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -174,8 +175,23 @@ export default function App() {
                 Sort value
               </p>
             </button> This is NOT happening... for now?*/}
+            <div className="flex-col flex m-1">
+              <button onClick={() => {
+
+              }} className="bg-gray-800 rounded-lg text-gray-100">Save Theme</button>
+            </div>
+            <div className="m-1 p-0.5 rounded-lg bg-gray-400 inset-shadow-sm/10">
+              <label className="flex-col flex text-center">
+                <span className="text-center">Theme Name</span>
+                <input value={themeName} onChange={(e) => {
+                  const val = e.target.value
+                  setThemeName(val)
+                  setTextAreaJSON(JSON.stringify({...JSON.parse(textAreaJSON), name: val}))
+                }} className="shadow-xs/30 w-full text-xs text-gray-300 focus:outline-1.5 outline-mist-100 bg-gray-900 rounded-md mr-1 hover:bg-[#171720] border-black pl-1 inset-shadow-md/40"></input>
+              </label>
+            </div>
             <button
-              className="flex-row flex bg-gray-800 m-1 p-1 rounded-lg text-gray-100"
+              className="cursor-copy flex-row flex bg-gray-800 m-1 p-1 rounded-lg text-gray-100"
               onClick={() => {
                 navigator.clipboard.writeText(textAreaJSON);
                 setJustCopied(true);
@@ -215,7 +231,7 @@ export default function App() {
                   setTextAreaJSON(`{
 "version": "0.1",
 "what": "onshape theme",
-"name": "Onshape light",
+"name": "${themeName}",
 "rules": ${rulesString}}`);
                 } catch (error) {
                   setTextAreaJSON(
