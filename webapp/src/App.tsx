@@ -3,6 +3,8 @@ import "./App.css";
 import RulesCard from "./RulesCard";
 import colorStringToRGBA from "./colorStringToRGBA";
 import convert from "color-convert";
+import { createPortal } from "react-dom";
+import SaveCards from "./SaveCards";
 
 interface hslPlusItem {
   id: string;
@@ -22,7 +24,8 @@ export default function App() {
   const [selectedPreset, setSelectedPreset] = useState(
     "https://raw.githubusercontent.com/DHmango/onshape-plus/main/themes/Onshape_dark.json",
   );
-  const [themeName, setThemeName] = useState('')
+  const [themeName, setThemeName] = useState("");
+  const [saveMenuOpen, setSaveMenuOpen] = useState(false)
 
   async function loadTheme(address: string) {
     //this is basically the same as the background_script.js
@@ -33,7 +36,7 @@ export default function App() {
       }
       const jsonned = await response.json();
       setTextAreaJSON(JSON.stringify(jsonned));
-      setThemeName(jsonned.name)
+      setThemeName(jsonned.name);
       setRuleValues(jsonned.rules);
       sendAllRulesToHSL(jsonned.rules);
     } catch (error) {
@@ -176,18 +179,36 @@ export default function App() {
               </p>
             </button> This is NOT happening... for now?*/}
             <div className="flex-col flex m-1">
-              <button onClick={() => {
-
-              }} className="bg-gray-800 rounded-lg text-gray-100">Save Theme</button>
+              <button
+                onClick={() => {
+                  setSaveMenuOpen(true)
+                }}
+                className="bg-gray-800 rounded-lg text-gray-100"
+              >
+                Save Theme {`${saveMenuOpen}`}
+              </button>
             </div>
+            {saveMenuOpen && createPortal(
+              <SaveCards reportBack={()=>{}} onClose={()=>setSaveMenuOpen(false)}></SaveCards>,
+              document.body
+            )}
             <div className="m-1 p-0.5 rounded-lg bg-gray-400 inset-shadow-sm/10">
               <label className="flex-col flex text-center">
                 <span className="text-center">Theme Name</span>
-                <input value={themeName} onChange={(e) => {
-                  const val = e.target.value
-                  setThemeName(val)
-                  setTextAreaJSON(JSON.stringify({...JSON.parse(textAreaJSON), name: val}))
-                }} className="shadow-xs/30 w-full text-xs text-gray-300 focus:outline-1.5 outline-mist-100 bg-gray-900 rounded-md mr-1 hover:bg-[#171720] border-black pl-1 inset-shadow-md/40"></input>
+                <input
+                  value={themeName}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setThemeName(val);
+                    setTextAreaJSON(
+                      JSON.stringify({
+                        ...JSON.parse(textAreaJSON),
+                        name: val,
+                      }),
+                    );
+                  }}
+                  className="shadow-xs/30 w-full text-xs text-gray-300 focus:outline-1.5 outline-mist-100 bg-gray-900 rounded-md mr-1 hover:bg-[#171720] border-black pl-1 inset-shadow-md/40"
+                ></input>
               </label>
             </div>
             <button
