@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import "./App.css";
 import RulesCard from "./RulesCard";
 import colorStringToRGBA from "./colorStringToRGBA";
 import convert from "color-convert";
-import { createPortal } from "react-dom";
 import SaveCards from "./SaveCards";
+import browser from 'webextension-polyfill';
 
 interface hslPlusItem {
   id: string;
@@ -25,7 +25,7 @@ export default function App() {
     "https://raw.githubusercontent.com/DHmango/onshape-plus/main/themes/Onshape_dark.json",
   );
   const [themeName, setThemeName] = useState("");
-  const [saveMenuOpen, setSaveMenuOpen] = useState(false)
+  const saveDialogRef = useRef<HTMLDialogElement>(null)
 
   async function loadTheme(address: string) {
     //this is basically the same as the background_script.js
@@ -142,56 +142,20 @@ export default function App() {
               />
             </svg>
 
-            {/* <button
-              className="flex-row flex bg-gray-800 m-1 p-1 rounded-lg text-gray-100"
-              onClick={() => {}
-              }
-            >
-              <p className="flex-3 text-xs text-gray-300 self-center">
-                Sort A-Z
-              </p>
-            </button>
-            <button
-              className="flex-row flex bg-gray-800 m-1 p-1 rounded-lg text-gray-100"
-              onClick={() => {}
-              }
-            >
-              <p className="flex-3 text-xs text-gray-300 self-center">
-                Sort hue
-              </p>
-            </button>
-            <button
-              className="flex-row flex bg-gray-800 m-1 p-1 rounded-lg text-gray-100"
-              onClick={() => {}
-              }
-            >
-              <p className="flex-3 text-xs text-gray-300 self-center">
-                Sort saturation
-              </p>
-            </button>
-            <button
-              className="flex-row flex bg-gray-800 m-1 p-1 rounded-lg text-gray-100"
-              onClick={() => {}
-              }
-            >
-              <p className="flex-3 text-xs text-gray-300 self-center">
-                Sort value
-              </p>
-            </button> This is NOT happening... for now?*/}
-            <div className="flex-col flex m-1">
+                        <div className="flex-col flex m-1">
               <button
                 onClick={() => {
-                  setSaveMenuOpen(true)
+                  saveDialogRef.current?.showModal();
                 }}
                 className="bg-gray-800 rounded-lg text-gray-100"
               >
-                Save Theme {`${saveMenuOpen}`}
+                Save Theme
               </button>
             </div>
-            {saveMenuOpen && createPortal(
-              <SaveCards reportBack={()=>{}} onClose={()=>setSaveMenuOpen(false)}></SaveCards>,
-              document.body
-            )}
+            <dialog ref={saveDialogRef} className="m-auto backdrop:backdrop-brightness-50">
+              <div>hello!</div>
+              <SaveCards onClose={()=>{saveDialogRef.current?.close()}} reportBack={(slot:number, value:string,)=>{browser.storage.local.set({[`theme-${slot}`]:value})}}></SaveCards>
+            </dialog>
             <div className="m-1 p-0.5 rounded-lg bg-gray-400 inset-shadow-sm/10">
               <label className="flex-col flex text-center">
                 <span className="text-center">Theme Name</span>
