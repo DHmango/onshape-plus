@@ -1,10 +1,10 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import RulesCard from "./RulesCard";
 import colorStringToRGBA from "./colorStringToRGBA";
 import convert from "color-convert";
 import SaveCards from "./SaveCards";
-import browser from 'webextension-polyfill';
+import browser from "webextension-polyfill";
 
 interface hslPlusItem {
   id: string;
@@ -13,6 +13,18 @@ interface hslPlusItem {
   l: number;
   a: number;
 } // from now i will do it this way, the right way
+
+async function getSaves() {
+  const themesList = [];
+  const keys = await browser.storage.local.getKeys();
+  for (const key of keys) {
+    if (key.startsWith("theme-")) {
+      const value = await browser.storage.local.get(key);
+      themesList.push(`${key.slice(-2)}-${JSON.parse(typeof value[key] === 'string' ? value[key]:'error').name}`);
+    }
+  }
+  return(themesList)
+}
 
 export default function App() {
   //add a way to sort them by whatever
@@ -24,8 +36,14 @@ export default function App() {
   const [selectedPreset, setSelectedPreset] = useState(
     "https://raw.githubusercontent.com/DHmango/onshape-plus/main/themes/Onshape_dark.json",
   );
+  const [saveSlots, setSaveSlots] = useState<string[]>(['loading...'])
   const [themeName, setThemeName] = useState("");
-  const saveDialogRef = useRef<HTMLDialogElement>(null)
+  const saveDialogRef = useRef<HTMLDialogElement>(null);
+
+  useEffect(()=>{
+    getSaves().then((val)=>{
+    setSaveSlots(val)})
+  })
 
   async function loadTheme(address: string) {
     //this is basically the same as the background_script.js
@@ -142,7 +160,7 @@ export default function App() {
               />
             </svg>
 
-                        <div className="flex-col flex m-1">
+            <div className="flex-col flex m-1">
               <button
                 onClick={() => {
                   saveDialogRef.current?.showModal();
@@ -152,9 +170,21 @@ export default function App() {
                 Save Theme
               </button>
             </div>
-            <dialog ref={saveDialogRef} className="m-auto backdrop:backdrop-brightness-50">
+            <dialog
+              ref={saveDialogRef}
+              className="m-auto backdrop:backdrop-brightness-50"
+            >
               <div>hello!</div>
-              <SaveCards onClose={()=>{saveDialogRef.current?.close()}} reportBack={(slot:number, value:string,)=>{browser.storage.local.set({[`theme-${slot}`]:value})}}></SaveCards>
+              <SaveCards
+                currentTheme={textAreaJSON}
+                saveSlots={saveSlots}
+                onClose={() => {
+                  saveDialogRef.current?.close();
+                }}
+                reportBack={(slot: string, value: string) => {
+                  browser.storage.local.set({ [`theme-${slot}`]: value });
+                }}
+              ></SaveCards>
             </dialog>
             <div className="m-1 p-0.5 rounded-lg bg-gray-400 inset-shadow-sm/10">
               <label className="flex-col flex text-center">
