@@ -1,39 +1,36 @@
 {
-    "manifest_version": 3,
-    "name": "OnshapePlus",
-    "version": "1.0.0",
+  "manifest_version": 3,
+  "name": "OnshapePlus",
+  "version": "1.0.0",
 
-    "browser_specific_settings": {
-        "gecko": {
-            "id": "@fakeID",
-            "data_collection_permissions": {
-                "required": ["none"]
-            }
-        }
-    },
-    "content_scripts": [
-    {
-        "matches": [ "*://*.onshape.com/*" ],
-        "js": ["/onshape_script.js"]
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "@fakeID",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
     }
-    ],
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.onshape.com/*"],
+      "js": ["/onshape_script.js"]
+    }
+  ],
 
-    "action": {
-        "default_icon": {
-            "48":"/onshape-favicon.png"
-        },
-        "default_title": "OnshapePlus",
-        "default_popup": "/popup.html"
-
+  "action": {
+    "default_icon": {
+      "48": "/onshape-favicon.png"
     },
+    "default_title": "OnshapePlus",
+    "default_popup": "/popup.html"
+  },
 
-    "permissions": [
-        "storage"
-    ],
-    "background": {
-        "scripts": ["background_script.js"],
-        "service_worker": "background_script.js"
-    },
+  "permissions": ["storage"],
+  "background": {
+    "scripts": ["background_script.js"],
+    "service_worker": "background_script.js"
+  },
 
-    "homepage_url": "https://github.com/dhmango/"//what?
+  "homepage_url": "https://github.com/dhmango/" //what?
 }

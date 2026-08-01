@@ -1,3 +1,8 @@
+const { connectToDevTools } = require('react-devtools-core');
+  connectToDevTools({
+    host: 'localhost',
+    port: 8097,
+  });
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import RulesCard from "./RulesCard";
@@ -20,10 +25,12 @@ async function getSaves() {
   for (const key of keys) {
     if (key.startsWith("theme-")) {
       const value = await browser.storage.local.get(key);
-      themesList.push(`${key.slice(-2)}-${JSON.parse(typeof value[key] === 'string' ? value[key]:'error').name}`);
+      themesList.push(
+        `${key.slice(-2)}-${JSON.parse(typeof value[key] === "string" ? value[key] : "error").name}`,
+      );
     }
   }
-  return(themesList)
+  return themesList;
 }
 
 export default function App() {
@@ -36,14 +43,15 @@ export default function App() {
   const [selectedPreset, setSelectedPreset] = useState(
     "https://raw.githubusercontent.com/DHmango/onshape-plus/main/themes/Onshape_dark.json",
   );
-  const [saveSlots, setSaveSlots] = useState<string[]>(['loading...'])
+  const [saveSlots, setSaveSlots] = useState<string[]>(["loading..."]);
   const [themeName, setThemeName] = useState("");
   const saveDialogRef = useRef<HTMLDialogElement>(null);
 
-  useEffect(()=>{
-    getSaves().then((val)=>{
-    setSaveSlots(val)})
-  })
+  useEffect(() => {
+    getSaves().then((val) => {
+      setSaveSlots(val);
+    });
+  });
 
   async function loadTheme(address: string) {
     //this is basically the same as the background_script.js

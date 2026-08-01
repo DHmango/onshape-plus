@@ -14,22 +14,43 @@ export default function SaveCards({
   saveSlots: string[];
   onClose: () => void;
 }) {
-
   return (
     <>
-      <div>
-        <button className="w-6 h-6 bg-pink-300" onClick={onClose}></button>
-        <div className="grid grid-cols-5 gap-4"></div>
-        {saveSlots.map((slot)=>(
-          <OneCard
-          currentTheme={currentTheme}
-          number={slot.slice(0,2)}
-          name={slot.slice(3)}
-          reportBack={(slot: string, value: string) => {
-            reportBack(slot, value);
-          }}
-        ></OneCard>
-        ))}
+      <div className="w-200">
+        <button className="w-8 h-8 bg-red-800" onClick={onClose}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="size-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6 18 18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+        <div className="grid grid-cols-3 gap-4">
+          {saveSlots.map((slot) => (
+            <OneCard
+              currentTheme={currentTheme}
+              number={slot.slice(0, 2)}
+              name={slot.slice(3)}
+              reportBack={(slot: string, value: string) => {
+                reportBack(slot, value);
+              }}
+            ></OneCard>
+          ))}
+          |<OneCard currentTheme={currentTheme}
+              number={'03'}
+              name={'blank'}
+              reportBack={(slot: string, value: string) => {
+                reportBack(slot, value);
+              }}></OneCard>
+        </div>
       </div>
     </>
   );

@@ -59,7 +59,7 @@ export default function RulesCard({
       x: colorHSV[1] / 100,
       y: 1 - colorHSV[2] / 100,
     };
-    const hueThumbPos = activelyChangingSV ? deadHSL[0]:colorHSV[0]
+    const hueThumbPos = activelyChangingSV ? deadHSL[0] : colorHSV[0];
 
     return (
       <>
@@ -103,7 +103,7 @@ export default function RulesCard({
                 className="flex-2 bg-linear-to-r from-white to-(--hueColor)"
                 style={
                   {
-                    "--hueColor": `hsl(${activelyChangingSV ? deadHSL[0]:colorHSV[0]} 100 50)`,
+                    "--hueColor": `hsl(${activelyChangingSV ? deadHSL[0] : colorHSV[0]} 100 50)`,
                   } as React.CSSProperties
                 }
               >
@@ -282,8 +282,8 @@ export default function RulesCard({
                   ></div>
                 </div>
                 {/* alpha */}
-                <div 
-                onMouseMove={(e) => {
+                <div
+                  onMouseMove={(e) => {
                     if (e.buttons === 1) {
                       if (wasMouseDownA) {
                         const pickerRegion =
@@ -341,7 +341,8 @@ export default function RulesCard({
                       reportBack([dataType, selector, ruleKey], liveColor);
                     }
                   }}
-                className="cursor-col-resize flex-1 flex bg-[conic-gradient(#fff_25%,#ccc_25%_50%,#fff_50%_75%,#ccc_75%)] bg-size-[15px_15px] m-1 rounded-md">
+                  className="cursor-col-resize flex-1 flex bg-[conic-gradient(#fff_25%,#ccc_25%_50%,#fff_50%_75%,#ccc_75%)] bg-size-[15px_15px] m-1 rounded-md"
+                >
                   <div
                     style={
                       {
@@ -385,9 +386,7 @@ export default function RulesCard({
               className="justify-between flex flex-start m-1"
             >
               <span className="overflow-hidden text-ellipsis">
-                <span className="text-xs text-gray-300">
-                  value: &nbsp;
-                </span>
+                <span className="text-xs text-gray-300">value: &nbsp;</span>
                 <span className="overflow-hidden text-sm flex-1 min-w-0">
                   {selector}&nbsp;
                 </span>
@@ -403,6 +402,7 @@ export default function RulesCard({
             </label>
           </div>
         </div>
-    </>)
+      </>
+    );
   }
 }
