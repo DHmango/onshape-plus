@@ -3,6 +3,8 @@
 // Overwrite?
 // getKeys and for each that starts with theme- make a card that says save here with ^^ also show a delete button for everything. Also show any gaps in save data and one extra, like 1, 2, 3, 4 even if only 1 and 4 exist
 
+import { useState } from "react";
+
 export default function SaveCards({
   reportBack,
   currentTheme,
@@ -16,8 +18,11 @@ export default function SaveCards({
 }) {
   return (
     <>
-      <div className="w-200">
-        <button className="w-8 h-8 bg-red-800" onClick={onClose}>
+      <div className="shadow-lg/25 h-100 w-200 bg-[#dee6ef]">
+        <button
+          className="inset-ring-2 inset-ring-red-900 text-neutral-300 w-6 h-6 bg-red-700"
+          onClick={onClose}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -33,7 +38,7 @@ export default function SaveCards({
             />
           </svg>
         </button>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-3">
           {saveSlots.map((slot) => (
             <OneCard
               currentTheme={currentTheme}
@@ -44,12 +49,6 @@ export default function SaveCards({
               }}
             ></OneCard>
           ))}
-          |<OneCard currentTheme={currentTheme}
-              number={'03'}
-              name={'blank'}
-              reportBack={(slot: string, value: string) => {
-                reportBack(slot, value);
-              }}></OneCard>
         </div>
       </div>
     </>
@@ -66,20 +65,45 @@ function OneCard({
   currentTheme: string;
   reportBack: (slot: string, value: string) => void;
 }) {
-  console.log("jump!");
+  const [reallyClear, setReallyClear] = useState(false)
   return (
     <>
-      <div className="flex flex-col">
-        <div>{`Slot-${number}`}</div>
-        {name}
-        <button
-          onClick={() => {
-            reportBack(number, currentTheme);
-          }}
-          className="w-12 h-6 bg-amber-950"
+      <div className="m-2 border-2 border-neutral-300 shadow-lg p-1 bg-stone-200 rounded-md overflow-auto flex flex-col">
+        <div className="font-thin">{`Slot-${number}`}</div>
+        <div
+          title={name}
+          className="overflow-clip text-ellipsis text-nowrap text-lg font-playfair font-semibold text-[#190301]"
         >
-          save here
-        </button>
+          {name}{" "}
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          <button
+            onClick={() => {
+              reportBack(number, currentTheme);
+            }}
+            className="col-span-2 font-normal hover:bg-[#efeee8] transition text-neutral-700 font-workSans rounded-sm h-6 bg-amber-50"
+          >
+            Save here
+          </button>
+          <button
+            onClick={() => {
+              if (reallyClear){
+              reportBack(
+                number,
+                '{"version":"0.1","what":"onshape theme","name":"Empty slot","rules":[]',  
+              );
+              setReallyClear(false)} else{
+                setReallyClear(true)
+                setTimeout(() => {
+                  setReallyClear(false);
+                }, 2000);
+              }
+            }}
+            className={`font-normal ${reallyClear ? 'bg-rose-500 inset-ring-red-700 inset-ring-4':''} hover:bg-rose-500 hover:inset-ring-4 duration-200 hover:inset-ring-red-700 transition text-neutral-700 font-workSans rounded-sm h-6 bg-amber-50`}
+          >
+            {reallyClear? 'Delete?' : 'Delete'}
+          </button>
+        </div>
       </div>
     </>
   );

@@ -4,7 +4,6 @@ import RulesCard from "./RulesCard";
 import colorStringToRGBA from "./colorStringToRGBA";
 import convert from "color-convert";
 import SaveCards from "./SaveCards";
-import browser from "webextension-polyfill";
 
 interface saveSlot {
   slot: number;
@@ -19,23 +18,23 @@ interface hslPlusItem {
 } // from now i will do it this way, the right way
 
 async function getSaves() {
-  const themesList = [];
-  const keys = await browser.storage.local.getKeys();
-  for (const key of keys) {
-    if (key.startsWith("theme-")) {
-      const value = await browser.storage.local.get(key);
-      themesList.push({
-        slot: Number(key.slice(-2)),
-        name: JSON.parse(typeof value[key] === "string" ? value[key] : "error")
-          .name,
-      });
-    }
-  }
+  const themesList = [{slot:1,name:'test1'},{slot:12,name:'test2'},{slot:7,name:'tes'},{slot:3,name:'really cool beautiful theme'},{slot:5,name:'who?'}];
+  // const keys = await browser.storage.local.getKeys();
+  // for (const key of keys) {
+  //   if (key.startsWith("theme-")) {
+  //     const value = await browser.storage.local.get(key);
+  //     themesList.push({
+  //       slot: Number(key.slice(-2)),
+  //       name: JSON.parse(typeof value[key] === "string" ? value[key] : "error")
+  //         .name,
+  //     });
+  //   }
+  // }
   const sortedList = themesList.toSorted((a, b) => a.slot - b.slot);
   return sortedList;
 }
 
-export default function App() {
+export default function TestAppOutOfExtension() {
   //add a way to sort them by whatever
   // last 4 are h s l a I will store them beyond their range limits internally and limit it when actually setting
   const [ruleValues, setRuleValues] = useState<string[][]>([]);
@@ -203,7 +202,8 @@ export default function App() {
                   saveDialogRef.current?.close();
                 }}
                 reportBack={(slot: string, value: string) => {
-                  browser.storage.local.set({ [`theme-${slot}`]: value });
+                  //browser.storage.local.set({ [`theme-${slot}`]: value });
+                  console.log(`would have saved ${JSON.stringify({ [`theme-${slot}`]: value })}`)
                 }}
               ></SaveCards>
             </dialog>

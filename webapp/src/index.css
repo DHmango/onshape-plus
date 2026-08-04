@@ -1,1 +1,16 @@
 @import "tailwindcss";
+
+@font-face {
+  font-family: 'PlayfairDisplay';
+  src: url(./assets/fonts/PlayfairDisplay-VariableFont_wght.ttf);
+}
+
+@font-face {
+  font-family: 'WorkSans';
+  src: url(./assets/fonts/WorkSans-VariableFont_wght.ttf);
+}
+
+@theme {
+  --font-playfair: 'PlayfairDisplay';
+  --font-workSans: 'WorkSans';
+}
