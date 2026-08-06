@@ -1,7 +1,7 @@
 // you get to choose which slot to save it too, and they show what they were.
 // 00 - Onshape Light
 // Overwrite?
-// getKeys and for each that starts with theme- make a card that says save here with ^^ also show a delete button for everything. Also show any gaps in save data and one extra, like 1, 2, 3, 4 even if only 1 and 4 exist
+// getKeys and for each that starts with theme- make a card that says save here with ^^ also show a deleteTheme button for everything. Also show any gaps in save data and one extra, like 1, 2, 3, 4 even if only 1 and 4 exist
 
 import { useState } from "react";
 
@@ -10,11 +10,13 @@ export default function SaveCards({
   currentTheme,
   saveSlots,
   onClose,
+  deleteTheme,
 }: {
   reportBack: (slot: string, value: string) => void; // its a string because leading zeroes are needed and maybe futureproof or not
   currentTheme: string;
   saveSlots: string[];
   onClose: () => void;
+  deleteTheme: (slot: string) => void;
 }) {
   return (
     <>
@@ -47,6 +49,9 @@ export default function SaveCards({
               reportBack={(slot: string, value: string) => {
                 reportBack(slot, value);
               }}
+              deleteTheme={(slot:string) => {
+                deleteTheme(slot)
+              }}
             ></OneCard>
           ))}
         </div>
@@ -59,11 +64,13 @@ function OneCard({
   name,
   currentTheme,
   reportBack,
+  deleteTheme,
 }: {
   number: string;
   name: string;
   currentTheme: string;
   reportBack: (slot: string, value: string) => void;
+  deleteTheme: (slot: string) => void;
 }) {
   const [reallyClear, setReallyClear] = useState(false)
   return (
@@ -88,20 +95,17 @@ function OneCard({
           <button
             onClick={() => {
               if (reallyClear){
-              reportBack(
-                number,
-                '{"version":"0.1","what":"onshape theme","name":"Empty slot","rules":[]',  
-              );
+              deleteTheme(number);
               setReallyClear(false)} else{
                 setReallyClear(true)
                 setTimeout(() => {
                   setReallyClear(false);
                 }, 2000);
-              }
+              } 
             }}
-            className={`font-normal ${reallyClear ? 'bg-rose-500 inset-ring-red-700 inset-ring-4':''} hover:bg-rose-500 hover:inset-ring-4 duration-200 hover:inset-ring-red-700 transition text-neutral-700 font-workSans rounded-sm h-6 bg-amber-50`}
+            className={`font-normal ${reallyClear ? 'bg-rose-500 inset-ring-red-700 inset-ring-4':'hover:bg-red-300 hover:inset-ring-4 hover:inset-ring-red-400'} duration-200 transition text-neutral-700 font-workSans rounded-sm h-6 bg-amber-50`}
           >
-            {reallyClear? 'Delete?' : 'Delete'}
+            {reallyClear? 'deleteTheme?' : 'deleteTheme'}
           </button>
         </div>
       </div>

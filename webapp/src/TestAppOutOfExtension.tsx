@@ -4,6 +4,7 @@ import RulesCard from "./RulesCard";
 import colorStringToRGBA from "./colorStringToRGBA";
 import convert from "color-convert";
 import SaveCards from "./SaveCards";
+import browser from "webextension-polyfill";
 
 interface saveSlot {
   slot: number;
@@ -45,7 +46,7 @@ export default function TestAppOutOfExtension() {
     "https://raw.githubusercontent.com/DHmango/onshape-plus/main/themes/Onshape_dark.json",
   );
   const [saveSlots, setSaveSlots] = useState<saveSlot[]>([
-    { slot: -1, name: "loading..." },
+    { slot: -1, name: "Error" },
   ]);
   const [themeName, setThemeName] = useState("");
   const saveDialogRef = useRef<HTMLDialogElement>(null);
@@ -58,13 +59,19 @@ export default function TestAppOutOfExtension() {
   }
   saveSlotsToShow.push(`${String(Number(saveSlots.at(-1)?.slot)+1).padStart(2,'0')}-empty slot`)
 
+  let lightTheme = ''
+  let darkTheme = ''
 
   useEffect(() => {
+    async () => {
+      lightTheme ='theme-00'
+      darkTheme = 'theme-01'
+    };
     getSaves().then((val) => {
       setSaveSlots(val);
       console.log("loaded saves!");
     });
-  },[]);
+  }, []);
 
   async function loadTheme(address: string) {
     //this is basically the same as the background_script.js
@@ -202,8 +209,15 @@ export default function TestAppOutOfExtension() {
                   saveDialogRef.current?.close();
                 }}
                 reportBack={(slot: string, value: string) => {
-                  //browser.storage.local.set({ [`theme-${slot}`]: value });
-                  console.log(`would have saved ${JSON.stringify({ [`theme-${slot}`]: value })}`)
+                  browser.storage.local.set({ [`theme-${slot}`]: value });
+                }}
+                deleteTheme={(slot: string) => {
+                  if (
+                    slot === darkTheme.slice(-2) ||
+                    slot === lightTheme.slice(-2)
+                  ) {
+                  }
+                  browser.storage.local.remove(`theme-${slot}`);
                 }}
               ></SaveCards>
             </dialog>

@@ -34,6 +34,20 @@ async function getSaves() {
   const sortedList = themesList.toSorted((a, b) => a.slot - b.slot);
   return sortedList;
 }
+async function getLightnesses() {
+  const lightTheme = await browser.storage.local
+    .get("lightTheme")
+    .then((theme) => {
+      console.log(theme.lightTheme);
+      return typeof theme.lightTheme === "string" ? theme.lightTheme : "";
+    });
+  const darkTheme = await browser.storage.local
+    .get("darkTheme")
+    .then((theme) =>
+      typeof theme.darkTheme === "string" ? theme.darkTheme : "",
+    );
+  return({light:lightTheme,dark:darkTheme})
+}
 
 export default function App() {
   //add a way to sort them by whatever
@@ -46,26 +60,34 @@ export default function App() {
     "https://raw.githubusercontent.com/DHmango/onshape-plus/main/themes/Onshape_dark.json",
   );
   const [saveSlots, setSaveSlots] = useState<saveSlot[]>([
-    { slot: -1, name: "loading..." },
+    { slot: -1, name: "Error" },
   ]);
   const [themeName, setThemeName] = useState("");
   const saveDialogRef = useRef<HTMLDialogElement>(null);
   const saveSlotsToShow = [];
+
+  const [lightTheme, setLightTheme] = useState('')
+  const [darkTheme, setDarkTheme] = useState('')
 
   for (const value of saveSlots) {
     saveSlotsToShow.push(
       `${String(value.slot).padStart(2, "0")}-${value.name}`,
     );
   }
-  saveSlotsToShow.push(`${String(Number(saveSlots.at(-1)?.slot)+1).padStart(2,'0')}-empty slot`)
-
+  saveSlotsToShow.push(
+    `${String(Number(saveSlots.at(-1)?.slot) + 1).padStart(2, "0")}-Empty slot`,
+  );
 
   useEffect(() => {
+    getLightnesses().then((val) => {
+      setDarkTheme(val.dark)
+      setLightTheme(val.light)
+    });
     getSaves().then((val) => {
       setSaveSlots(val);
       console.log("loaded saves!");
     });
-  },[]);
+  }, []);
 
   async function loadTheme(address: string) {
     //this is basically the same as the background_script.js
@@ -204,6 +226,29 @@ export default function App() {
                 }}
                 reportBack={(slot: string, value: string) => {
                   browser.storage.local.set({ [`theme-${slot}`]: value });
+                  getSaves().then((val) => {
+                    setSaveSlots(val);
+                    console.log("loaded saves!");
+                  });
+                }}
+                deleteTheme={(slot: string) => {
+                  console.log(`deleting${slot}`);
+                  console.log(darkTheme)
+                  console.log(darkTheme.slice(-2))
+                  console.log('split!')
+                  console.log(slot)
+                  if (
+                    slot === darkTheme.slice(-2) ||
+                    slot === lightTheme.slice(-2)
+                  ) {
+                    confirm(
+                      "Cannot delete an active theme. Change theme and reload",
+                    );
+                  } else {
+                    browser.storage.local.remove(`theme-${slot}`);
+                    console.log(slot);
+                    console.log(lightTheme.slice(-2));
+                  }
                 }}
               ></SaveCards>
             </dialog>
