@@ -1,6 +1,5 @@
 const darkSelect = document.getElementById("darkSelect");
 const lightSelect = document.getElementById("lightSelect");
-const saveButton = document.getElementById("saveButton");
 
 const lightTheme = await browser.storage.local.get("lightTheme");
 const darkTheme = await browser.storage.local.get("darkTheme");
@@ -21,17 +20,22 @@ for (const themeName of themesList) {
 darkSelect.value = darkTheme.darkTheme
 lightSelect.value = lightTheme.lightTheme
 
-saveButton.addEventListener("click", function () {
+function save() {
   browser.storage.local.set({
     lightTheme: lightSelect.value,
     darkTheme: darkSelect.value,
   });
-});
+};
+darkSelect.addEventListener('change',()=>{
+  save()
+})
+lightSelect.addEventListener('change',()=>{
+  save()
+})
 
 const manageButton = document.getElementById("manageButton")
 manageButton.addEventListener("click", function(){
   browser.tabs.create({
     url: "/webapp/dist/index.html"
-
   })
 })

@@ -99,6 +99,7 @@ export default function App() {
       setThemeName(jsonned.name);
       setRuleValues(jsonned.rules);
       sendAllRulesToHSL(jsonned.rules);
+      console.log(colorsHSL)
     } catch (error) {
       console.log(`could not fetch theme: ${error}`);
     }
@@ -132,11 +133,11 @@ export default function App() {
   //         }
   //       }
   //     } else{
-  //       return rule
+  //       return newRules
   //     }
   //   });
   // }
-  //I think you are supposed to have functions be totally isolated so starting now I will
+  // I think you are supposed to have functions be totally isolated so starting now I will
 
   function sendAllRulesToHSL(allRules: string[][]) {
     const newColorsHSL = [];
@@ -234,7 +235,6 @@ export default function App() {
               className="m-auto backdrop:backdrop-brightness-50"
             >
               <SaveCards
-                
                 currentTheme={textAreaJSON}
                 saveSlots={saveSlotsToShow}
                 onClose={() => {
@@ -244,10 +244,13 @@ export default function App() {
                   try {
                     if ((JSON.parse(value).what = "onshape theme")) {
                       if (confirm("save here?")) {
-                        browser.storage.local.set({ [`theme-${slot}`]: value });
-                        getSaves().then((val) => {
-                          setSaveSlots(val);
-                        });
+                        browser.storage.local
+                          .set({ [`theme-${slot}`]: value })
+                          .then(() => {
+                            getSaves().then((val) => {
+                              setSaveSlots(val);
+                            });
+                          });
                       }
                     } else {
                       alert("error shouldn't happen!");
@@ -265,11 +268,15 @@ export default function App() {
                       "Cannot delete an active theme. Change theme and reload",
                     );
                   } else {
-                    browser.storage.local.remove(`theme-${slot}`);
+                    browser.storage.local.remove(`theme-${slot}`).then(() => {
+                      getSaves().then((val) => {
+                        setSaveSlots(val);
+                      });
+                    });
                   }
                 }}
                 loadTheme={(slot: string) => {
-                  loadThemeFromSlot(slot)
+                  loadThemeFromSlot(slot);
                   saveDialogRef.current?.close();
                 }}
               ></SaveCards>

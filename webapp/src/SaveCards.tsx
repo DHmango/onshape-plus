@@ -22,43 +22,53 @@ export default function SaveCards({
 }) {
   return (
     <>
-      <div className="shadow-lg/25 h-100 w-200 bg-[#dee6ef]">
-        <button
-          className="inset-ring-2 inset-ring-red-900 text-neutral-300 w-6 h-6 bg-red-700"
-          onClick={onClose}
+      <div
+        className="flex fixed inset-0 z-50 items-center justify-center backdrop-blur-[1px] bg-[#0003]"
+        onClick={() => {onClose()}}
+      >
+        <div
+          className="shadow-lg/25 h-100 w-200 bg-[#dee6ef]"
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="size-6"
+          <button
+            className="inset-ring-2 inset-ring-red-900 text-neutral-300 w-6 h-6 bg-red-700"
+            onClick={onClose}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M6 18 18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-        <div className="grid grid-cols-3">
-          {saveSlots.map((slot) => (
-            <OneCard
-              currentTheme={currentTheme}
-              number={slot.slice(0, 2)}
-              name={slot.slice(3)}
-              reportBack={(slot: string, value: string) => {
-                reportBack(slot, value);
-              }}
-              deleteTheme={(slot: string) => {
-                deleteTheme(slot);
-              }}
-              loadTheme={(slot: string) => {
-                loadTheme(slot);
-              }}
-            ></OneCard>
-          ))}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="size-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18 18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+          <div className="grid grid-cols-3">
+            {saveSlots.map((slot) => (
+              <OneCard
+                currentTheme={currentTheme}
+                number={slot.slice(0, 2)}
+                name={slot.slice(3)}
+                reportBack={(slot: string, value: string) => {
+                  reportBack(slot, value);
+                }}
+                deleteTheme={(slot: string) => {
+                  deleteTheme(slot);
+                }}
+                loadTheme={(slot: string) => {
+                  loadTheme(slot);
+                }}
+              ></OneCard>
+            ))}
+          </div>
         </div>
       </div>
     </>
@@ -102,7 +112,6 @@ function OneCard({
           <button
             onClick={() => {
               loadTheme(number);
-              
             }}
             className={`font-normal text-neutral-700 font-workSans rounded-sm h-6 bg-amber-50`}
           >
@@ -120,9 +129,9 @@ function OneCard({
                 }, 2000);
               }
             }}
-            className={`font-normal ${reallyClear ? "bg-rose-500 inset-ring-red-700 inset-ring-4" : "hover:bg-red-300 hover:inset-ring-4 hover:inset-ring-red-400"} duration-200 transition text-neutral-700 font-workSans rounded-sm h-6 bg-amber-50`}
+            className={`font-normal ${reallyClear ? "bg-rose-500 inset-ring-red-700 inset-ring-4 text-amber-50" : "hover:bg-red-300 hover:inset-ring-4 hover:inset-ring-red-400 text-neutral-700"} duration-200 transition font-workSans rounded-sm h-6 bg-amber-50`}
           >
-            {reallyClear ? "Delete?" : "Delete"}
+            Delete
           </button>
         </div>
       </div>
