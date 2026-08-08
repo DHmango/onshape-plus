@@ -11,12 +11,14 @@ export default function SaveCards({
   saveSlots,
   onClose,
   deleteTheme,
+  loadTheme,
 }: {
   reportBack: (slot: string, value: string) => void; // its a string because leading zeroes are needed and maybe futureproof or not
   currentTheme: string;
   saveSlots: string[];
   onClose: () => void;
   deleteTheme: (slot: string) => void;
+  loadTheme: (slot: string) => void;
 }) {
   return (
     <>
@@ -49,8 +51,11 @@ export default function SaveCards({
               reportBack={(slot: string, value: string) => {
                 reportBack(slot, value);
               }}
-              deleteTheme={(slot:string) => {
-                deleteTheme(slot)
+              deleteTheme={(slot: string) => {
+                deleteTheme(slot);
+              }}
+              loadTheme={(slot: string) => {
+                loadTheme(slot);
               }}
             ></OneCard>
           ))}
@@ -65,14 +70,16 @@ function OneCard({
   currentTheme,
   reportBack,
   deleteTheme,
+  loadTheme,
 }: {
   number: string;
   name: string;
   currentTheme: string;
   reportBack: (slot: string, value: string) => void;
   deleteTheme: (slot: string) => void;
+  loadTheme: (slot: string) => void;
 }) {
-  const [reallyClear, setReallyClear] = useState(false)
+  const [reallyClear, setReallyClear] = useState(false);
   return (
     <>
       <div className="m-2 border-2 border-neutral-300 shadow-lg p-1 bg-stone-200 rounded-md overflow-auto flex flex-col">
@@ -83,7 +90,7 @@ function OneCard({
         >
           {name}{" "}
         </div>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-4 gap-2">
           <button
             onClick={() => {
               reportBack(number, currentTheme);
@@ -94,18 +101,28 @@ function OneCard({
           </button>
           <button
             onClick={() => {
-              if (reallyClear){
-              deleteTheme(number);
-              setReallyClear(false)} else{
-                setReallyClear(true)
+              loadTheme(number);
+              
+            }}
+            className={`font-normal text-neutral-700 font-workSans rounded-sm h-6 bg-amber-50`}
+          >
+            Load
+          </button>
+          <button
+            onClick={() => {
+              if (reallyClear) {
+                deleteTheme(number);
+                setReallyClear(false);
+              } else {
+                setReallyClear(true);
                 setTimeout(() => {
                   setReallyClear(false);
                 }, 2000);
-              } 
+              }
             }}
-            className={`font-normal ${reallyClear ? 'bg-rose-500 inset-ring-red-700 inset-ring-4':'hover:bg-red-300 hover:inset-ring-4 hover:inset-ring-red-400'} duration-200 transition text-neutral-700 font-workSans rounded-sm h-6 bg-amber-50`}
+            className={`font-normal ${reallyClear ? "bg-rose-500 inset-ring-red-700 inset-ring-4" : "hover:bg-red-300 hover:inset-ring-4 hover:inset-ring-red-400"} duration-200 transition text-neutral-700 font-workSans rounded-sm h-6 bg-amber-50`}
           >
-            {reallyClear? 'deleteTheme?' : 'deleteTheme'}
+            {reallyClear ? "Delete?" : "Delete"}
           </button>
         </div>
       </div>

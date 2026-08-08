@@ -38,7 +38,6 @@ async function getLightnesses() {
   const lightTheme = await browser.storage.local
     .get("lightTheme")
     .then((theme) => {
-      console.log(theme.lightTheme);
       return typeof theme.lightTheme === "string" ? theme.lightTheme : "";
     });
   const darkTheme = await browser.storage.local
@@ -46,7 +45,7 @@ async function getLightnesses() {
     .then((theme) =>
       typeof theme.darkTheme === "string" ? theme.darkTheme : "",
     );
-  return({light:lightTheme,dark:darkTheme})
+  return { light: lightTheme, dark: darkTheme };
 }
 
 export default function App() {
@@ -66,8 +65,8 @@ export default function App() {
   const saveDialogRef = useRef<HTMLDialogElement>(null);
   const saveSlotsToShow = [];
 
-  const [lightTheme, setLightTheme] = useState('')
-  const [darkTheme, setDarkTheme] = useState('')
+  const [lightTheme, setLightTheme] = useState("");
+  const [darkTheme, setDarkTheme] = useState("");
 
   for (const value of saveSlots) {
     saveSlotsToShow.push(
@@ -80,16 +79,15 @@ export default function App() {
 
   useEffect(() => {
     getLightnesses().then((val) => {
-      setDarkTheme(val.dark)
-      setLightTheme(val.light)
+      setDarkTheme(val.dark);
+      setLightTheme(val.light);
     });
     getSaves().then((val) => {
       setSaveSlots(val);
-      console.log("loaded saves!");
     });
   }, []);
 
-  async function loadTheme(address: string) {
+  async function loadThemeFromAddress(address: string) {
     //this is basically the same as the background_script.js
     try {
       const response = await fetch(address);
@@ -101,6 +99,23 @@ export default function App() {
       setThemeName(jsonned.name);
       setRuleValues(jsonned.rules);
       sendAllRulesToHSL(jsonned.rules);
+    } catch (error) {
+      console.log(`could not fetch theme: ${error}`);
+    }
+  }
+
+  async function loadThemeFromSlot(slot: string) {
+    //this is basically the same as the background_script.js
+    try {
+      const value = await browser.storage.local.get(`theme-${slot}`);
+      const intermediate = value[`theme-${slot}`]; //this is dumb?
+      if (typeof intermediate === "string") {
+        const jsonned = JSON.parse(intermediate);
+        setTextAreaJSON(JSON.stringify(jsonned));
+        setThemeName(jsonned.name);
+        setRuleValues(jsonned.rules);
+        sendAllRulesToHSL(jsonned.rules);
+      }
     } catch (error) {
       console.log(`could not fetch theme: ${error}`);
     }
@@ -211,7 +226,7 @@ export default function App() {
                 }}
                 className="bg-gray-800 rounded-lg text-gray-100"
               >
-                Save Theme
+                Save slots
               </button>
             </div>
             <dialog
@@ -219,36 +234,43 @@ export default function App() {
               className="m-auto backdrop:backdrop-brightness-50"
             >
               <SaveCards
+                
                 currentTheme={textAreaJSON}
                 saveSlots={saveSlotsToShow}
                 onClose={() => {
                   saveDialogRef.current?.close();
                 }}
                 reportBack={(slot: string, value: string) => {
-                  browser.storage.local.set({ [`theme-${slot}`]: value });
-                  getSaves().then((val) => {
-                    setSaveSlots(val);
-                    console.log("loaded saves!");
-                  });
+                  try {
+                    if ((JSON.parse(value).what = "onshape theme")) {
+                      if (confirm("save here?")) {
+                        browser.storage.local.set({ [`theme-${slot}`]: value });
+                        getSaves().then((val) => {
+                          setSaveSlots(val);
+                        });
+                      }
+                    } else {
+                      alert("error shouldn't happen!");
+                    }
+                  } catch {
+                    alert("invalid save data!");
+                  }
                 }}
                 deleteTheme={(slot: string) => {
-                  console.log(`deleting${slot}`);
-                  console.log(darkTheme)
-                  console.log(darkTheme.slice(-2))
-                  console.log('split!')
-                  console.log(slot)
                   if (
                     slot === darkTheme.slice(-2) ||
                     slot === lightTheme.slice(-2)
                   ) {
-                    confirm(
+                    alert(
                       "Cannot delete an active theme. Change theme and reload",
                     );
                   } else {
                     browser.storage.local.remove(`theme-${slot}`);
-                    console.log(slot);
-                    console.log(lightTheme.slice(-2));
                   }
+                }}
+                loadTheme={(slot: string) => {
+                  loadThemeFromSlot(slot)
+                  saveDialogRef.current?.close();
                 }}
               ></SaveCards>
             </dialog>
@@ -333,7 +355,7 @@ export default function App() {
                 className="flex-row flex flex-1 bg-gray-800 m-1 p-1 rounded-lg text-gray-100"
                 onClick={() => {
                   if (confirm("Really load theme?")) {
-                    loadTheme(selectedPreset);
+                    loadThemeFromAddress(selectedPreset);
                   }
                 }}
               >
