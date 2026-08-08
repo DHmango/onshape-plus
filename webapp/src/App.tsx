@@ -58,6 +58,9 @@ export default function App() {
   const [selectedPreset, setSelectedPreset] = useState(
     "https://raw.githubusercontent.com/DHmango/onshape-plus/main/themes/Onshape_dark.json",
   );
+  const [selectedRuleIDs, setSelectedRuleIDs] = useState<string[]>()
+  selectedRuleIDs
+  setSelectedRuleIDs
   const [saveSlots, setSaveSlots] = useState<saveSlot[]>([
     { slot: -1, name: "Error" },
   ]);
@@ -67,6 +70,17 @@ export default function App() {
 
   const [lightTheme, setLightTheme] = useState("");
   const [darkTheme, setDarkTheme] = useState("");
+
+  function isStringArrayArray(value: unknown): value is string[][] {
+    return (
+      Array.isArray(value) &&
+      value.every(
+        (item) =>
+          Array.isArray(item) &&
+          item.every((content) => typeof content === "string"),
+      )
+    );
+  }
 
   for (const value of saveSlots) {
     saveSlotsToShow.push(
@@ -99,7 +113,6 @@ export default function App() {
       setThemeName(jsonned.name);
       setRuleValues(jsonned.rules);
       sendAllRulesToHSL(jsonned.rules);
-      console.log(colorsHSL)
     } catch (error) {
       console.log(`could not fetch theme: ${error}`);
     }
@@ -122,22 +135,27 @@ export default function App() {
     }
   }
 
-  // function HSLOverRules(HSLs: hslPlusItem[], rules: string[]) {
-  //   const newRules = rules.map((rule) => {
-  //     if (rule[0] === "c") {
-  //       for (const hsl of HSLs) {
-  //         if (hsl.id === `${rule[0] + "_㊫_" + rule[1] + "_㊫_" + rule[2]}`){ // is this inefficient?
-  //           //TOFODIOUJ
-
-  //           //todo dont forget
-  //         }
-  //       }
-  //     } else{
-  //       return newRules
-  //     }
-  //   });
-  // }
-  // I think you are supposed to have functions be totally isolated so starting now I will
+  function applyHSLOverRules(HSLs: hslPlusItem[], rules: string[][]) {
+    const newRules = rules.map((rule) => {
+      if (rule[0] === "c") {
+        for (const hsl of HSLs) {
+          if (hsl.id === `${rule[0] + "_㊫_" + rule[1] + "_㊫_" + rule[2]}`) {
+            // is this inefficient? idc
+            return [
+              rule[0],
+              rule[1],
+              rule[2],
+              `hsl(${hsl.h} ${hsl.s} ${hsl.l} / ${hsl.a})`,
+            ];
+          }
+        }
+      } else {
+        return rule;
+      }
+    });
+    return newRules;
+  }
+  // I think you are supposed to have functions be totally isolated so starting now I will ^^^
 
   function sendAllRulesToHSL(allRules: string[][]) {
     const newColorsHSL = [];
@@ -219,7 +237,35 @@ export default function App() {
                 d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"
               />
             </svg>
-
+            <button
+              onClick={() => {
+                const newColors = colorsHSL.map((color) => {
+                  return {
+                    h: (color.h + 180) % 360,
+                    s: color.s,
+                    l: color.l,
+                    a: color.a,
+                    id: color.id,
+                  };
+                });
+                setColorsHSL(newColors);
+                const newRules = applyHSLOverRules(newColors, ruleValues);
+                if (isStringArrayArray(newRules)) {
+                  setRuleValues(newRules);
+                  const rulesString = JSON.stringify(newRules);
+                  setTextAreaJSON(`{
+"version": "0.1",
+"what": "onshape theme",
+"name": "${themeName}",
+"rules": ${rulesString}}`);
+                } else {
+                  alert(`wasn't string array...`);
+                }
+              }}
+              className="bg-pink-950"
+            >
+              Rotate hues
+            </button>
             <div className="flex-col flex m-1">
               <button
                 onClick={() => {
@@ -227,7 +273,7 @@ export default function App() {
                 }}
                 className="bg-gray-800 rounded-lg text-gray-100"
               >
-                Save slots
+                Load / Save
               </button>
             </div>
             <dialog
@@ -253,7 +299,7 @@ export default function App() {
                           });
                       }
                     } else {
-                      alert("error shouldn't happen!");
+                      alert("error shouldn't ever happen!");
                     }
                   } catch {
                     alert("invalid save data!");
@@ -357,7 +403,7 @@ export default function App() {
               }}
               className="break-all resize-none flex-none select-all font-mono bg-[#ccc] h-40 overflow-auto tracking-tight text-[9px]/tight wrap-anywhere scrollbar-thin"
             ></textarea>
-            <div className="flex flex-row flex-nowrap max-w-full">
+            <div className="flex flex-col flex-nowrap max-w-full">
               <button
                 className="flex-row flex flex-1 bg-gray-800 m-1 p-1 rounded-lg text-gray-100"
                 onClick={() => {
@@ -366,44 +412,17 @@ export default function App() {
                   }
                 }}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="size-4"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M9 8.25H7.5a2.25 2.25 0 0 0-2.25 2.25v9a2.25 2.25 0 0 0 2.25 2.25h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25H15M9 12l3 3m0 0 3-3m-3 3V2.25"
-                  />
-                </svg>
-
-                <p className="flex-3 text-xs text-gray-300 self-center">Load</p>
+                <p className="flex-3 text-xs text-gray-300 self-center">
+                  Load from url
+                </p>
               </button>
-              <select
+              <input
                 onChange={(event) => {
                   setSelectedPreset(event.target.value);
                 }}
-                className="min-w-0 flex-1 overflow-hidden text-ellipsis bg-gray-800 m-1 ml-0 p-1 rounded-lg text-gray-100 text-xs"
-              >
-                <option
-                  value={
-                    "https://raw.githubusercontent.com/DHmango/onshape-plus/main/themes/Onshape_dark.json" /*if you change this link, make the usestate default to it, too */
-                  }
-                >
-                  Onshape Dark
-                </option>
-                <option
-                  value={
-                    "https://raw.githubusercontent.com/DHmango/onshape-plus/main/themes/Onshape_light.json"
-                  }
-                >
-                  Onshape Light
-                </option>
-              </select>
+                value={selectedPreset}
+                className="min-w-0 flex-1 overflow-hidden text-ellipsis bg-gray-800 m-1 p-1 rounded-lg text-gray-100 text-xs"
+              ></input>
             </div>
             {/* <div>
               add rule
@@ -427,7 +446,7 @@ export default function App() {
                 <option value={"c"}>color</option>
                 <option value={"o"}>other</option>
               </select>
-            </div> TODO*/}
+            </div> TODO... or is it?*/}
           </div>
           <div className="relative flex-1 overflow-x-hidden overflow-y-scroll h-full mr-30 scrollbar-thumb-slate-400/50 scrollbar-track-black/50">
             <div className="w-full h-full bg-zinc-500 text-center p-5 text-xl text-mauve-800">

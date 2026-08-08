@@ -5,11 +5,9 @@ let CSSRules = ''
 for (const lightnessMode of ['light','dark']){ //this sucks.
     const which = await browser.storage.local.get(`${lightnessMode}Theme`)
     const data = await browser.storage.local.get(which[`${lightnessMode}Theme`])
-    console.timeLog()
     CSSRules+=json2css(JSON.parse(data[which[`${lightnessMode}Theme`]]),lightnessMode).css
     }
 styleSheet.textContent = CSSRules
-console.log(CSSRules)
 document.head.appendChild(styleSheet)
 
 function json2css(json,mode){
