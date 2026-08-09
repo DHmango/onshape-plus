@@ -5,6 +5,8 @@ import { useState } from "react";
 // this thing doesn't store any data its self, its instead passed data from its parent, and calls back to it when it changes.
 export default function RulesCard({
   reportBack, //the thing used to change the centralized array of data
+  isSelected,
+  setSelected,
   dataType, // color, px, etc. only 'c' works rn
   selector, // css selector- not implemented
   ruleKey, // what the name of the value we are setting. ex: --os-accent-nonary
@@ -12,12 +14,13 @@ export default function RulesCard({
 }: {
   // the typescripr types
   reportBack: (ruleID: string[], value: string) => void;
+  isSelected: boolean;
+  setSelected: (trueRuleIDs: boolean) => void;
   dataType: string;
   selector: string;
   ruleKey: string;
   ruleValue: string;
 }) {
-  // someday we will have totally different things if its not a color
   if (dataType === "c") {
     let cardColor = ruleValue; // the actual color used within the card
 
@@ -67,6 +70,7 @@ export default function RulesCard({
           className={`animate-none ${activelyChangingSV ? "h-27" : "h-9"} ease-in-out flex transition-all group hover:h-27 duration-100 overflow-hidden bg-white bg-[conic-gradient(#ccc_25%,transparent_25%_50%,#ccc_50%_75%,transparent_75%)] bg-size-[18px_18px]`}
         >
           <div className="flex-col text-nowrap w-120  shrink-0  float-start bg-gray-800 text-gray-50">
+            <button className="w-8 h-8 bg-yellow-300" onClick={()=>setSelected(true)}>{`${isSelected ? "yes" : "no"}`}</button>
             <label
               title={ruleKey}
               className="justify-between flex flex-start m-1"

@@ -58,7 +58,7 @@ export default function App() {
   const [selectedPreset, setSelectedPreset] = useState(
     "https://raw.githubusercontent.com/DHmango/onshape-plus/main/themes/Onshape_dark.json",
   );
-  const [selectedRuleIDs, setSelectedRuleIDs] = useState<string[]>()
+  const [selectedRuleIDs, setSelectedRuleIDs] = useState<Record<string,boolean>>({})
   selectedRuleIDs
   setSelectedRuleIDs
   const [saveSlots, setSaveSlots] = useState<saveSlot[]>([
@@ -453,18 +453,29 @@ export default function App() {
               No rules yet. Load a preset using the sidebar
             </div>
             <div className="top-0 left-0 absolute w-full z-10">
-              {ruleValues.map((ruleData) => (
-                <RulesCard
+              { add a selectedlist that isnt usestate
+              ruleValues.map((ruleData) => {
+                const key = ruleData[0] + "_㊫_" + ruleData[1] + "_㊫_" + ruleData[2]
+                let selected = false
+                if (Object.hasOwn(selectedRuleIDs,key)){
+                  console.log('good!!!!!!!')
+                  selected = selectedRuleIDs[key]
+                } else{
+                  setSelectedRuleIDs({...selectedRuleIDs,[key]:false})
+                }
+                return <RulesCard
+                  isSelected={selected}
+                  setSelected={(bool)=>{console.log(`${key} set to ${bool}`)}}
                   key={
-                    ruleData[0] + "_㊫_" + ruleData[1] + "_㊫_" + ruleData[2]
-                  } // ['c','',"--os-accent-nonary","#a64dff"] becomes c_㊫__㊫_--os-accent-nonary
+                    key
+                  } //   ['c','',"--os-accent-nonary","#a64dff"] becomes c_㊫__㊫_--os-accent-nonary
                   reportBack={whenInputChanged}
                   dataType={ruleData[0]}
                   selector={ruleData[1]}
                   ruleKey={ruleData[2]}
                   ruleValue={ruleData[3]}
                 />
-              ))}
+              })}
             </div>
           </div>
         </div>
