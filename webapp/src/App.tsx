@@ -58,9 +58,12 @@ export default function App() {
   const [selectedPreset, setSelectedPreset] = useState(
     "https://raw.githubusercontent.com/DHmango/onshape-plus/main/themes/Onshape_dark.json",
   );
-  const [selectedRuleIDs, setSelectedRuleIDs] = useState<Record<string,boolean>>({})
-  selectedRuleIDs
-  setSelectedRuleIDs
+  const [selectedRuleIDs, setSelectedRuleIDs] = useState<
+    Record<string, boolean>
+  >({});
+  selectedRuleIDs;
+  setSelectedRuleIDs;
+  const [lastSelected, setLastSelected] = useState("");
   const [saveSlots, setSaveSlots] = useState<saveSlot[]>([
     { slot: -1, name: "Error" },
   ]);
@@ -101,6 +104,15 @@ export default function App() {
     });
   }, []);
 
+  function selectAllRules(rules: string[][], bool: boolean) {
+    const newSelectedRules: Record<string, boolean> = {};
+    for (const rule of rules) {
+      newSelectedRules[`${rule[0] + "_㊫_" + rule[1] + "_㊫_" + rule[2]}`] =
+        bool;
+    }
+    return newSelectedRules;
+  }
+
   async function loadThemeFromAddress(address: string) {
     //this is basically the same as the background_script.js
     try {
@@ -113,6 +125,7 @@ export default function App() {
       setThemeName(jsonned.name);
       setRuleValues(jsonned.rules);
       sendAllRulesToHSL(jsonned.rules);
+      setSelectedRuleIDs(selectAllRules(jsonned.rules, false));
     } catch (error) {
       console.log(`could not fetch theme: ${error}`);
     }
@@ -129,6 +142,7 @@ export default function App() {
         setThemeName(jsonned.name);
         setRuleValues(jsonned.rules);
         sendAllRulesToHSL(jsonned.rules);
+        setSelectedRuleIDs(selectAllRules(jsonned.rules, false));
       }
     } catch (error) {
       console.log(`could not fetch theme: ${error}`);
@@ -382,6 +396,7 @@ export default function App() {
                 try {
                   const rules = JSON.parse(event.target.value).rules;
                   sendAllRulesToHSL(rules);
+                  setSelectedRuleIDs(selectAllRules(rules, false));
                   const rulesString = JSON.stringify(rules);
                   setRuleValues(rules);
                   setTextAreaJSON(`{
@@ -453,28 +468,52 @@ export default function App() {
               No rules yet. Load a preset using the sidebar
             </div>
             <div className="top-0 left-0 absolute w-full z-10">
-              { add a selectedlist that isnt usestate
-              ruleValues.map((ruleData) => {
-                const key = ruleData[0] + "_㊫_" + ruleData[1] + "_㊫_" + ruleData[2]
-                let selected = false
-                if (Object.hasOwn(selectedRuleIDs,key)){
-                  console.log('good!!!!!!!')
-                  selected = selectedRuleIDs[key]
-                } else{
-                  setSelectedRuleIDs({...selectedRuleIDs,[key]:false})
-                }
-                return <RulesCard
-                  isSelected={selected}
-                  setSelected={(bool)=>{console.log(`${key} set to ${bool}`)}}
-                  key={
-                    key
-                  } //   ['c','',"--os-accent-nonary","#a64dff"] becomes c_㊫__㊫_--os-accent-nonary
-                  reportBack={whenInputChanged}
-                  dataType={ruleData[0]}
-                  selector={ruleData[1]}
-                  ruleKey={ruleData[2]}
-                  ruleValue={ruleData[3]}
-                />
+              {ruleValues.map((ruleData) => {
+                const key =
+                  ruleData[0] + "_㊫_" + ruleData[1] + "_㊫_" + ruleData[2]; //  ['c','',"--os-accent-nonary","#a64dff"] becomes c_㊫__㊫_--os-accent-nonary
+                const selected = selectedRuleIDs[key];
+                return (
+                  <RulesCard
+                    isSelected={selected}
+                    setSelected={(bool, shift) => {
+                      setSelectedRuleIDs({ ...selectedRuleIDs, [key]: bool });
+                      if (shift && bool) {
+                        let selectsToAdd = {};
+                        let inSelectionRange = false;
+                        Object.entries(selectedRuleIDs).map(([ruleID, val]) => {
+                          val;
+                          if (inSelectionRange) {
+                            selectsToAdd = { ...selectsToAdd, [ruleID]: true };
+                            if (ruleID === lastSelected || ruleID === key) {
+                              inSelectionRange = false;
+                            }
+                          } else {
+                            if (ruleID === lastSelected || ruleID === key) {
+                              inSelectionRange = true;
+                              selectsToAdd = {
+                                ...selectsToAdd,
+                                [ruleID]: true,
+                              };
+                            }
+                          } // select multiple is here
+                        });
+                        setSelectedRuleIDs({
+                          ...selectedRuleIDs,
+                          ...selectsToAdd,
+                        });
+                        if (bool) {
+                          setLastSelected(key);
+                        }
+                      }
+                    }}
+                    key={key}
+                    reportBack={whenInputChanged}
+                    dataType={ruleData[0]}
+                    selector={ruleData[1]}
+                    ruleKey={ruleData[2]}
+                    ruleValue={ruleData[3]}
+                  />
+                );
               })}
             </div>
           </div>

@@ -15,7 +15,7 @@ export default function RulesCard({
   // the typescripr types
   reportBack: (ruleID: string[], value: string) => void;
   isSelected: boolean;
-  setSelected: (trueRuleIDs: boolean) => void;
+  setSelected: (trueRuleIDs: boolean, shift: boolean) => void;
   dataType: string;
   selector: string;
   ruleKey: string;
@@ -67,10 +67,9 @@ export default function RulesCard({
     return (
       <>
         <div
-          className={`animate-none ${activelyChangingSV ? "h-27" : "h-9"} ease-in-out flex transition-all group hover:h-27 duration-100 overflow-hidden bg-white bg-[conic-gradient(#ccc_25%,transparent_25%_50%,#ccc_50%_75%,transparent_75%)] bg-size-[18px_18px]`}
+          className={`animate-none ${activelyChangingSV ? "h-27" : "h-9"} relative ease-in-out flex transition-all group hover:h-27 duration-100 overflow-hidden bg-white bg-[conic-gradient(#ccc_25%,transparent_25%_50%,#ccc_50%_75%,transparent_75%)] bg-size-[18px_18px]`}
         >
           <div className="flex-col text-nowrap w-120  shrink-0  float-start bg-gray-800 text-gray-50">
-            <button className="w-8 h-8 bg-yellow-300" onClick={()=>setSelected(true)}>{`${isSelected ? "yes" : "no"}`}</button>
             <label
               title={ruleKey}
               className="justify-between flex flex-start m-1"
@@ -375,6 +374,18 @@ export default function RulesCard({
             className="flex-1 justify-end "
             style={{ backgroundColor: cardColor }}
           ></div>
+          <div className="absolute top-0 right-0">
+            <button
+              className="w-8 h-8 bg-green-950"
+              onClick={(e) => {
+                if (isSelected) {
+                  setSelected(false,e.shiftKey);
+                } else {
+                  setSelected(true,e.shiftKey);
+                }
+              }}
+            >{`${isSelected ? "yes" : "no"}`}</button>
+          </div>
         </div>
       </>
     );
