@@ -63,13 +63,21 @@ export default function App() {
   >({});
   selectedRuleIDs;
   setSelectedRuleIDs;
-  const [lastSelected, setLastSelected] = useState("");
+  const [lastSelectedID, setLastSelectedID] = useState("");
+  const [lastSelectedBool, setLastSelectedBool] = useState(false);
+  const [hueMod, setHueMod] = useState(0);
+  // const [satMod, setSatMod] = useState(0);
+  // const [valMod, setvalMod] = useState(0); TODO
+  // const [alpMod, setalpMod] = useState(0);
+
   const [saveSlots, setSaveSlots] = useState<saveSlot[]>([
     { slot: -1, name: "Error" },
   ]);
   const [themeName, setThemeName] = useState("");
   const saveDialogRef = useRef<HTMLDialogElement>(null);
   const saveSlotsToShow = [];
+
+  const [allSelected, setAllSelected] = useState(false);
 
   const [lightTheme, setLightTheme] = useState("");
   const [darkTheme, setDarkTheme] = useState("");
@@ -251,35 +259,6 @@ export default function App() {
                 d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"
               />
             </svg>
-            <button
-              onClick={() => {
-                const newColors = colorsHSL.map((color) => {
-                  return {
-                    h: (color.h + 180) % 360,
-                    s: color.s,
-                    l: color.l,
-                    a: color.a,
-                    id: color.id,
-                  };
-                });
-                setColorsHSL(newColors);
-                const newRules = applyHSLOverRules(newColors, ruleValues);
-                if (isStringArrayArray(newRules)) {
-                  setRuleValues(newRules);
-                  const rulesString = JSON.stringify(newRules);
-                  setTextAreaJSON(`{
-"version": "0.1",
-"what": "onshape theme",
-"name": "${themeName}",
-"rules": ${rulesString}}`);
-                } else {
-                  alert(`wasn't string array...`);
-                }
-              }}
-              className="bg-pink-950"
-            >
-              Rotate hues
-            </button>
             <div className="flex-col flex m-1">
               <button
                 onClick={() => {
@@ -389,6 +368,7 @@ export default function App() {
               </p>
             </button>
             <textarea
+              title="Raw rule data"
               spellCheck="false"
               value={textAreaJSON}
               onBlur={(event) => {
@@ -417,9 +397,10 @@ export default function App() {
                 setTextAreaJSON(event.target.value);
               }}
               className="break-all resize-none flex-none select-all font-mono bg-[#ccc] h-40 overflow-auto tracking-tight text-[9px]/tight wrap-anywhere scrollbar-thin"
-            ></textarea>
+            />
             <div className="flex flex-col flex-nowrap max-w-full">
               <button
+                title="load theme from a valid json"
                 className="flex-row flex flex-1 bg-gray-800 m-1 p-1 rounded-lg text-gray-100"
                 onClick={() => {
                   if (confirm("Really load theme?")) {
@@ -428,16 +409,87 @@ export default function App() {
                 }}
               >
                 <p className="flex-3 text-xs text-gray-300 self-center">
-                  Load from url
+                  Load from URL
                 </p>
               </button>
               <input
+                title="Input the url here"
                 onChange={(event) => {
                   setSelectedPreset(event.target.value);
                 }}
                 value={selectedPreset}
-                className="min-w-0 flex-1 overflow-hidden text-ellipsis bg-gray-800 m-1 p-1 rounded-lg text-gray-100 text-xs"
-              ></input>
+                className="min-w-0 mt-0 flex-1 overflow-hidden text-ellipsis bg-gray-800 m-1 p-1 rounded-lg text-gray-100 text-xs"
+              />
+            </div>
+            <div className="flex flex-col bg-red-800">
+              <button
+                onClick={() => {
+                  if (allSelected) {
+                    setAllSelected(false);
+                    setLastSelectedID("");
+                    setSelectedRuleIDs(selectAllRules(ruleValues, false));
+                  } else {
+                    setAllSelected(true);
+                    setSelectedRuleIDs(selectAllRules(ruleValues, true));
+                    setLastSelectedID("");
+                  }
+                }}
+                className="text-xs bg-yellow-100"
+              >
+                Select/deselect all
+              </button>
+              <div>
+                <button
+                  onClick={() => {
+                    const newColors = colorsHSL.map((color) => {
+                      if (selectedRuleIDs[color.id]) {
+                        return {
+                          h: (color.h + hueMod) % 360,
+                          s: color.s,
+                          l: color.l,
+                          a: color.a,
+                          id: color.id,
+                        };
+                      } else {
+                        return {
+                          h: color.h,
+                          s: color.s,
+                          l: color.l,
+                          a: color.a,
+                          id: color.id,
+                        };
+                      }
+                    });
+                    setColorsHSL(newColors);
+                    const newRules = applyHSLOverRules(newColors, ruleValues);
+                    if (isStringArrayArray(newRules)) {
+                      setRuleValues(newRules);
+                      const rulesString = JSON.stringify(newRules);
+                      setTextAreaJSON(`{
+"version": "0.1",
+"what": "onshape theme",
+"name": "${themeName}",
+"rules": ${rulesString}}`);
+                    } else {
+                      alert(`wasn't string array...`);
+                    }
+                  }}
+                >
+                  Rotate hue of selected rules
+                </button>
+                <input
+                  type="number"
+                  onChange={(e) => {
+                    const val = Number(e.target.value);
+                    if (typeof val === "number") {
+                      setHueMod(val);
+                    } else {
+                      alert("invalid input!");
+                    }
+                  }}
+                  value={hueMod}
+                ></input>
+              </div>
             </div>
             {/* <div>
               add rule
@@ -476,35 +528,39 @@ export default function App() {
                   <RulesCard
                     isSelected={selected}
                     setSelected={(bool, shift) => {
+                      setAllSelected(false);
                       setSelectedRuleIDs({ ...selectedRuleIDs, [key]: bool });
-                      if (shift && bool) {
+                      if (
+                        shift &&
+                        Object.hasOwn(selectedRuleIDs, lastSelectedID) &&
+                        lastSelectedBool === bool
+                      ) {
                         let selectsToAdd = {};
                         let inSelectionRange = false;
                         Object.entries(selectedRuleIDs).map(([ruleID, val]) => {
                           val;
                           if (inSelectionRange) {
-                            selectsToAdd = { ...selectsToAdd, [ruleID]: true };
-                            if (ruleID === lastSelected || ruleID === key) {
+                            selectsToAdd = { ...selectsToAdd, [ruleID]: bool };
+                            if (ruleID === lastSelectedID || ruleID === key) {
                               inSelectionRange = false;
                             }
                           } else {
-                            if (ruleID === lastSelected || ruleID === key) {
+                            if (ruleID === lastSelectedID || ruleID === key) {
                               inSelectionRange = true;
                               selectsToAdd = {
                                 ...selectsToAdd,
-                                [ruleID]: true,
+                                [ruleID]: bool,
                               };
                             }
-                          } // select multiple is here
+                          } // select multiple is here!
                         });
                         setSelectedRuleIDs({
                           ...selectedRuleIDs,
                           ...selectsToAdd,
                         });
-                        if (bool) {
-                          setLastSelected(key);
-                        }
                       }
+                      setLastSelectedID(key);
+                      setLastSelectedBool(bool);
                     }}
                     key={key}
                     reportBack={whenInputChanged}

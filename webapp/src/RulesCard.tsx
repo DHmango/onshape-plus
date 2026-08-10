@@ -376,7 +376,7 @@ export default function RulesCard({
           ></div>
           <div className="absolute top-0 right-0">
             <button
-              className="w-8 h-8 bg-green-950"
+              className={`inset-ring-gray-400 inset-ring-4 w-8 h-27 ${isSelected? 'bg-blue-400':'bg-neutral-100'}`}
               onClick={(e) => {
                 if (isSelected) {
                   setSelected(false,e.shiftKey);
@@ -384,7 +384,7 @@ export default function RulesCard({
                   setSelected(true,e.shiftKey);
                 }
               }}
-            >{`${isSelected ? "yes" : "no"}`}</button>
+            >{`${isSelected ? "yay" : "no"}`}</button>
           </div>
         </div>
       </>
