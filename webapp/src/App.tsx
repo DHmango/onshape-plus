@@ -65,7 +65,11 @@ export default function App() {
   setSelectedRuleIDs;
   const [lastSelectedID, setLastSelectedID] = useState("");
   const [lastSelectedBool, setLastSelectedBool] = useState(false);
-  const [hueMod, setHueMod] = useState(0);
+  const [whatYouAdd, setWhatYouAdd] = useState(0);
+  const [whatYouPullTo, setWhatYouPullTo] = useState(0);
+  const [howFarYouPullTo, setHowFarYouPullTo] = useState(0);
+  const [whichYouPullTo, setWhichYouPullTo] = useState("h");
+  const [whichYouAdd, setWhichYouAdd] = useState("h");
   // const [satMod, setSatMod] = useState(0);
   // const [valMod, setvalMod] = useState(0); TODO
   // const [alpMod, setalpMod] = useState(0);
@@ -421,7 +425,8 @@ export default function App() {
                 className="min-w-0 mt-0 flex-1 overflow-hidden text-ellipsis bg-gray-800 m-1 p-1 rounded-lg text-gray-100 text-xs"
               />
             </div>
-            <div className="flex flex-col bg-red-800">
+            <div className="text-xs flex flex-col m-1 p-1 bg-gray-400 rounded-2xl shadow-2xl">
+              Modify all selected colors
               <button
                 onClick={() => {
                   if (allSelected) {
@@ -434,20 +439,112 @@ export default function App() {
                     setLastSelectedID("");
                   }
                 }}
-                className="text-xs bg-yellow-100"
+                className="text-xs bg-purple-700 rounded-md"
               >
                 Select/deselect all
               </button>
-              <div>
+              <div className="flex flex-col bg-gray-500 rounded-lg p-1 mb-1">
+                <div>
+                  <button
+                    onClick={() => {
+                      let anySelected;
+                      const newColors = colorsHSL.map((color) => {
+                        if (selectedRuleIDs[color.id]) {
+                          anySelected = true;
+                          const newHSLA = {
+                            ...{ h: 0, s: 0, l: 0, a: 0 },
+                            [whichYouAdd]: whatYouAdd,
+                          }; // cursed method?
+                          return {
+                            h: color.h + newHSLA.h,
+                            s: color.s + newHSLA.s,
+                            l: color.l + newHSLA.l,
+                            a: color.a + newHSLA.a,
+                            id: color.id,
+                          };
+                        } else {
+                          return {
+                            h: color.h,
+                            s: color.s,
+                            l: color.l,
+                            a: color.a,
+                            id: color.id,
+                          };
+                        }
+                      });
+                      if (!anySelected) {
+                        alert("no selected rules!");
+                      }
+                      setColorsHSL(newColors);
+                      const newRules = applyHSLOverRules(newColors, ruleValues);
+                      if (isStringArrayArray(newRules)) {
+                        setRuleValues(newRules);
+                        const rulesString = JSON.stringify(newRules);
+                        setTextAreaJSON(`{
+"version": "0.1",
+"what": "onshape theme",
+"name": "${themeName}",
+"rules": ${rulesString}}`);
+                      } else {
+                        alert(`wasn't string array...`);
+                      }
+                    }}
+                  >
+                    Add to&nbsp;
+                    <select
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                      onChange={(e) => {
+                        setWhichYouAdd(e.target.value);
+                      }}
+                      value={whichYouAdd}
+                    >
+                      <option value={"h"}>hue</option>
+                      <option value={"s"}>satr.</option>
+                      <option value={"l"}>light</option>
+                      <option value={"a"}>alpha</option>
+                    </select>
+                  </button>
+                  <input
+                    className="bg-gray-600"
+                    type="number"
+                    onChange={(e) => { //TODO make this not so annoying
+                      const val = Number(e.target.value);
+                      if (typeof val === "number") {
+                        setWhatYouAdd(val);
+                      } else {
+                        alert("invalid input!");
+                      }
+                    }}
+                    value={whatYouAdd}
+                  ></input>
+                </div>
+              </div>
+              <div className="flex-col flex bg-gray-500 rounded-lg p-1">
                 <button
                   onClick={() => {
+                    let anySelected = false;
                     const newColors = colorsHSL.map((color) => {
                       if (selectedRuleIDs[color.id]) {
+                        anySelected = true;
+                        const newHSLA = {
+                          ...color,
+                          [whichYouPullTo]: whatYouPullTo,
+                        };
                         return {
-                          h: (color.h + hueMod) % 360,
-                          s: color.s,
-                          l: color.l,
-                          a: color.a,
+                          h:
+                            color.h * (1 - howFarYouPullTo) +
+                            howFarYouPullTo * newHSLA.h,
+                          s:
+                            color.s * (1 - howFarYouPullTo) +
+                            howFarYouPullTo * newHSLA.s,
+                          l:
+                            color.l * (1 - howFarYouPullTo) +
+                            howFarYouPullTo * newHSLA.l,
+                          a:
+                            color.a * (1 - howFarYouPullTo) +
+                            howFarYouPullTo * newHSLA.a,
                           id: color.id,
                         };
                       } else {
@@ -460,6 +557,9 @@ export default function App() {
                         };
                       }
                     });
+                    if (!anySelected) {
+                      alert("no selected rules!");
+                    }
                     setColorsHSL(newColors);
                     const newRules = applyHSLOverRules(newColors, ruleValues);
                     if (isStringArrayArray(newRules)) {
@@ -475,19 +575,47 @@ export default function App() {
                     }
                   }}
                 >
-                  Rotate hue of selected rules
+                  Move towards&nbsp; 
+                  <select
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                    onChange={(e) => {
+                      setWhichYouPullTo(e.target.value);
+                    }}
+                    value={whichYouPullTo}
+                  >
+                    <option value={"h"}>hue</option>
+                    <option value={"s"}>satr.</option>
+                    <option value={"l"}>light</option>
+                    <option value={"a"}>alpha</option>
+                  </select>
                 </button>
                 <input
+                  className="bg-gray-600"
                   type="number"
                   onChange={(e) => {
                     const val = Number(e.target.value);
                     if (typeof val === "number") {
-                      setHueMod(val);
+                      setWhatYouPullTo(val);
                     } else {
                       alert("invalid input!");
                     }
                   }}
-                  value={hueMod}
+                  value={whatYouPullTo}
+                ></input>
+                <input
+                  className="bg-gray-600"
+                  type="number"
+                  onChange={(e) => {
+                    const val = Number(e.target.value);
+                    if (typeof val === "number") {
+                      setHowFarYouPullTo(val);
+                    } else {
+                      alert("invalid input!");
+                    }
+                  }}
+                  value={howFarYouPullTo}
                 ></input>
               </div>
             </div>
@@ -513,7 +641,7 @@ export default function App() {
                 <option value={"c"}>color</option>
                 <option value={"o"}>other</option>
               </select>
-            </div> TODO... or is it?*/}
+            </div> TODO... or is it*/} 
           </div>
           <div className="relative flex-1 overflow-x-hidden overflow-y-scroll h-full mr-30 scrollbar-thumb-slate-400/50 scrollbar-track-black/50">
             <div className="w-full h-full bg-zinc-500 text-center p-5 text-xl text-mauve-800">
