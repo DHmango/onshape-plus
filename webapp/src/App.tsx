@@ -428,8 +428,8 @@ export default function App() {
                 className="min-w-0 mt-0 flex-1 overflow-hidden text-ellipsis bg-gray-800 m-1 p-1 rounded-lg text-gray-100 text-xs"
               />
             </div>
-            <div className="text-xs flex flex-col m-1 p-1 bg-gray-400 rounded-2xl shadow-2xl">
-              Modify all selected colors
+            <div className="text-center text-sm flex flex-col m-1 p-1 bg-gray-400 rounded-2xl inset-shadow-sm/10">
+              Modify selected colors
               <button
                 onClick={() => {
                   if (allSelected) {
@@ -446,91 +446,91 @@ export default function App() {
               >
                 Select/deselect all
               </button>
-              <div className="flex flex-col bg-gray-500 rounded-lg p-1 mb-1">
-                <div>
-                  <button
-                    onClick={() => {
-                      let anySelected;
-                      const newColors = colorsHSL.map((color) => {
-                        if (selectedRuleIDs[color.id]) {
-                          anySelected = true;
-                          const newHSLA = {
-                            ...{ h: 0, s: 0, l: 0, a: 0 },
-                            [whichYouAdd]: whatYouAdd,
-                          }; // cursed method?
-                          return {
-                            h: color.h + newHSLA.h,
-                            s: color.s + newHSLA.s,
-                            l: color.l + newHSLA.l,
-                            a: color.a + newHSLA.a,
-                            id: color.id,
-                          };
-                        } else {
-                          return {
-                            h: color.h,
-                            s: color.s,
-                            l: color.l,
-                            a: color.a,
-                            id: color.id,
-                          };
-                        }
-                      });
-                      if (!anySelected) {
-                        alert("no selected rules!");
+              <div className="flex flex-col text-xs bg-gray-500 rounded-lg p-1 mb-1">
+                <button
+                  className="bg-mauve-400 rounded-md p-1"
+                  onClick={() => {
+                    let anySelected;
+                    const newColors = colorsHSL.map((color) => {
+                      if (selectedRuleIDs[color.id]) {
+                        anySelected = true;
+                        const newHSLA = {
+                          ...{ h: 0, s: 0, l: 0, a: 0 },
+                          [whichYouAdd]: whatYouAdd,
+                        }; // cursed method?
+                        return {
+                          h: color.h + newHSLA.h,
+                          s: color.s + newHSLA.s,
+                          l: color.l + newHSLA.l,
+                          a: color.a + newHSLA.a,
+                          id: color.id,
+                        };
+                      } else {
+                        return {
+                          h: color.h,
+                          s: color.s,
+                          l: color.l,
+                          a: color.a,
+                          id: color.id,
+                        };
                       }
-                      setColorsHSL(newColors);
-                      const newRules = applyHSLOverRules(newColors, ruleValues);
-                      if (isStringArrayArray(newRules)) {
-                        setRuleValues(newRules);
-                        const rulesString = JSON.stringify(newRules);
-                        setTextAreaJSON(`{
+                    });
+                    if (!anySelected) {
+                      alert("no selected rules!");
+                    }
+                    setColorsHSL(newColors);
+                    const newRules = applyHSLOverRules(newColors, ruleValues);
+                    if (isStringArrayArray(newRules)) {
+                      setRuleValues(newRules);
+                      const rulesString = JSON.stringify(newRules);
+                      setTextAreaJSON(`{
 "version": "0.1",
 "what": "onshape theme",
 "name": "${themeName}",
 "rules": ${rulesString}}`);
-                      } else {
-                        alert(`wasn't string array...`);
-                      }
-                    }}
-                  >
-                    Add to&nbsp;
-                    <select
-                      onClick={(e) => {
-                        e.stopPropagation();
-                      }}
-                      onChange={(e) => {
-                        setWhichYouAdd(e.target.value);
-                      }}
-                      value={whichYouAdd}
-                    >
-                      <option value={"h"}>hue</option>
-                      <option value={"s"}>satr.</option>
-                      <option value={"l"}>light</option>
-                      <option value={"a"}>alpha</option>
-                    </select>
-                  </button>
-                  <input
-                    className="bg-gray-600 rounded-md w-9"
-                    type="number"
-                    onChange={(e) => {
-                      const val = e.target.value;
+                    } else {
+                      alert(`wasn't string array...`);
+                    }
+                  }}
+                >
+                  Add to&nbsp;
+                </button>
+                <select
+                  className="mt-1 mb-1 bg-gray-500"//this styles dropdown. Make parent div for clickable select
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                  onChange={(e) => {
+                    setWhichYouAdd(e.target.value);
+                  }}
+                  value={whichYouAdd}
+                >
+                  <option value={"h"}>hue </option>
+                  <option value={"s"}>satr.</option>
+                  <option value={"l"}>light</option>
+                  <option value={"a"}>alpha</option>
+                </select>
+                <input
+                  className="bg-gray-600 rounded-md w-9"
+                  type="number"
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setWhatYouAddTemp(String(val));
+                  }}
+                  onBlur={(e) => {
+                    const val = Number(e.target.value);
+                    if (typeof val === "number") {
+                      setWhatYouAdd(val);
                       setWhatYouAddTemp(String(val));
-                    }}
-                    onBlur={(e) => {
-                      const val = Number(e.target.value);
-                      if (typeof val === "number") {
-                        setWhatYouAdd(val);
-                        setWhatYouAddTemp(String(val));
-                      } else {
-                        setWhatYouAdd(0);
-                        setWhatYouAddTemp("0");
-                      }
-                    }}
-                    value={whatYouAddTemp}
-                  ></input>
-                </div>
+                    } else {
+                      setWhatYouAdd(0);
+                      setWhatYouAddTemp("0");
+                    }
+                  }}
+                  value={whatYouAddTemp}
+                ></input>
               </div>
-              <div className="flex-col flex bg-gray-500 rounded-lg p-1">
+              <div className="text-xs flex-col flex bg-gray-500 rounded-lg p-1">
                 <button
                   className="bg-mauve-400 rounded-md p-1"
                   onClick={() => {
@@ -547,22 +547,11 @@ export default function App() {
                             Math.abs(color.h - whatYouPullTo) <
                               Math.abs(color.h - (-360 + whatYouPullTo))
                           ) {
-                            //327<33 XXX
-                            //357-390<-600
-                            //h=357 w=30
-                            //example: color.h = 200, wypt = 0 200-0>200-160
-                            //color.h = 100 wypt = 300 200<760
-                            // 180 210 240 270 300 330 360 000 030 060 090 120 150 180 210 240 270 300 330 360
-                            //                      w               h                                   w
-                            //^^^ if abs(w blah) > abs(-360+w blah)
-                            // 180 210 240 270 300 330 360 000 030 060 090 120 150 180 210 240 270 300 330 360 000 030
-                            //                                  w                               h                   w
                           } else {
                             if (
                               Math.abs(color.h - (whatYouPullTo + 360)) <
                               Math.abs(color.h - (-360 + whatYouPullTo))
                             ) {
-                              //im fried?
                               valDrawnTo = whatYouPullTo + 360;
                             } else {
                               valDrawnTo = -360 + whatYouPullTo;
@@ -619,7 +608,7 @@ export default function App() {
                   Move towards&nbsp;
                 </button>
                 <select
-                  className="bg-gray-500"
+                  className="bg-gray-500 mt-1"
                   onChange={(e) => {
                     setWhichYouPullTo(e.target.value);
                   }}
@@ -631,7 +620,7 @@ export default function App() {
                   <option value={"a"}>alpha</option>
                 </select>
                 <input
-                  className="bg-gray-600 rounded-md"
+                  className="mt-1 mb-1 bg-gray-600 rounded-md"
                   type="number"
                   onChange={(e) => {
                     const val = e.target.value;
