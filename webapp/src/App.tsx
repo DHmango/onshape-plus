@@ -66,8 +66,11 @@ export default function App() {
   const [lastSelectedID, setLastSelectedID] = useState("");
   const [lastSelectedBool, setLastSelectedBool] = useState(false);
   const [whatYouAdd, setWhatYouAdd] = useState(0);
+  const [whatYouAddTemp, setWhatYouAddTemp] = useState("");
   const [whatYouPullTo, setWhatYouPullTo] = useState(0);
+  const [whatYouPullToTemp, setWhatYouPullToTemp] = useState("");
   const [howFarYouPullTo, setHowFarYouPullTo] = useState(0);
+  const [howFarYouPullToTemp, setHowFarYouPullToTemp] = useState("");
   const [whichYouPullTo, setWhichYouPullTo] = useState("h");
   const [whichYouAdd, setWhichYouAdd] = useState("h");
   // const [satMod, setSatMod] = useState(0);
@@ -439,7 +442,7 @@ export default function App() {
                     setLastSelectedID("");
                   }
                 }}
-                className="text-xs bg-purple-700 rounded-md"
+                className="text-xs text-white mb-1 bg-purple-700 rounded-md"
               >
                 Select/deselect all
               </button>
@@ -507,30 +510,68 @@ export default function App() {
                     </select>
                   </button>
                   <input
-                    className="bg-gray-600"
+                    className="bg-gray-600 rounded-md w-9"
                     type="number"
-                    onChange={(e) => { //TODO make this not so annoying
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setWhatYouAddTemp(String(val));
+                    }}
+                    onBlur={(e) => {
                       const val = Number(e.target.value);
                       if (typeof val === "number") {
                         setWhatYouAdd(val);
+                        setWhatYouAddTemp(String(val));
                       } else {
-                        alert("invalid input!");
+                        setWhatYouAdd(0);
+                        setWhatYouAddTemp("0");
                       }
                     }}
-                    value={whatYouAdd}
+                    value={whatYouAddTemp}
                   ></input>
                 </div>
               </div>
               <div className="flex-col flex bg-gray-500 rounded-lg p-1">
                 <button
+                  className="bg-mauve-400 rounded-md p-1"
                   onClick={() => {
                     let anySelected = false;
                     const newColors = colorsHSL.map((color) => {
                       if (selectedRuleIDs[color.id]) {
                         anySelected = true;
+                        let valDrawnTo = whatYouPullTo;
+                        if (whichYouPullTo === "h") {
+                          // this nonsense is because hue wraps around and im bad at math
+                          if (
+                            Math.abs(color.h - whatYouPullTo) <
+                              Math.abs(color.h - (whatYouPullTo + 360)) &&
+                            Math.abs(color.h - whatYouPullTo) <
+                              Math.abs(color.h - (-360 + whatYouPullTo))
+                          ) {
+                            //327<33 XXX
+                            //357-390<-600
+                            //h=357 w=30
+                            //example: color.h = 200, wypt = 0 200-0>200-160
+                            //color.h = 100 wypt = 300 200<760
+                            // 180 210 240 270 300 330 360 000 030 060 090 120 150 180 210 240 270 300 330 360
+                            //                      w               h                                   w
+                            //^^^ if abs(w blah) > abs(-360+w blah)
+                            // 180 210 240 270 300 330 360 000 030 060 090 120 150 180 210 240 270 300 330 360 000 030
+                            //                                  w                               h                   w
+                          } else {
+                            if (
+                              Math.abs(color.h - (whatYouPullTo + 360)) <
+                              Math.abs(color.h - (-360 + whatYouPullTo))
+                            ) {
+                              //im fried?
+                              valDrawnTo = whatYouPullTo + 360;
+                            } else {
+                              valDrawnTo = -360 + whatYouPullTo;
+                            }
+                          }
+                        }
                         const newHSLA = {
                           ...color,
-                          [whichYouPullTo]: whatYouPullTo,
+                          [whichYouPullTo]: valDrawnTo,
                         };
                         return {
                           h:
@@ -575,47 +616,57 @@ export default function App() {
                     }
                   }}
                 >
-                  Move towards&nbsp; 
-                  <select
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                    onChange={(e) => {
-                      setWhichYouPullTo(e.target.value);
-                    }}
-                    value={whichYouPullTo}
-                  >
-                    <option value={"h"}>hue</option>
-                    <option value={"s"}>satr.</option>
-                    <option value={"l"}>light</option>
-                    <option value={"a"}>alpha</option>
-                  </select>
+                  Move towards&nbsp;
                 </button>
+                <select
+                  className="bg-gray-500"
+                  onChange={(e) => {
+                    setWhichYouPullTo(e.target.value);
+                  }}
+                  value={whichYouPullTo}
+                >
+                  <option value={"h"}>hue</option>
+                  <option value={"s"}>satr.</option>
+                  <option value={"l"}>light</option>
+                  <option value={"a"}>alpha</option>
+                </select>
                 <input
-                  className="bg-gray-600"
+                  className="bg-gray-600 rounded-md"
                   type="number"
                   onChange={(e) => {
+                    const val = e.target.value;
+                    setWhatYouPullToTemp(String(val));
+                  }}
+                  onBlur={(e) => {
                     const val = Number(e.target.value);
                     if (typeof val === "number") {
                       setWhatYouPullTo(val);
+                      setWhatYouPullToTemp(String(val));
                     } else {
-                      alert("invalid input!");
+                      setWhatYouPullTo(0);
+                      setWhatYouPullToTemp("0");
                     }
                   }}
-                  value={whatYouPullTo}
+                  value={whatYouPullToTemp}
                 ></input>
                 <input
-                  className="bg-gray-600"
+                  className="bg-gray-600 rounded-md"
                   type="number"
                   onChange={(e) => {
+                    const val = e.target.value;
+                    setHowFarYouPullToTemp(String(val));
+                  }}
+                  onBlur={(e) => {
                     const val = Number(e.target.value);
                     if (typeof val === "number") {
                       setHowFarYouPullTo(val);
+                      setHowFarYouPullToTemp(String(val));
                     } else {
-                      alert("invalid input!");
+                      setHowFarYouPullTo(0);
+                      setHowFarYouPullToTemp("0");
                     }
                   }}
-                  value={howFarYouPullTo}
+                  value={howFarYouPullToTemp}
                 ></input>
               </div>
             </div>
@@ -641,7 +692,7 @@ export default function App() {
                 <option value={"c"}>color</option>
                 <option value={"o"}>other</option>
               </select>
-            </div> TODO... or is it*/} 
+            </div> TODO... or is it*/}
           </div>
           <div className="relative flex-1 overflow-x-hidden overflow-y-scroll h-full mr-30 scrollbar-thumb-slate-400/50 scrollbar-track-black/50">
             <div className="w-full h-full bg-zinc-500 text-center p-5 text-xl text-mauve-800">
