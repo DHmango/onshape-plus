@@ -1,3 +1,5 @@
+//Todo: add reordering of rules (.toSpliced?), make good preset themes, reorder default jsons, make website about this? buy chrome extension? prettier popup, logo etc, bug report, theme share? quick tutorial, sorting?? Select does more thing?? oscope
+
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import RulesCard from "./RulesCard";
@@ -66,11 +68,11 @@ export default function App() {
   const [lastSelectedID, setLastSelectedID] = useState("");
   const [lastSelectedBool, setLastSelectedBool] = useState(false);
   const [whatYouAdd, setWhatYouAdd] = useState(0);
-  const [whatYouAddTemp, setWhatYouAddTemp] = useState("");
+  const [whatYouAddTemp, setWhatYouAddTemp] = useState("0");
   const [whatYouPullTo, setWhatYouPullTo] = useState(0);
-  const [whatYouPullToTemp, setWhatYouPullToTemp] = useState("");
+  const [whatYouPullToTemp, setWhatYouPullToTemp] = useState("0");
   const [howFarYouPullTo, setHowFarYouPullTo] = useState(0);
-  const [howFarYouPullToTemp, setHowFarYouPullToTemp] = useState("");
+  const [howFarYouPullToTemp, setHowFarYouPullToTemp] = useState("0");
   const [whichYouPullTo, setWhichYouPullTo] = useState("h");
   const [whichYouAdd, setWhichYouAdd] = useState("h");
   // const [satMod, setSatMod] = useState(0);
@@ -252,20 +254,6 @@ export default function App() {
       <div className="flex w-full overflow-hidden h-screen bg-[#202020]">
         <div className="flex flex-1 place-content-between">
           <div className="z-50 shadow-2xl/50 flex-col flex flex-none fixed right-0 h-screen bg-[#aaa] w-30">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="size-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"
-              />
-            </svg>
             <div className="flex-col flex m-1">
               <button
                 onClick={() => {
@@ -403,7 +391,7 @@ export default function App() {
               onChange={(event) => {
                 setTextAreaJSON(event.target.value);
               }}
-              className="break-all resize-none flex-none select-all font-mono bg-[#ccc] h-40 overflow-auto tracking-tight text-[9px]/tight wrap-anywhere scrollbar-thin"
+              className="inset-ring-1 inset-ring-taupe-500 break-all resize-none flex-none select-all font-mono bg-[#ccc] h-40 overflow-auto tracking-tight text-[9px]/tight wrap-anywhere scrollbar-thin"
             />
             <div className="flex flex-col flex-nowrap max-w-full">
               <button
@@ -428,8 +416,8 @@ export default function App() {
                 className="min-w-0 mt-0 flex-1 overflow-hidden text-ellipsis bg-gray-800 m-1 p-1 rounded-lg text-gray-100 text-xs"
               />
             </div>
-            <div className="text-center text-sm flex flex-col m-1 p-1 bg-gray-400 rounded-2xl inset-shadow-sm/10">
-              Modify selected colors
+            <div className="text-center text-sm flex flex-col m-1 p-1 bg-gray-300 rounded-xl inset-ring-1 inset-ring-mist-600">
+              <span className="font-semibold">Modify selected colors</span>
               <button
                 onClick={() => {
                   if (allSelected) {
@@ -442,13 +430,13 @@ export default function App() {
                     setLastSelectedID("");
                   }
                 }}
-                className="text-xs text-white mb-1 bg-purple-700 rounded-md"
+                className="text-xs text-white  mb-1 bg-indigo-600 inset-ring-1 inset-ring-indigo-800 rounded-md"
               >
                 Select/deselect all
               </button>
-              <div className="flex flex-col text-xs bg-gray-500 rounded-lg p-1 mb-1">
+              <div className="flex items-start flex-col text-xs inset-ring-1 inset-ring-blue-950 bg-gray-400 rounded-lg p-1 mb-1">
                 <button
-                  className="bg-mauve-400 rounded-md p-1"
+                  className="self-stretch bg-indigo-300 inset-ring-1 inset-ring-indigo-600 rounded-md p-1"
                   onClick={() => {
                     let anySelected;
                     const newColors = colorsHSL.map((color) => {
@@ -489,50 +477,56 @@ export default function App() {
 "name": "${themeName}",
 "rules": ${rulesString}}`);
                     } else {
-                      alert(`wasn't string array...`);
+                      alert(`wasn't string array!`);
                     }
                   }}
                 >
                   Add to&nbsp;
                 </button>
-                <select
-                  className="mt-1 mb-1 bg-gray-500"//this styles dropdown. Make parent div for clickable select
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                  onChange={(e) => {
-                    setWhichYouAdd(e.target.value);
-                  }}
-                  value={whichYouAdd}
-                >
-                  <option value={"h"}>hue </option>
-                  <option value={"s"}>satr.</option>
-                  <option value={"l"}>light</option>
-                  <option value={"a"}>alpha</option>
-                </select>
-                <input
-                  className="bg-gray-600 rounded-md w-9"
-                  type="number"
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setWhatYouAddTemp(String(val));
-                  }}
-                  onBlur={(e) => {
-                    const val = Number(e.target.value);
-                    if (typeof val === "number") {
-                      setWhatYouAdd(val);
+                <div className="p-0.5 mt-1 mb-1 inset-ring-1 inset-ring-blue-900 bg-gray-500 self-stretch rounded-md">
+                  <select
+                    className="w-22 "
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                    onChange={(e) => {
+                      setWhichYouAdd(e.target.value);
+                    }}
+                    value={whichYouAdd}
+                  >
+                    <option value={"h"}>hue </option>
+                    <option value={"s"}>saturation</option>
+                    <option value={"l"}>lightness</option>
+                    <option value={"a"}>transparency</option>
+                  </select>
+                </div>
+                <div className="flex-row flex">
+                  <span title="Value to add">Value&nbsp;</span>
+                  <input
+                    title="Value to add"
+                    className="w-8 pl-1 inset-ring-1 inset-ring-emerald-900 bg-gray-500 rounded-md"
+                    onChange={(e) => {
+                      const val = e.target.value;
                       setWhatYouAddTemp(String(val));
-                    } else {
-                      setWhatYouAdd(0);
-                      setWhatYouAddTemp("0");
-                    }
-                  }}
-                  value={whatYouAddTemp}
-                ></input>
+                    }}
+                    onBlur={(e) => {
+                      const val = Number(e.target.value);
+                      if (typeof val === "number") {
+                        setWhatYouAdd(val);
+                        setWhatYouAddTemp(String(val));
+                      } else {
+                        setWhatYouAdd(0);
+                        setWhatYouAddTemp("0");
+                      }
+                    }}
+                    value={whatYouAddTemp}
+                  ></input>
+                </div>
               </div>
-              <div className="text-xs flex-col flex bg-gray-500 rounded-lg p-1">
+              <div className="flex items-start flex-col text-xs inset-ring-1 inset-ring-blue-950 bg-gray-400 rounded-lg p-1">
+                {" "}
                 <button
-                  className="bg-mauve-400 rounded-md p-1"
+                  className="self-stretch bg-indigo-300 inset-ring-1 inset-ring-indigo-600 rounded-md p-1"
                   onClick={() => {
                     let anySelected = false;
                     const newColors = colorsHSL.map((color) => {
@@ -601,62 +595,72 @@ export default function App() {
 "name": "${themeName}",
 "rules": ${rulesString}}`);
                     } else {
-                      alert(`wasn't string array...`);
+                      alert(`wasn't string array!`);
                     }
                   }}
                 >
                   Move towards&nbsp;
                 </button>
-                <select
-                  className="bg-gray-500 mt-1"
-                  onChange={(e) => {
-                    setWhichYouPullTo(e.target.value);
-                  }}
-                  value={whichYouPullTo}
-                >
-                  <option value={"h"}>hue</option>
-                  <option value={"s"}>satr.</option>
-                  <option value={"l"}>light</option>
-                  <option value={"a"}>alpha</option>
-                </select>
-                <input
-                  className="mt-1 mb-1 bg-gray-600 rounded-md"
-                  type="number"
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setWhatYouPullToTemp(String(val));
-                  }}
-                  onBlur={(e) => {
-                    const val = Number(e.target.value);
-                    if (typeof val === "number") {
-                      setWhatYouPullTo(val);
+                <div className="p-0.5 inset-ring-1 inset-ring-blue-900 bg-gray-500 self-stretch mt-1 rounded-md">
+                  <select
+                    className="w-22"
+                    onChange={(e) => {
+                      setWhichYouPullTo(e.target.value);
+                    }}
+                    value={whichYouPullTo} 
+                  >
+                    <option value={"h"}>hue</option>
+                    <option value={"s"}>saturation</option>
+                    <option value={"l"}>lightness</option>
+                    <option value={"a"}>transparency</option>
+                  </select>
+                </div>
+                <div className="grid-cols-2">
+                  <span title="Target Value">Target&nbsp;</span>
+                  <input
+                    title="Target value"
+                    className="w-8 mt-1 mb-1 pl-1 inset-ring-1 inset-ring-emerald-900 bg-gray-500 rounded-md"
+                    onChange={(e) => {
+                      const val = e.target.value;
                       setWhatYouPullToTemp(String(val));
-                    } else {
-                      setWhatYouPullTo(0);
-                      setWhatYouPullToTemp("0");
-                    }
-                  }}
-                  value={whatYouPullToTemp}
-                ></input>
-                <input
-                  className="bg-gray-600 rounded-md"
-                  type="number"
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setHowFarYouPullToTemp(String(val));
-                  }}
-                  onBlur={(e) => {
-                    const val = Number(e.target.value);
-                    if (typeof val === "number") {
-                      setHowFarYouPullTo(val);
+                    }}
+                    onBlur={(e) => {
+                      const val = Number(e.target.value);
+                      if (typeof val === "number") {
+                        setWhatYouPullTo(val);
+                        setWhatYouPullToTemp(String(val));
+                      } else {
+                        setWhatYouPullTo(0);
+                        setWhatYouPullToTemp("0");
+                      }
+                    }}
+                    value={whatYouPullToTemp}
+                  ></input>
+                </div>
+                <div className="flex-row flex">
+                  <span title="what proportion of the way to move (0-1)">
+                    Magnitude&nbsp;
+                  </span>
+                  <input
+                    title="what proportion of the way to move (0-1)"
+                    className="w-8 pl-1 inset-ring-1 inset-ring-emerald-900 bg-gray-500 rounded-md"
+                    onChange={(e) => {
+                      const val = e.target.value;
                       setHowFarYouPullToTemp(String(val));
-                    } else {
-                      setHowFarYouPullTo(0);
-                      setHowFarYouPullToTemp("0");
-                    }
-                  }}
-                  value={howFarYouPullToTemp}
-                ></input>
+                    }}
+                    onBlur={(e) => {
+                      const val = Number(e.target.value);
+                      if (typeof val === "number") {
+                        setHowFarYouPullTo(val);
+                        setHowFarYouPullToTemp(String(val));
+                      } else {
+                        setHowFarYouPullTo(0);
+                        setHowFarYouPullToTemp("0");
+                      }
+                    }}
+                    value={howFarYouPullToTemp}
+                  ></input>
+                </div>
               </div>
             </div>
             {/* <div>

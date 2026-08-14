@@ -376,7 +376,7 @@ export default function RulesCard({
           ></div>
           <div className="absolute top-0 right-0">
             <button
-              className={`inset-ring-gray-400 inset-ring-4 w-8 h-30 ${isSelected? 'bg-purple-700':'bg-neutral-100'}`}
+              className={`inset-ring-2 w-8 h-30 ${isSelected? 'inset-ring-neutral-400 bg-indigo-800':'inset-ring-gray-400 bg-neutral-100'}`}
               onClick={(e) => {
                 if (isSelected) {
                   setSelected(false,e.shiftKey);
