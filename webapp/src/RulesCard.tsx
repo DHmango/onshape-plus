@@ -6,6 +6,8 @@ import { useState } from "react";
 export default function RulesCard({
   reportBack, //the thing used to change the centralized array of data
   isSelected,
+  isRearranging,
+  moveHere,
   setSelected,
   dataType, // color, px, etc. only 'c' works rn
   selector, // css selector- not implemented
@@ -14,7 +16,9 @@ export default function RulesCard({
 }: {
   // the typescripr types
   reportBack: (ruleID: string[], value: string) => void;
+  isRearranging: boolean;
   isSelected: boolean;
+  moveHere: () => void;
   setSelected: (trueRuleIDs: boolean, shift: boolean) => void;
   dataType: string;
   selector: string;
@@ -376,15 +380,25 @@ export default function RulesCard({
           ></div>
           <div className="absolute top-0 right-0">
             <button
-              className={`inset-ring-2 w-8 h-30 ${isSelected? 'inset-ring-neutral-400 bg-indigo-800':'inset-ring-gray-400 bg-neutral-100'}`}
+              className={`inset-ring-2 w-8 h-30 ${isSelected ? "inset-ring-neutral-400 bg-indigo-800" : "inset-ring-gray-400 bg-neutral-100"}`}
               onClick={(e) => {
                 if (isSelected) {
-                  setSelected(false,e.shiftKey);
+                  setSelected(false, e.shiftKey);
                 } else {
-                  setSelected(true,e.shiftKey);
+                  setSelected(true, e.shiftKey);
                 }
               }}
             ></button>
+          </div>
+          <div className="absolute top-0 right-10 h-27 flex flex-col justify-end">
+            <button
+              className={`rounded-md hover:bg-neutral-800 inset-ring-2 inset-ring-neutral-900 bg-black text-white w-50 h-6 font-workSans ${isRearranging ? "" : "hidden"}`}
+              onClick={() => {
+                moveHere();
+              }}
+            >
+              Move Selected Below
+            </button>
           </div>
         </div>
       </>
@@ -393,7 +407,7 @@ export default function RulesCard({
     return (
       <>
         <div
-          className={`animate-none h-9 ease-in-out flex transition-all group hover:h-27 duration-100 overflow-hidden bg-white bg-[conic-gradient(#ccc_25%,transparent_25%_50%,#ccc_50%_75%,transparent_75%)] bg-size-[18px_18px]`}
+          className={`relative  animate-none h-9 ease-in-out flex transition-all group hover:h-27 duration-100 overflow-hidden bg-white bg-[conic-gradient(#ccc_25%,transparent_25%_50%,#ccc_50%_75%,transparent_75%)] bg-size-[18px_18px]`}
         >
           <div className="flex-col text-nowrap w-120  shrink-0  float-start bg-gray-800 text-gray-50">
             <label
@@ -415,6 +429,28 @@ export default function RulesCard({
                 }
               />
             </label>
+          </div>
+          <div className="absolute top-0 right-0">
+            <button
+              className={`inset-ring-2 w-8 h-30 ${isSelected ? "inset-ring-neutral-400 bg-indigo-800" : "inset-ring-gray-400 bg-neutral-100"}`}
+              onClick={(e) => {
+                if (isSelected) {
+                  setSelected(false, e.shiftKey);
+                } else {
+                  setSelected(true, e.shiftKey);
+                }
+              }}
+            ></button>
+          </div>
+          <div className="absolute top-0 right-10 h-27 flex flex-col justify-end">
+            <button
+              className={`rounded-md hover:bg-neutral-800 inset-ring-2 inset-ring-neutral-900 bg-black text-white w-50 h-6 font-workSans ${isRearranging ? "" : "hidden"}`}
+              onClick={() => {
+                moveHere();
+              }}
+            >
+              Move Selected Below
+            </button>
           </div>
         </div>
       </>

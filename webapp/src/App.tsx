@@ -1,4 +1,4 @@
-//Todo: add reordering of rules (.toSpliced?), make good preset themes, reorder default jsons, make website about this? buy chrome extension? prettier popup, logo etc, bug report, theme share? quick tutorial, sorting?? Select does more thing?? oscope
+//Todo: add reordering of rules (.toSpliced?), make good preset themes, reorder default jsons, make website about this? buy chrome extension? bug report, theme share? quick tutorial, sorting?? Select does more thing?? oscope
 
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
@@ -90,6 +90,7 @@ export default function App() {
 
   const [lightTheme, setLightTheme] = useState("");
   const [darkTheme, setDarkTheme] = useState("");
+  const [isRearranging, setIsRearranging] = useState(false);
 
   function isStringArrayArray(value: unknown): value is string[][] {
     return (
@@ -420,7 +421,7 @@ export default function App() {
               <span className="font-semibold">Modify selected colors</span>
               <button
                 onClick={() => {
-                  if (allSelected) {
+                  if (allSelected || isRearranging) {
                     setAllSelected(false);
                     setLastSelectedID("");
                     setSelectedRuleIDs(selectAllRules(ruleValues, false));
@@ -436,7 +437,7 @@ export default function App() {
               </button>
               <div className="flex items-start flex-col text-xs inset-ring-1 inset-ring-blue-950 bg-gray-400 rounded-lg p-1 mb-1">
                 <button
-                  className="self-stretch bg-indigo-300 inset-ring-1 inset-ring-indigo-600 rounded-md p-1"
+                  className="self-stretch hover:bg-indigo-400 bg-indigo-300 inset-ring-1 inset-ring-indigo-600 rounded-md p-1"
                   onClick={() => {
                     let anySelected;
                     const newColors = colorsHSL.map((color) => {
@@ -526,7 +527,7 @@ export default function App() {
               <div className="flex items-start flex-col text-xs inset-ring-1 inset-ring-blue-950 bg-gray-400 rounded-lg p-1">
                 {" "}
                 <button
-                  className="self-stretch bg-indigo-300 inset-ring-1 inset-ring-indigo-600 rounded-md p-1"
+                  className="self-stretch hover:bg-indigo-400 bg-indigo-300 inset-ring-1 inset-ring-indigo-600 rounded-md p-1"
                   onClick={() => {
                     let anySelected = false;
                     const newColors = colorsHSL.map((color) => {
@@ -607,7 +608,7 @@ export default function App() {
                     onChange={(e) => {
                       setWhichYouPullTo(e.target.value);
                     }}
-                    value={whichYouPullTo} 
+                    value={whichYouPullTo}
                   >
                     <option value={"h"}>hue</option>
                     <option value={"s"}>saturation</option>
@@ -663,6 +664,17 @@ export default function App() {
                 </div>
               </div>
             </div>
+            {`${isRearranging}`}
+            <button
+              onClick={() => {
+                setIsRearranging(true);
+                setAllSelected(false);
+                setLastSelectedID("");
+                setSelectedRuleIDs(selectAllRules(ruleValues, false));
+              }}
+            >
+              rearrangge
+            </button>
             {/* <div>
               add rule
               <svg
@@ -698,10 +710,44 @@ export default function App() {
                 const selected = selectedRuleIDs[key];
                 return (
                   <RulesCard
+                    isRearranging={isRearranging}
+                    moveHere={() => {
+                      setIsRearranging(false);
+                      setAllSelected(false);
+                      setLastSelectedID("");
+                      setSelectedRuleIDs(selectAllRules(ruleValues, false));
+                    }}
                     isSelected={selected}
                     setSelected={(bool, shift) => {
                       setAllSelected(false);
-                      setSelectedRuleIDs({ ...selectedRuleIDs, [key]: bool });
+                      if (!isRearranging) {
+                        setSelectedRuleIDs({ ...selectedRuleIDs, [key]: bool });
+                      } else {
+                        let howManyTimesSwitched = 0;
+                        let lastOne = false;
+                        Object.entries({ ...selectedRuleIDs, [key]: bool }).map(
+                          ([ruleID, val]) => {
+                            ruleID; //is there a better way? almost certainly.
+                            if (val === lastOne) {
+                            } else {
+                              howManyTimesSwitched++;
+                              lastOne = val;
+                            }
+                          },
+                        );
+                        console.log(howManyTimesSwitched);
+                        if (howManyTimesSwitched > 2) {
+                          setSelectedRuleIDs({
+                            ...selectAllRules(ruleValues, false),
+                            [key]: bool,
+                          });
+                        } else {
+                          setSelectedRuleIDs({
+                            ...selectedRuleIDs,
+                            [key]: bool,
+                          });
+                        }
+                      }
                       if (
                         shift &&
                         Object.hasOwn(selectedRuleIDs, lastSelectedID) &&
