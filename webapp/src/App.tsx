@@ -1,4 +1,4 @@
-//Todo: add reordering of rules (.toSpliced?), make good preset themes, reorder default jsons, make website about this? buy chrome extension? bug report, theme share? quick tutorial, sorting?? Select does more thing?? oscope
+//Todo: add reordering of rules (.toSpliced?), make good preset themes, reorder default jsons, make website about this? buy chrome extension? theme share? quick tutorial, sorting?? Select does more thing?? oscope
 
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
@@ -75,9 +75,6 @@ export default function App() {
   const [howFarYouPullToTemp, setHowFarYouPullToTemp] = useState("0");
   const [whichYouPullTo, setWhichYouPullTo] = useState("h");
   const [whichYouAdd, setWhichYouAdd] = useState("h");
-  // const [satMod, setSatMod] = useState(0);
-  // const [valMod, setvalMod] = useState(0); TODO
-  // const [alpMod, setalpMod] = useState(0);
 
   const [saveSlots, setSaveSlots] = useState<saveSlot[]>([
     { slot: -1, name: "Error" },
@@ -101,6 +98,30 @@ export default function App() {
           item.every((content) => typeof content === "string"),
       )
     );
+  }
+
+  function moveSelectedTo(
+    rules: string[][],
+    selected: Record<string, boolean>,
+    below: string,
+  ) {
+    const movingRules = rules.filter((rule) => {
+      return selected[`${rule[0] + "_㊫_" + rule[1] + "_㊫_" + rule[2]}`];
+    });
+    let newRules = rules.filter((rule) => {
+      return !movingRules.includes(rule);
+    });
+    const whereImBelow = newRules.indexOf(
+      newRules.filter((rule) => {
+        return `${rule[0] + "_㊫_" + rule[1] + "_㊫_" + rule[2]}` === below;
+      })[0],
+    );
+    if (whereImBelow === -1) {
+      return rules;//KNOWN ISSUE: if you move below a selected rule, it will not move them, which is bad if its not a continuous group
+                   //FIX: maybe you can move up the list until you find a safe one to move below? seems sus but workable
+    }
+    newRules.splice(whereImBelow + 1, 0, ...movingRules);
+    return newRules;
   }
 
   for (const value of saveSlots) {
@@ -254,451 +275,6 @@ export default function App() {
     <>
       <div className="flex w-full overflow-hidden h-screen bg-[#202020]">
         <div className="flex flex-1 place-content-between">
-          <div className="z-50 shadow-2xl/50 flex-col flex flex-none fixed right-0 h-screen bg-[#aaa] w-30">
-            <div className="flex-col flex m-1">
-              <button
-                onClick={() => {
-                  saveDialogRef.current?.showModal();
-                }}
-                className="bg-gray-800 rounded-lg text-gray-100"
-              >
-                Load / Save
-              </button>
-            </div>
-            <dialog
-              ref={saveDialogRef}
-              className="m-auto backdrop:backdrop-brightness-50"
-            >
-              <SaveCards
-                currentTheme={textAreaJSON}
-                saveSlots={saveSlotsToShow}
-                onClose={() => {
-                  saveDialogRef.current?.close();
-                }}
-                reportBack={(slot: string, value: string) => {
-                  try {
-                    if ((JSON.parse(value).what = "onshape theme")) {
-                      if (confirm("save here?")) {
-                        browser.storage.local
-                          .set({ [`theme-${slot}`]: value })
-                          .then(() => {
-                            getSaves().then((val) => {
-                              setSaveSlots(val);
-                            });
-                          });
-                      }
-                    } else {
-                      alert("error shouldn't ever happen!");
-                    }
-                  } catch {
-                    alert("invalid save data!");
-                  }
-                }}
-                deleteTheme={(slot: string) => {
-                  if (
-                    slot === darkTheme.slice(-2) ||
-                    slot === lightTheme.slice(-2)
-                  ) {
-                    alert(
-                      "Cannot delete an active theme. Change theme and reload",
-                    );
-                  } else {
-                    browser.storage.local.remove(`theme-${slot}`).then(() => {
-                      getSaves().then((val) => {
-                        setSaveSlots(val);
-                      });
-                    });
-                  }
-                }}
-                loadTheme={(slot: string) => {
-                  loadThemeFromSlot(slot);
-                  saveDialogRef.current?.close();
-                }}
-              ></SaveCards>
-            </dialog>
-            <div className="m-1 p-0.5 rounded-lg bg-gray-400 inset-shadow-sm/10">
-              <label className="flex-col flex text-center">
-                <span className="text-center">Theme Name</span>
-                <input
-                  value={themeName}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setThemeName(val);
-                    setTextAreaJSON(
-                      JSON.stringify({
-                        ...JSON.parse(textAreaJSON),
-                        name: val,
-                      }),
-                    );
-                  }}
-                  className="shadow-xs/30 w-full text-xs text-gray-300 focus:outline-1.5 outline-mist-100 bg-gray-900 rounded-md mr-1 hover:bg-[#171720] border-black pl-1 inset-shadow-md/40"
-                ></input>
-              </label>
-            </div>
-            <button
-              className="cursor-copy flex-row flex bg-gray-800 m-1 p-1 rounded-lg text-gray-100"
-              onClick={() => {
-                navigator.clipboard.writeText(textAreaJSON);
-                setJustCopied(true);
-                setTimeout(() => {
-                  setJustCopied(false);
-                }, 1500);
-              }}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="size-4 self-center flex-1"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184"
-                />
-              </svg>
-              <p className="flex-3 text-xs text-gray-300 self-center">
-                {justCopied ? "Copied!" : "Copy"}
-              </p>
-            </button>
-            <textarea
-              title="Raw rule data"
-              spellCheck="false"
-              value={textAreaJSON}
-              onBlur={(event) => {
-                /* get it? because blur is the opposite of focus !*/
-                try {
-                  const rules = JSON.parse(event.target.value).rules;
-                  sendAllRulesToHSL(rules);
-                  setSelectedRuleIDs(selectAllRules(rules, false));
-                  const rulesString = JSON.stringify(rules);
-                  setRuleValues(rules);
-                  setTextAreaJSON(`{
-"version": "0.1",
-"what": "onshape theme",
-"name": "${themeName}",
-"rules": ${rulesString}}`);
-                } catch (error) {
-                  setTextAreaJSON(
-                    "The JSON you typed was invalid! modify a rule on the left to revert this",
-                  );
-                }
-              }}
-              onFocus={(event) => {
-                event.target.select();
-              }}
-              onChange={(event) => {
-                setTextAreaJSON(event.target.value);
-              }}
-              className="inset-ring-1 inset-ring-taupe-500 break-all resize-none flex-none select-all font-mono bg-[#ccc] h-40 overflow-auto tracking-tight text-[9px]/tight wrap-anywhere scrollbar-thin"
-            />
-            <div className="flex flex-col flex-nowrap max-w-full">
-              <button
-                title="load theme from a valid json"
-                className="flex-row flex flex-1 bg-gray-800 m-1 p-1 rounded-lg text-gray-100"
-                onClick={() => {
-                  if (confirm("Really load theme?")) {
-                    loadThemeFromAddress(selectedPreset);
-                  }
-                }}
-              >
-                <p className="flex-3 text-xs text-gray-300 self-center">
-                  Load from URL
-                </p>
-              </button>
-              <input
-                title="Input the url here"
-                onChange={(event) => {
-                  setSelectedPreset(event.target.value);
-                }}
-                value={selectedPreset}
-                className="min-w-0 mt-0 flex-1 overflow-hidden text-ellipsis bg-gray-800 m-1 p-1 rounded-lg text-gray-100 text-xs"
-              />
-            </div>
-            <div className="text-center text-sm flex flex-col m-1 p-1 bg-gray-300 rounded-xl inset-ring-1 inset-ring-mist-600">
-              <span className="font-semibold">Modify selected colors</span>
-              <button
-                onClick={() => {
-                  if (allSelected || isRearranging) {
-                    setAllSelected(false);
-                    setLastSelectedID("");
-                    setSelectedRuleIDs(selectAllRules(ruleValues, false));
-                  } else {
-                    setAllSelected(true);
-                    setSelectedRuleIDs(selectAllRules(ruleValues, true));
-                    setLastSelectedID("");
-                  }
-                }}
-                className="text-xs text-white  mb-1 bg-indigo-600 inset-ring-1 inset-ring-indigo-800 rounded-md"
-              >
-                Select/deselect all
-              </button>
-              <div className="flex items-start flex-col text-xs inset-ring-1 inset-ring-blue-950 bg-gray-400 rounded-lg p-1 mb-1">
-                <button
-                  className="self-stretch hover:bg-indigo-400 bg-indigo-300 inset-ring-1 inset-ring-indigo-600 rounded-md p-1"
-                  onClick={() => {
-                    let anySelected;
-                    const newColors = colorsHSL.map((color) => {
-                      if (selectedRuleIDs[color.id]) {
-                        anySelected = true;
-                        const newHSLA = {
-                          ...{ h: 0, s: 0, l: 0, a: 0 },
-                          [whichYouAdd]: whatYouAdd,
-                        }; // cursed method?
-                        return {
-                          h: color.h + newHSLA.h,
-                          s: color.s + newHSLA.s,
-                          l: color.l + newHSLA.l,
-                          a: color.a + newHSLA.a,
-                          id: color.id,
-                        };
-                      } else {
-                        return {
-                          h: color.h,
-                          s: color.s,
-                          l: color.l,
-                          a: color.a,
-                          id: color.id,
-                        };
-                      }
-                    });
-                    if (!anySelected) {
-                      alert("no selected rules!");
-                    }
-                    setColorsHSL(newColors);
-                    const newRules = applyHSLOverRules(newColors, ruleValues);
-                    if (isStringArrayArray(newRules)) {
-                      setRuleValues(newRules);
-                      const rulesString = JSON.stringify(newRules);
-                      setTextAreaJSON(`{
-"version": "0.1",
-"what": "onshape theme",
-"name": "${themeName}",
-"rules": ${rulesString}}`);
-                    } else {
-                      alert(`wasn't string array!`);
-                    }
-                  }}
-                >
-                  Add to&nbsp;
-                </button>
-                <div className="p-0.5 mt-1 mb-1 inset-ring-1 inset-ring-blue-900 bg-gray-500 self-stretch rounded-md">
-                  <select
-                    className="w-22 "
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                    onChange={(e) => {
-                      setWhichYouAdd(e.target.value);
-                    }}
-                    value={whichYouAdd}
-                  >
-                    <option value={"h"}>hue </option>
-                    <option value={"s"}>saturation</option>
-                    <option value={"l"}>lightness</option>
-                    <option value={"a"}>transparency</option>
-                  </select>
-                </div>
-                <div className="flex-row flex">
-                  <span title="Value to add">Value&nbsp;</span>
-                  <input
-                    title="Value to add"
-                    className="w-8 pl-1 inset-ring-1 inset-ring-emerald-900 bg-gray-500 rounded-md"
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      setWhatYouAddTemp(String(val));
-                    }}
-                    onBlur={(e) => {
-                      const val = Number(e.target.value);
-                      if (typeof val === "number") {
-                        setWhatYouAdd(val);
-                        setWhatYouAddTemp(String(val));
-                      } else {
-                        setWhatYouAdd(0);
-                        setWhatYouAddTemp("0");
-                      }
-                    }}
-                    value={whatYouAddTemp}
-                  ></input>
-                </div>
-              </div>
-              <div className="flex items-start flex-col text-xs inset-ring-1 inset-ring-blue-950 bg-gray-400 rounded-lg p-1">
-                {" "}
-                <button
-                  className="self-stretch hover:bg-indigo-400 bg-indigo-300 inset-ring-1 inset-ring-indigo-600 rounded-md p-1"
-                  onClick={() => {
-                    let anySelected = false;
-                    const newColors = colorsHSL.map((color) => {
-                      if (selectedRuleIDs[color.id]) {
-                        anySelected = true;
-                        let valDrawnTo = whatYouPullTo;
-                        if (whichYouPullTo === "h") {
-                          // this nonsense is because hue wraps around and im bad at math
-                          if (
-                            Math.abs(color.h - whatYouPullTo) <
-                              Math.abs(color.h - (whatYouPullTo + 360)) &&
-                            Math.abs(color.h - whatYouPullTo) <
-                              Math.abs(color.h - (-360 + whatYouPullTo))
-                          ) {
-                          } else {
-                            if (
-                              Math.abs(color.h - (whatYouPullTo + 360)) <
-                              Math.abs(color.h - (-360 + whatYouPullTo))
-                            ) {
-                              valDrawnTo = whatYouPullTo + 360;
-                            } else {
-                              valDrawnTo = -360 + whatYouPullTo;
-                            }
-                          }
-                        }
-                        const newHSLA = {
-                          ...color,
-                          [whichYouPullTo]: valDrawnTo,
-                        };
-                        return {
-                          h:
-                            color.h * (1 - howFarYouPullTo) +
-                            howFarYouPullTo * newHSLA.h,
-                          s:
-                            color.s * (1 - howFarYouPullTo) +
-                            howFarYouPullTo * newHSLA.s,
-                          l:
-                            color.l * (1 - howFarYouPullTo) +
-                            howFarYouPullTo * newHSLA.l,
-                          a:
-                            color.a * (1 - howFarYouPullTo) +
-                            howFarYouPullTo * newHSLA.a,
-                          id: color.id,
-                        };
-                      } else {
-                        return {
-                          h: color.h,
-                          s: color.s,
-                          l: color.l,
-                          a: color.a,
-                          id: color.id,
-                        };
-                      }
-                    });
-                    if (!anySelected) {
-                      alert("no selected rules!");
-                    }
-                    setColorsHSL(newColors);
-                    const newRules = applyHSLOverRules(newColors, ruleValues);
-                    if (isStringArrayArray(newRules)) {
-                      setRuleValues(newRules);
-                      const rulesString = JSON.stringify(newRules);
-                      setTextAreaJSON(`{
-"version": "0.1",
-"what": "onshape theme",
-"name": "${themeName}",
-"rules": ${rulesString}}`);
-                    } else {
-                      alert(`wasn't string array!`);
-                    }
-                  }}
-                >
-                  Move towards&nbsp;
-                </button>
-                <div className="p-0.5 inset-ring-1 inset-ring-blue-900 bg-gray-500 self-stretch mt-1 rounded-md">
-                  <select
-                    className="w-22"
-                    onChange={(e) => {
-                      setWhichYouPullTo(e.target.value);
-                    }}
-                    value={whichYouPullTo}
-                  >
-                    <option value={"h"}>hue</option>
-                    <option value={"s"}>saturation</option>
-                    <option value={"l"}>lightness</option>
-                    <option value={"a"}>transparency</option>
-                  </select>
-                </div>
-                <div className="grid-cols-2">
-                  <span title="Target Value">Target&nbsp;</span>
-                  <input
-                    title="Target value"
-                    className="w-8 mt-1 mb-1 pl-1 inset-ring-1 inset-ring-emerald-900 bg-gray-500 rounded-md"
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      setWhatYouPullToTemp(String(val));
-                    }}
-                    onBlur={(e) => {
-                      const val = Number(e.target.value);
-                      if (typeof val === "number") {
-                        setWhatYouPullTo(val);
-                        setWhatYouPullToTemp(String(val));
-                      } else {
-                        setWhatYouPullTo(0);
-                        setWhatYouPullToTemp("0");
-                      }
-                    }}
-                    value={whatYouPullToTemp}
-                  ></input>
-                </div>
-                <div className="flex-row flex">
-                  <span title="what proportion of the way to move (0-1)">
-                    Magnitude&nbsp;
-                  </span>
-                  <input
-                    title="what proportion of the way to move (0-1)"
-                    className="w-8 pl-1 inset-ring-1 inset-ring-emerald-900 bg-gray-500 rounded-md"
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      setHowFarYouPullToTemp(String(val));
-                    }}
-                    onBlur={(e) => {
-                      const val = Number(e.target.value);
-                      if (typeof val === "number") {
-                        setHowFarYouPullTo(val);
-                        setHowFarYouPullToTemp(String(val));
-                      } else {
-                        setHowFarYouPullTo(0);
-                        setHowFarYouPullToTemp("0");
-                      }
-                    }}
-                    value={howFarYouPullToTemp}
-                  ></input>
-                </div>
-              </div>
-            </div>
-            {`${isRearranging}`}
-            <button
-              onClick={() => {
-                setIsRearranging(true);
-                setAllSelected(false);
-                setLastSelectedID("");
-                setSelectedRuleIDs(selectAllRules(ruleValues, false));
-              }}
-            >
-              rearrangge
-            </button>
-            {/* <div>
-              add rule
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="size-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 4.5v15m7.5-7.5h-15"
-                />
-              </svg>
-              <input className="bg-amber-400"></input>
-              <input className="bg-indigo-400"></input>
-              <select>
-                <option value={"c"}>color</option>
-                <option value={"o"}>other</option>
-              </select>
-            </div> TODO... or is it*/}
-          </div>
           <div className="relative flex-1 overflow-x-hidden overflow-y-scroll h-full mr-30 scrollbar-thumb-slate-400/50 scrollbar-track-black/50">
             <div className="w-full h-full bg-zinc-500 text-center p-5 text-xl text-mauve-800">
               No rules yet. Load a preset using the sidebar
@@ -712,42 +288,49 @@ export default function App() {
                   <RulesCard
                     isRearranging={isRearranging}
                     moveHere={() => {
-                      setIsRearranging(false);
+                      const newRuleValues = moveSelectedTo(
+                        ruleValues,
+                        selectedRuleIDs,
+                        key,
+                      );
+                      setRuleValues(newRuleValues);
                       setAllSelected(false);
                       setLastSelectedID("");
-                      setSelectedRuleIDs(selectAllRules(ruleValues, false));
+                      setSelectedRuleIDs(selectAllRules(newRuleValues, false));
                     }}
                     isSelected={selected}
                     setSelected={(bool, shift) => {
                       setAllSelected(false);
-                      if (!isRearranging) {
-                        setSelectedRuleIDs({ ...selectedRuleIDs, [key]: bool });
-                      } else {
-                        let howManyTimesSwitched = 0;
-                        let lastOne = false;
-                        Object.entries({ ...selectedRuleIDs, [key]: bool }).map(
-                          ([ruleID, val]) => {
-                            ruleID; //is there a better way? almost certainly.
-                            if (val === lastOne) {
-                            } else {
-                              howManyTimesSwitched++;
-                              lastOne = val;
-                            }
-                          },
-                        );
-                        console.log(howManyTimesSwitched);
-                        if (howManyTimesSwitched > 2) {
-                          setSelectedRuleIDs({
-                            ...selectAllRules(ruleValues, false),
-                            [key]: bool,
-                          });
-                        } else {
-                          setSelectedRuleIDs({
-                            ...selectedRuleIDs,
-                            [key]: bool,
-                          });
-                        }
-                      }
+                      setSelectedRuleIDs({ ...selectedRuleIDs, [key]: bool });
+                      // if (!isRearranging) { I Made this to prevent you from making split groups when rearranging... but it actually a better UX to allow it, and the rearrange function I made supports it
+                      //   setSelectedRuleIDs({ ...selectedRuleIDs, [key]: bool });
+                      // } else {
+                      //   let howManyTimesSwitched = 0;
+                      //   let lastOne = false;
+                      //   Object.entries({ ...selectedRuleIDs, [key]: bool }).map(
+                      //     ([ruleID, val]) => {
+                      //       ruleID; //is there a better way? almost certainly.
+                      //       if (val === lastOne) {
+                      //       } else {
+                      //         howManyTimesSwitched++;
+                      //         lastOne = val;
+                      //       }
+                      //     },
+                      //   );
+                      //   console.log(howManyTimesSwitched);
+                      //   if (howManyTimesSwitched > 20) {
+                      //     //maybe i don't need to avoid split groups?
+                      //     setSelectedRuleIDs({
+                      //       ...selectAllRules(ruleValues, false),
+                      //       [key]: bool,
+                      //     });
+                      //   } else {
+                      //     setSelectedRuleIDs({
+                      //       ...selectedRuleIDs,
+                      //       [key]: bool,
+                      //     });
+                      //   }
+                      // } I Made this to prevent you from making split groups when rearranging... but it actually a better UX to allow it, and the rearrange function I made supports it
                       if (
                         shift &&
                         Object.hasOwn(selectedRuleIDs, lastSelectedID) &&
@@ -791,6 +374,459 @@ export default function App() {
               })}
             </div>
           </div>
+        </div>
+        {/* below this is the SIDEBAR */}
+        <div className="z-50 shadow-2xl/50 flex-col flex flex-none fixed right-0 h-screen bg-[#aaa] w-30">
+          <div className="flex-col flex m-1">
+            <button
+              onClick={() => {
+                saveDialogRef.current?.showModal();
+              }}
+              className="bg-gray-800 rounded-lg text-gray-100"
+            >
+              Load / Save
+            </button>
+          </div>
+          <dialog
+            ref={saveDialogRef}
+            className="m-auto backdrop:backdrop-brightness-50"
+          >
+            <SaveCards
+              currentTheme={textAreaJSON}
+              saveSlots={saveSlotsToShow}
+              onClose={() => {
+                saveDialogRef.current?.close();
+              }}
+              reportBack={(slot: string, value: string) => {
+                try {
+                  if ((JSON.parse(value).what = "onshape theme")) {
+                    if (confirm("save here?")) {
+                      browser.storage.local
+                        .set({ [`theme-${slot}`]: value })
+                        .then(() => {
+                          getSaves().then((val) => {
+                            setSaveSlots(val);
+                          });
+                        });
+                    }
+                  } else {
+                    alert("error shouldn't ever happen!");
+                  }
+                } catch {
+                  alert("invalid save data!");
+                }
+              }}
+              deleteTheme={(slot: string) => {
+                if (
+                  slot === darkTheme.slice(-2) ||
+                  slot === lightTheme.slice(-2)
+                ) {
+                  alert(
+                    "Cannot delete an active theme. Change theme and reload",
+                  );
+                } else {
+                  browser.storage.local.remove(`theme-${slot}`).then(() => {
+                    getSaves().then((val) => {
+                      setSaveSlots(val);
+                    });
+                  });
+                }
+              }}
+              loadTheme={(slot: string) => {
+                loadThemeFromSlot(slot);
+                saveDialogRef.current?.close();
+              }}
+            ></SaveCards>
+          </dialog>
+          <div className="m-1 p-0.5 rounded-lg bg-gray-400 inset-shadow-sm/10">
+            <label className="flex-col flex text-center">
+              <span className="text-center">Theme Name</span>
+              <input
+                value={themeName}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setThemeName(val);
+                  setTextAreaJSON(
+                    JSON.stringify({
+                      ...JSON.parse(textAreaJSON),
+                      name: val,
+                    }),
+                  );
+                }}
+                className="shadow-xs/30 w-full text-xs text-gray-300 focus:outline-1.5 outline-mist-100 bg-gray-900 rounded-md mr-1 hover:bg-[#171720] border-black pl-1 inset-shadow-md/40"
+              ></input>
+            </label>
+          </div>
+          <button
+            className="cursor-copy flex-row flex bg-gray-800 m-1 p-1 rounded-lg text-gray-100"
+            onClick={() => {
+              navigator.clipboard.writeText(textAreaJSON);
+              setJustCopied(true);
+              setTimeout(() => {
+                setJustCopied(false);
+              }, 1500);
+            }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="size-4 self-center flex-1"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184"
+              />
+            </svg>
+            <p className="flex-3 text-xs text-gray-300 self-center">
+              {justCopied ? "Copied!" : "Copy"}
+            </p>
+          </button>
+          <textarea
+            title="Raw rule data"
+            spellCheck="false"
+            value={textAreaJSON}
+            onBlur={(event) => {
+              /* get it? because blur is the opposite of focus !*/
+              try {
+                const rules = JSON.parse(event.target.value).rules;
+                sendAllRulesToHSL(rules);
+                setSelectedRuleIDs(selectAllRules(rules, false));
+                const rulesString = JSON.stringify(rules);
+                setRuleValues(rules);
+                setTextAreaJSON(`{
+"version": "0.1",
+"what": "onshape theme",
+"name": "${themeName}",
+"rules": ${rulesString}}`);
+              } catch (error) {
+                setTextAreaJSON(
+                  "The JSON you typed was invalid! modify a rule on the left to revert this",
+                );
+              }
+            }}
+            onFocus={(event) => {
+              event.target.select();
+            }}
+            onChange={(event) => {
+              setTextAreaJSON(event.target.value);
+            }}
+            className="inset-ring-1 inset-ring-taupe-500 break-all resize-none flex-none select-all font-mono bg-[#ccc] h-40 overflow-auto tracking-tight text-[9px]/tight wrap-anywhere scrollbar-thin"
+          />
+          <div className="flex flex-col flex-nowrap max-w-full">
+            <button
+              title="load theme from a valid json"
+              className="flex-row flex flex-1 bg-gray-800 m-1 p-1 rounded-lg text-gray-100"
+              onClick={() => {
+                if (confirm("Really load theme?")) {
+                  loadThemeFromAddress(selectedPreset);
+                }
+              }}
+            >
+              <p className="flex-3 text-xs text-gray-300 self-center">
+                Load from URL
+              </p>
+            </button>
+            <input
+              title="Input the url here"
+              onChange={(event) => {
+                setSelectedPreset(event.target.value);
+              }}
+              value={selectedPreset}
+              className="min-w-0 mt-0 flex-1 overflow-hidden text-ellipsis bg-gray-800 m-1 p-1 rounded-lg text-gray-100 text-xs"
+            />
+          </div>
+          <div className="text-center text-sm flex flex-col m-1 p-1 bg-gray-300 rounded-xl inset-ring-1 inset-ring-mist-600">
+            <span className="font-semibold">Modify selected colors</span>
+            <button
+              onClick={() => {
+                if (allSelected || isRearranging) {
+                  setAllSelected(false);
+                  setLastSelectedID("");
+                  setSelectedRuleIDs(selectAllRules(ruleValues, false));
+                } else {
+                  setAllSelected(true);
+                  setSelectedRuleIDs(selectAllRules(ruleValues, true));
+                  setLastSelectedID("");
+                }
+              }}
+              className="text-xs text-white  mb-1 bg-indigo-600 inset-ring-1 inset-ring-indigo-800 rounded-md"
+            >
+              Select/deselect all
+            </button>
+            <div className="flex items-start flex-col text-xs inset-ring-1 inset-ring-blue-950 bg-gray-400 rounded-lg p-1 mb-1">
+              <button
+                className="self-stretch hover:bg-indigo-400 bg-indigo-300 inset-ring-1 inset-ring-indigo-600 rounded-md p-1"
+                onClick={() => {
+                  let anySelected;
+                  const newColors = colorsHSL.map((color) => {
+                    if (selectedRuleIDs[color.id]) {
+                      anySelected = true;
+                      const newHSLA = {
+                        ...{ h: 0, s: 0, l: 0, a: 0 },
+                        [whichYouAdd]: whatYouAdd,
+                      }; // cursed method?
+                      return {
+                        h: color.h + newHSLA.h,
+                        s: color.s + newHSLA.s,
+                        l: color.l + newHSLA.l,
+                        a: color.a + newHSLA.a,
+                        id: color.id,
+                      };
+                    } else {
+                      return {
+                        h: color.h,
+                        s: color.s,
+                        l: color.l,
+                        a: color.a,
+                        id: color.id,
+                      };
+                    }
+                  });
+                  if (!anySelected) {
+                    alert("no selected rules!");
+                  }
+                  setColorsHSL(newColors);
+                  const newRules = applyHSLOverRules(newColors, ruleValues);
+                  if (isStringArrayArray(newRules)) {
+                    setRuleValues(newRules);
+                    const rulesString = JSON.stringify(newRules);
+                    setTextAreaJSON(`{
+"version": "0.1",
+"what": "onshape theme",
+"name": "${themeName}",
+"rules": ${rulesString}}`);
+                  } else {
+                    alert(`wasn't string array!`);
+                  }
+                }}
+              >
+                Add to&nbsp;
+              </button>
+              <div className="p-0.5 mt-1 mb-1 inset-ring-1 inset-ring-blue-900 bg-gray-500 self-stretch rounded-md">
+                <select
+                  className="w-22 "
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                  onChange={(e) => {
+                    setWhichYouAdd(e.target.value);
+                  }}
+                  value={whichYouAdd}
+                >
+                  <option value={"h"}>hue </option>
+                  <option value={"s"}>saturation</option>
+                  <option value={"l"}>lightness</option>
+                  <option value={"a"}>transparency</option>
+                </select>
+              </div>
+              <div className="flex-row flex">
+                <span title="Value to add">Value&nbsp;</span>
+                <input
+                  title="Value to add"
+                  className="w-8 pl-1 inset-ring-1 inset-ring-emerald-900 bg-gray-500 rounded-md"
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setWhatYouAddTemp(String(val));
+                  }}
+                  onBlur={(e) => {
+                    const val = Number(e.target.value);
+                    if (typeof val === "number") {
+                      setWhatYouAdd(val);
+                      setWhatYouAddTemp(String(val));
+                    } else {
+                      setWhatYouAdd(0);
+                      setWhatYouAddTemp("0");
+                    }
+                  }}
+                  value={whatYouAddTemp}
+                ></input>
+              </div>
+            </div>
+            <div className="flex items-start flex-col text-xs inset-ring-1 inset-ring-blue-950 bg-gray-400 rounded-lg p-1">
+              {" "}
+              <button
+                className="self-stretch hover:bg-indigo-400 bg-indigo-300 inset-ring-1 inset-ring-indigo-600 rounded-md p-1"
+                onClick={() => {
+                  let anySelected = false;
+                  const newColors = colorsHSL.map((color) => {
+                    if (selectedRuleIDs[color.id]) {
+                      anySelected = true;
+                      let valDrawnTo = whatYouPullTo;
+                      if (whichYouPullTo === "h") {
+                        // this nonsense is because hue wraps around and im bad at math
+                        if (
+                          Math.abs(color.h - whatYouPullTo) <
+                            Math.abs(color.h - (whatYouPullTo + 360)) &&
+                          Math.abs(color.h - whatYouPullTo) <
+                            Math.abs(color.h - (-360 + whatYouPullTo))
+                        ) {
+                        } else {
+                          if (
+                            Math.abs(color.h - (whatYouPullTo + 360)) <
+                            Math.abs(color.h - (-360 + whatYouPullTo))
+                          ) {
+                            valDrawnTo = whatYouPullTo + 360;
+                          } else {
+                            valDrawnTo = -360 + whatYouPullTo;
+                          }
+                        }
+                      }
+                      const newHSLA = {
+                        ...color,
+                        [whichYouPullTo]: valDrawnTo,
+                      };
+                      return {
+                        h:
+                          color.h * (1 - howFarYouPullTo) +
+                          howFarYouPullTo * newHSLA.h,
+                        s:
+                          color.s * (1 - howFarYouPullTo) +
+                          howFarYouPullTo * newHSLA.s,
+                        l:
+                          color.l * (1 - howFarYouPullTo) +
+                          howFarYouPullTo * newHSLA.l,
+                        a:
+                          color.a * (1 - howFarYouPullTo) +
+                          howFarYouPullTo * newHSLA.a,
+                        id: color.id,
+                      };
+                    } else {
+                      return {
+                        h: color.h,
+                        s: color.s,
+                        l: color.l,
+                        a: color.a,
+                        id: color.id,
+                      };
+                    }
+                  });
+                  if (!anySelected) {
+                    alert("no selected rules!");
+                  }
+                  setColorsHSL(newColors);
+                  const newRules = applyHSLOverRules(newColors, ruleValues);
+                  if (isStringArrayArray(newRules)) {
+                    setRuleValues(newRules);
+                    const rulesString = JSON.stringify(newRules);
+                    setTextAreaJSON(`{
+"version": "0.1",
+"what": "onshape theme",
+"name": "${themeName}",
+"rules": ${rulesString}}`);
+                  } else {
+                    alert(`wasn't string array!`);
+                  }
+                }}
+              >
+                Move towards&nbsp;
+              </button>
+              <div className="p-0.5 inset-ring-1 inset-ring-blue-900 bg-gray-500 self-stretch mt-1 rounded-md">
+                <select
+                  className="w-22"
+                  onChange={(e) => {
+                    setWhichYouPullTo(e.target.value);
+                  }}
+                  value={whichYouPullTo}
+                >
+                  <option value={"h"}>hue</option>
+                  <option value={"s"}>saturation</option>
+                  <option value={"l"}>lightness</option>
+                  <option value={"a"}>transparency</option>
+                </select>
+              </div>
+              <div className="grid-cols-2">
+                <span title="Target Value">Target&nbsp;</span>
+                <input
+                  title="Target value"
+                  className="w-8 mt-1 mb-1 pl-1 inset-ring-1 inset-ring-emerald-900 bg-gray-500 rounded-md"
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setWhatYouPullToTemp(String(val));
+                  }}
+                  onBlur={(e) => {
+                    const val = Number(e.target.value);
+                    if (typeof val === "number") {
+                      setWhatYouPullTo(val);
+                      setWhatYouPullToTemp(String(val));
+                    } else {
+                      setWhatYouPullTo(0);
+                      setWhatYouPullToTemp("0");
+                    }
+                  }}
+                  value={whatYouPullToTemp}
+                ></input>
+              </div>
+              <div className="flex-row flex">
+                <span title="what proportion of the way to move (0-1)">
+                  Magnitude&nbsp;
+                </span>
+                <input
+                  title="what proportion of the way to move (0-1)"
+                  className="w-8 pl-1 inset-ring-1 inset-ring-emerald-900 bg-gray-500 rounded-md"
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setHowFarYouPullToTemp(String(val));
+                  }}
+                  onBlur={(e) => {
+                    const val = Number(e.target.value);
+                    if (typeof val === "number") {
+                      setHowFarYouPullTo(val);
+                      setHowFarYouPullToTemp(String(val));
+                    } else {
+                      setHowFarYouPullTo(0);
+                      setHowFarYouPullToTemp("0");
+                    }
+                  }}
+                  value={howFarYouPullToTemp}
+                ></input>
+              </div>
+            </div>
+          </div>
+          <button
+            className={`${isRearranging ? "bg-orange-200" : "bg-orange-500"}`}
+            onClick={() => {
+              if (isRearranging) {
+                setIsRearranging(false);
+                setAllSelected(false);
+                setLastSelectedID("");
+                setSelectedRuleIDs(selectAllRules(ruleValues, false));
+              } else {
+                setIsRearranging(true);
+                setAllSelected(false);
+                setLastSelectedID("");
+                setSelectedRuleIDs(selectAllRules(ruleValues, false));
+              }
+            }}
+          >
+            Reorder rules
+          </button>
+          {/* <div>
+              add rule
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="size-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 4.5v15m7.5-7.5h-15"
+                />
+              </svg>
+              <input className="bg-amber-400"></input>
+              <input className="bg-indigo-400"></input>
+              <select>
+                <option value={"c"}>color</option>
+                <option value={"o"}>other</option>
+              </select>
+            </div> TODO... or is it*/}
         </div>
       </div>
     </>
