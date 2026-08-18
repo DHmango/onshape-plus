@@ -1,4 +1,4 @@
-//Todo: add reordering of rules (.toSpliced?), make good preset themes, reorder default jsons, make website about this? buy chrome extension? theme share? quick tutorial, sorting?? Select does more thing?? oscope
+//Todo: make good preset themes, reorder default jsons, make website about this? buy chrome extension? theme share? quick tutorial, sorting?? Select does more thing?? oscope
 
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
@@ -57,6 +57,7 @@ export default function App() {
   const [colorsHSL, setColorsHSL] = useState<hslPlusItem[]>([]);
   const [justCopied, setJustCopied] = useState(false);
   const [textAreaJSON, setTextAreaJSON] = useState("");
+  const [textToSelectBy, setTextToSelectBy] = useState("")
   const [selectedPreset, setSelectedPreset] = useState(
     "https://raw.githubusercontent.com/DHmango/onshape-plus/main/themes/Onshape_dark.json",
   );
@@ -87,7 +88,7 @@ export default function App() {
 
   const [lightTheme, setLightTheme] = useState("");
   const [darkTheme, setDarkTheme] = useState("");
-  const [isRearranging, setIsRearranging] = useState(false);
+  const [isRearranging] = useState(true); //im just going to have it always on cause ux, but leaving this in case
 
   function isStringArrayArray(value: unknown): value is string[][] {
     return (
@@ -117,8 +118,20 @@ export default function App() {
       })[0],
     );
     if (whereImBelow === -1) {
-      return rules;//KNOWN ISSUE: if you move below a selected rule, it will not move them, which is bad if its not a continuous group
-                   //FIX: maybe you can move up the list until you find a safe one to move below? seems sus but workable
+      let index = rules.indexOf(
+        rules.filter((rule) => {
+          return `${rule[0] + "_㊫_" + rule[1] + "_㊫_" + rule[2]}` === below;
+        })[0],
+      );
+      while (index > -1) {
+        if (newRules.includes(rules[index])) {
+          const whereNow = newRules.indexOf(rules[index]);
+          return newRules.toSpliced(whereNow + 1, 0, ...movingRules);
+        } else {
+          index--;
+        }
+      }
+      return newRules.toSpliced(0, 0, ...movingRules);
     }
     newRules.splice(whereImBelow + 1, 0, ...movingRules);
     return newRules;
@@ -186,6 +199,17 @@ export default function App() {
     } catch (error) {
       console.log(`could not fetch theme: ${error}`);
     }
+  }
+
+  function selectByName(nameToMatch:string, selectedIDs: Record<string, boolean>) {
+    return Object.fromEntries(
+      Object.entries(selectedIDs).map(([id, val]) => {
+        if(id.includes(nameToMatch)){
+          return [id, true]
+        } else{
+        return [id, val]}
+      }),
+    );
   }
 
   function applyHSLOverRules(HSLs: hslPlusItem[], rules: string[][]) {
@@ -294,6 +318,11 @@ export default function App() {
                         key,
                       );
                       setRuleValues(newRuleValues);
+                      setTextAreaJSON(`{
+"version": "0.1",
+"what": "onshape theme",
+"name": "${themeName}",
+"rules": ${JSON.stringify(newRuleValues)}}`);
                       setAllSelected(false);
                       setLastSelectedID("");
                       setSelectedRuleIDs(selectAllRules(newRuleValues, false));
@@ -375,8 +404,8 @@ export default function App() {
             </div>
           </div>
         </div>
-        {/* below this is the SIDEBAR */}
-        <div className="z-50 shadow-2xl/50 flex-col flex flex-none fixed right-0 h-screen bg-[#aaa] w-30">
+        {/* below this is the SIDEBAR*/}
+        <div className="z-50 shadow-2xl/50 flex-col overflow-y-auto flex flex-none fixed right-0 h-screen bg-[#aaa] w-30">
           <div className="flex-col flex m-1">
             <button
               onClick={() => {
@@ -412,7 +441,7 @@ export default function App() {
                   } else {
                     alert("error shouldn't ever happen!");
                   }
-                } catch {
+                } catch (error) {
                   alert("invalid save data!");
                 }
               }}
@@ -543,7 +572,7 @@ export default function App() {
             <span className="font-semibold">Modify selected colors</span>
             <button
               onClick={() => {
-                if (allSelected || isRearranging) {
+                if (allSelected) {
                   setAllSelected(false);
                   setLastSelectedID("");
                   setSelectedRuleIDs(selectAllRules(ruleValues, false));
@@ -786,7 +815,29 @@ export default function App() {
               </div>
             </div>
           </div>
-          <button
+          <div className="ml-1 flex items-start flex-col text-xs inset-ring-1 inset-ring-blue-950 bg-gray-400 rounded-lg p-1 mr-1">
+              <button
+                title="select rules that contain the substring in their name"
+                className="mb-1 self-stretch hover:bg-indigo-400 bg-indigo-300 inset-ring-1 inset-ring-indigo-600 rounded-md p-1"
+                onClick={() => {
+                  setSelectedRuleIDs(selectByName(textToSelectBy,selectedRuleIDs))
+                }}
+              >
+                Select by name&nbsp;
+              </button>
+              <div className="flex-row flex">
+                <span title="Text to select by">String&nbsp;</span>
+                <input
+                  title="Text to select by"
+                  className="w-8 pl-1 inset-ring-1 inset-ring-emerald-900 bg-gray-500 rounded-md"
+                  onChange={(e) => {
+                    setTextToSelectBy(String(e.target.value));
+                  }}
+                  value={textToSelectBy}
+                ></input>
+              </div>
+            </div>
+          {/* <button
             className={`${isRearranging ? "bg-orange-200" : "bg-orange-500"}`}
             onClick={() => {
               if (isRearranging) {
@@ -803,7 +854,7 @@ export default function App() {
             }}
           >
             Reorder rules
-          </button>
+          </button> */}
           {/* <div>
               add rule
               <svg

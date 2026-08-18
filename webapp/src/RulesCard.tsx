@@ -73,7 +73,7 @@ export default function RulesCard({
         <div
           className={`animate-none ${activelyChangingSV ? "h-27" : "h-9"} relative ease-in-out flex transition-all group hover:h-27 duration-100 overflow-hidden bg-white bg-[conic-gradient(#ccc_25%,transparent_25%_50%,#ccc_50%_75%,transparent_75%)] bg-size-[18px_18px]`}
         >
-          <div className="flex-col text-nowrap w-120  shrink-0  float-start bg-gray-800 text-gray-50">
+          <div className="flex-col text-nowrap w-160  shrink-0  float-start bg-gray-800 text-gray-50">
             <label
               title={ruleKey}
               className="justify-between flex flex-start m-1"
@@ -368,9 +368,6 @@ export default function RulesCard({
                     ></div>
                   </div>
                 </div>
-                <code className="text-gray-300 text-xs font-mono">
-                  {JSON.stringify(colorRGBA)}
-                </code>
               </div>
             </div>
           </div>
@@ -409,7 +406,7 @@ export default function RulesCard({
         <div
           className={`relative  animate-none h-9 ease-in-out flex transition-all group hover:h-27 duration-100 overflow-hidden bg-white bg-[conic-gradient(#ccc_25%,transparent_25%_50%,#ccc_50%_75%,transparent_75%)] bg-size-[18px_18px]`}
         >
-          <div className="flex-col text-nowrap w-120  shrink-0  float-start bg-gray-800 text-gray-50">
+          <div className="flex-col text-nowrap w-160  shrink-0  float-start bg-gray-800 text-gray-50">
             <label
               title={`${selector} ${ruleKey}`}
               className="justify-between flex flex-start m-1"
