@@ -377,7 +377,7 @@ export default function RulesCard({
           ></div>
           <div className="absolute top-0 right-0">
             <button
-              className={`inset-ring-2 w-8 h-30 ${isSelected ? "inset-ring-neutral-400 bg-indigo-800" : "inset-ring-gray-400 bg-neutral-100"}`}
+              className={`inset-ring-2 w-12 h-30 ${isSelected ? "inset-ring-neutral-400 bg-indigo-800" : "inset-ring-gray-400 bg-neutral-100"}`}
               onClick={(e) => {
                 if (isSelected) {
                   setSelected(false, e.shiftKey);
@@ -387,7 +387,7 @@ export default function RulesCard({
               }}
             ></button>
           </div>
-          <div className="absolute top-0 right-10 h-27 flex flex-col justify-end">
+          <div className="absolute top-0 right-16 h-27 flex flex-col justify-end">
             <button
               className={`rounded-md hover:bg-neutral-800 inset-ring-2 inset-ring-neutral-900 bg-black text-white w-50 h-6 font-workSans ${isRearranging ? "" : "hidden"}`}
               onClick={() => {
@@ -429,7 +429,7 @@ export default function RulesCard({
           </div>
           <div className="absolute top-0 right-0">
             <button
-              className={`inset-ring-2 w-8 h-30 ${isSelected ? "inset-ring-neutral-400 bg-indigo-800" : "inset-ring-gray-400 bg-neutral-100"}`}
+              className={`inset-ring-2 w-12 h-30 ${isSelected ? "inset-ring-neutral-400 bg-indigo-800" : "inset-ring-gray-400 bg-neutral-100"}`}
               onClick={(e) => {
                 if (isSelected) {
                   setSelected(false, e.shiftKey);
@@ -439,7 +439,7 @@ export default function RulesCard({
               }}
             ></button>
           </div>
-          <div className="absolute top-0 right-10 h-27 flex flex-col justify-end">
+          <div className="absolute top-0 right-16 h-27 flex flex-col justify-end">
             <button
               className={`rounded-md hover:bg-neutral-800 inset-ring-2 inset-ring-neutral-900 bg-black text-white w-50 h-6 font-workSans ${isRearranging ? "" : "hidden"}`}
               onClick={() => {

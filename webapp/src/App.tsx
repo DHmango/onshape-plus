@@ -7,6 +7,7 @@ import colorStringToRGBA from "./colorStringToRGBA";
 import convert from "color-convert";
 import SaveCards from "./SaveCards";
 import browser from "webextension-polyfill";
+import arrangeLikeOther from "./arrangeLikeOther";
 
 interface saveSlot {
   slot: number;
@@ -57,7 +58,7 @@ export default function App() {
   const [colorsHSL, setColorsHSL] = useState<hslPlusItem[]>([]);
   const [justCopied, setJustCopied] = useState(false);
   const [textAreaJSON, setTextAreaJSON] = useState("");
-  const [textToSelectBy, setTextToSelectBy] = useState("")
+  const [textToSelectBy, setTextToSelectBy] = useState("");
   const [selectedPreset, setSelectedPreset] = useState(
     "https://raw.githubusercontent.com/DHmango/onshape-plus/main/themes/Onshape_dark.json",
   );
@@ -89,6 +90,8 @@ export default function App() {
   const [lightTheme, setLightTheme] = useState("");
   const [darkTheme, setDarkTheme] = useState("");
   const [isRearranging] = useState(true); //im just going to have it always on cause ux, but leaving this in case
+
+  const [sortedTheme, setSortedTheme] = useState<string[][]>([]);
 
   function isStringArrayArray(value: unknown): value is string[][] {
     return (
@@ -154,7 +157,36 @@ export default function App() {
     getSaves().then((val) => {
       setSaveSlots(val);
     });
+    loadSorted().then((val) => {
+      setSortedTheme(val.rules);
+    });
   }, []);
+
+  useEffect(() => {
+    const sortKeyEvent = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey) {
+        const key = e.key;
+        if (key === "s") {
+          saveDialogRef.current?.showModal();
+        } else if (key === "o") {
+          const newRuleVals = arrangeLikeOther(ruleValues, sortedTheme);
+          setRuleValues(newRuleVals);
+          console.log(ruleValues)
+          console.log(sortedTheme)
+          console.log(newRuleVals)
+          setTextAreaJSON(`{
+"version": "0.1",
+"what": "onshape theme",
+"name": "${themeName}",
+"rules": ${JSON.stringify(newRuleVals)}}`);
+          setSelectedRuleIDs(selectAllRules(newRuleVals, false));
+        }
+      }
+      e.preventDefault()
+    };
+    window.addEventListener("keydown", sortKeyEvent);
+    return () => window.removeEventListener("keydown", sortKeyEvent);
+  }, [ruleValues,sortedTheme]); // sort on ctrl-o, open save menu on ctrl-s
 
   function selectAllRules(rules: string[][], bool: boolean) {
     const newSelectedRules: Record<string, boolean> = {};
@@ -200,14 +232,31 @@ export default function App() {
       console.log(`could not fetch theme: ${error}`);
     }
   }
+  async function loadSorted() {
+    try {
+      const value = await browser.storage.local.get("SORTED");
+      const intermediate = value.SORTED; //this is dumb?
+      if (typeof intermediate === "string") {
+        const jsonned = JSON.parse(intermediate);
+        return jsonned;
+      }
+    } catch (error) {
+      console.log(`could not fetch theme: ${error}`);
+      return "";
+    }
+  }
 
-  function selectByName(nameToMatch:string, selectedIDs: Record<string, boolean>) {
+  function selectByName(
+    nameToMatch: string,
+    selectedIDs: Record<string, boolean>,
+  ) {
     return Object.fromEntries(
       Object.entries(selectedIDs).map(([id, val]) => {
-        if(id.includes(nameToMatch)){
-          return [id, true]
-        } else{
-        return [id, val]}
+        if (id.includes(nameToMatch)) {
+          return [id, true];
+        } else {
+          return [id, val];
+        }
       }),
     );
   }
@@ -292,7 +341,7 @@ export default function App() {
     setTextAreaJSON(`{
 "version": "0.1",
 "what": "onshape theme",
-"name": "Onshape light",
+"name": "${themeName}",
 "rules": ${JSON.stringify(newRuleValues)}}`);
   };
   return (
@@ -543,7 +592,7 @@ export default function App() {
             onChange={(event) => {
               setTextAreaJSON(event.target.value);
             }}
-            className="inset-ring-1 inset-ring-taupe-500 break-all resize-none flex-none select-all font-mono bg-[#ccc] h-40 overflow-auto tracking-tight text-[9px]/tight wrap-anywhere scrollbar-thin"
+            className="inset-ring-1 inset-ring-taupe-500 break-all resize-none flex-none select-all font-mono bg-[#ccc] h-40 overflow-auto tracking-tight text-[9px]/tight wrap-anywhere"
           />
           <div className="flex flex-col flex-nowrap max-w-full">
             <button
@@ -816,27 +865,29 @@ export default function App() {
             </div>
           </div>
           <div className="ml-1 flex items-start flex-col text-xs inset-ring-1 inset-ring-blue-950 bg-gray-400 rounded-lg p-1 mr-1">
-              <button
-                title="select rules that contain the substring in their name"
-                className="mb-1 self-stretch hover:bg-indigo-400 bg-indigo-300 inset-ring-1 inset-ring-indigo-600 rounded-md p-1"
-                onClick={() => {
-                  setSelectedRuleIDs(selectByName(textToSelectBy,selectedRuleIDs))
+            <button
+              title="select rules that contain the substring in their name"
+              className="mb-1 self-stretch hover:bg-indigo-400 bg-indigo-300 inset-ring-1 inset-ring-indigo-600 rounded-md p-1"
+              onClick={() => {
+                setSelectedRuleIDs(
+                  selectByName(textToSelectBy, selectedRuleIDs),
+                );
+              }}
+            >
+              Select by name&nbsp;
+            </button>
+            <div className="flex-row flex">
+              <span title="Text to select by">String&nbsp;</span>
+              <input
+                title="Text to select by"
+                className="w-8 pl-1 inset-ring-1 inset-ring-emerald-900 bg-gray-500 rounded-md"
+                onChange={(e) => {
+                  setTextToSelectBy(String(e.target.value));
                 }}
-              >
-                Select by name&nbsp;
-              </button>
-              <div className="flex-row flex">
-                <span title="Text to select by">String&nbsp;</span>
-                <input
-                  title="Text to select by"
-                  className="w-8 pl-1 inset-ring-1 inset-ring-emerald-900 bg-gray-500 rounded-md"
-                  onChange={(e) => {
-                    setTextToSelectBy(String(e.target.value));
-                  }}
-                  value={textToSelectBy}
-                ></input>
-              </div>
+                value={textToSelectBy}
+              ></input>
             </div>
+          </div>
           {/* <button
             className={`${isRearranging ? "bg-orange-200" : "bg-orange-500"}`}
             onClick={() => {

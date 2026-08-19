@@ -5,6 +5,7 @@ async function preloadThemes(){ // loads the built in themes
     await browser.storage.local.set({
         ['theme-00']:JSON.stringify(await downloadTheme(browser.runtime.getURL('themes/Onshape_light.json'))),
         ['theme-01']:JSON.stringify(await downloadTheme(browser.runtime.getURL('themes/Onshape_dark.json'))),
+        ['SORTED']:JSON.stringify(await downloadTheme(browser.runtime.getURL('themes/Onshape_dark.json'))),
         lightTheme:"theme-00",
         darkTheme:"theme-01",
         allowJS:"false" // ignore?
