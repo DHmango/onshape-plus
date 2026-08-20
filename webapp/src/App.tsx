@@ -62,6 +62,7 @@ export default function App() {
   const [selectedPreset, setSelectedPreset] = useState(
     "https://raw.githubusercontent.com/DHmango/onshape-plus/main/themes/Onshape_dark.json",
   );
+  const [selectedCount, setSelectedCount] = useState(0);
   const [selectedRuleIDs, setSelectedRuleIDs] = useState<
     Record<string, boolean>
   >({});
@@ -163,17 +164,27 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    setSelectedCount(
+      Object.entries(selectedRuleIDs).filter((value) => {
+        return value[1];
+      }).length,
+    );
+  }, [selectedRuleIDs]);
+  useEffect(() => {
+    console.log("hi");
     const sortKeyEvent = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey) {
         const key = e.key;
         if (key === "s") {
           saveDialogRef.current?.showModal();
+          e.preventDefault();
         } else if (key === "o") {
           const newRuleVals = arrangeLikeOther(ruleValues, sortedTheme);
           setRuleValues(newRuleVals);
-          console.log(ruleValues)
-          console.log(sortedTheme)
-          console.log(newRuleVals)
+          console.log(ruleValues);
+          console.log(sortedTheme);
+          console.log(newRuleVals);
+          e.preventDefault();
           setTextAreaJSON(`{
 "version": "0.1",
 "what": "onshape theme",
@@ -182,11 +193,10 @@ export default function App() {
           setSelectedRuleIDs(selectAllRules(newRuleVals, false));
         }
       }
-      e.preventDefault()
     };
     window.addEventListener("keydown", sortKeyEvent);
     return () => window.removeEventListener("keydown", sortKeyEvent);
-  }, [ruleValues,sortedTheme]); // sort on ctrl-o, open save menu on ctrl-s
+  }, [ruleValues, sortedTheme]); // sort on ctrl-o, open save menu on ctrl-s
 
   function selectAllRules(rules: string[][], bool: boolean) {
     const newSelectedRules: Record<string, boolean> = {};
@@ -635,6 +645,9 @@ export default function App() {
             >
               Select/deselect all
             </button>
+            <span className="text-xs text-gray-500">
+              {`Selected: ${selectedCount}`}
+            </span>
             <div className="flex items-start flex-col text-xs inset-ring-1 inset-ring-blue-950 bg-gray-400 rounded-lg p-1 mb-1">
               <button
                 className="self-stretch hover:bg-indigo-400 bg-indigo-300 inset-ring-1 inset-ring-indigo-600 rounded-md p-1"
