@@ -41,5 +41,5 @@
     "service_worker": "background_script.js"
   },
 
-  "homepage_url": "https://github.com/dhmango/" //what?
+  "homepage_url": "https://github.com/DHmango/onshape-plus"
 }

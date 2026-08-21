@@ -1,50 +1,62 @@
 // Script that runs when onshape loads
 (async () => {
-const styleSheet = document.createElement('style')
-let CSSRules = ''
-for (const lightnessMode of ['light','dark']){ //this sucks.
-    const which = await browser.storage.local.get(`${lightnessMode}Theme`)
-    const data = await browser.storage.local.get(which[`${lightnessMode}Theme`])
-    CSSRules+=json2css(JSON.parse(data[which[`${lightnessMode}Theme`]]),lightnessMode).css
-    }
-styleSheet.textContent = CSSRules
-document.head.appendChild(styleSheet)
+  const styleSheet = document.createElement("style");
+  let CSSRules = "";
+  let importRules = "";
+  for (const lightnessMode of ["light", "dark"]) {
+    //this sucks.
+    const which = await browser.storage.local.get(`${lightnessMode}Theme`);
+    const data = await browser.storage.local.get(
+      which[`${lightnessMode}Theme`],
+    );
+    const result = json2css(
+      JSON.parse(data[which[`${lightnessMode}Theme`]]),
+      lightnessMode,
+    );
+    CSSRules += result.css;
+    importRules += result.imports;
+  }
+  styleSheet.textContent = importRules + CSSRules;
+  document.head.appendChild(styleSheet);
+  console.log(styleSheet.textContent);
 
-function json2css(json,mode){
-    let cssOutput = ''
-    let jsOutput = ''
-    try{
-        if (!json.what == 'onshape theme'){
-            throw new Error(`file was not recognized as an onshape theme`)
+  function json2css(json, mode) {
+    let cssOutput = "";
+    let importCSS = "";
+    try {
+      if (!json.what == "onshape theme") {
+        throw new Error(`file was not recognized as an onshape theme`);
+      }
+      if (!json.version.includes("0.1")) {
+        throw new Error(
+          `version mismatch- incompatible theme version: ${json.version}`,
+        );
+      }
+      for (const rule of json.rules) {
+        if (rule[0] == "c") {
+          cssOutput += `[data-os-theme=${mode}] ${rule[1]}{${rule[2]}:${rule[3]} !important} 
+`;
+        } else if (rule[0] == "px" || rule[0] == "p") {
+          cssOutput += `[data-os-theme=${mode}] ${rule[1]}{${rule[2]}:${rule[3]} !important}
+`;
+        } else if (rule[0] == "d") {
+          cssOutput += `[data-os-theme=${mode}] ${rule[1]}{${rule[2]}:${rule[3]} !important}
+`;
+        } else if (rule[0] == "o") {
+          cssOutput += `[data-os-theme=${mode}] ${rule[1]}{${rule[2]}:${rule[3]} !important}
+`;
+        } else if (rule[0] == "i") {
+          importCSS += `@import url('${rule[3]}');
+`;
         }
-        if (!json.version.includes("0.1")){
-            throw new Error(`version mismatch- incompatible theme version: ${json.version}`)
-        }
-        for (const rule of json.rules){
-            if (rule[0]=='c'){
-                cssOutput += `[data-os-theme=${mode}] ${rule[1]}{${rule[2]}:${rule[3]} !important} 
-`
-            } else if (rule[0]=='px' || rule[0]=='p'){
-                cssOutput += `[data-os-theme=${mode}] ${rule[1]}{${rule[2]}:${rule[3]} !important}
-`
-            } else if (rule[0]=='d'){
-                cssOutput += `[data-os-theme=${mode}] ${rule[1]}{${rule[2]}:${rule[3]} !important}
-`
-            } else if (rule[0]=='o'){
-                cssOutput += `[data-os-theme=${mode}] ${rule[1]}{${rule[2]}:${rule[3]} !important}
-`
-            } else if (rule[0]=='j'){
-                jsOutput+=`${rule[3]}
-`
-            }
-        }
-        return {
-            "name":json.name,
-            "js":jsOutput,
-            "css":cssOutput
-        }
-    } catch (error){
-        console.log(`could not process file: ${error}`)
+      }
+      return {
+        name: json.name,
+        imports: importCSS,
+        css: cssOutput,
+      };
+    } catch (error) {
+      console.log(`could not process file: ${error}`);
     }
-}
-})()
+  }
+})();

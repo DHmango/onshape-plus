@@ -62,7 +62,7 @@ export default function App() {
   const [selectedPreset, setSelectedPreset] = useState(
     "https://raw.githubusercontent.com/DHmango/onshape-plus/main/themes/Onshape_dark.json",
   );
-  const [selectedCount, setSelectedCount] = useState(0);
+  
   const [selectedRuleIDs, setSelectedRuleIDs] = useState<
     Record<string, boolean>
   >({});
@@ -162,14 +162,6 @@ export default function App() {
       setSortedTheme(val.rules);
     });
   }, []);
-
-  useEffect(() => {
-    setSelectedCount(
-      Object.entries(selectedRuleIDs).filter((value) => {
-        return value[1];
-      }).length,
-    );
-  }, [selectedRuleIDs]);
   useEffect(() => {
     console.log("hi");
     const sortKeyEvent = (e: KeyboardEvent) => {
@@ -315,6 +307,9 @@ export default function App() {
     }
     setColorsHSL(newColorsHSL);
   }
+  const selectedCount = Object.entries(selectedRuleIDs).filter((value) => {
+        return value[1];
+      }).length
   const whenInputChanged = (ruleID: string[], value: string) => {
     const newRuleValues = ruleValues.map(
       (
