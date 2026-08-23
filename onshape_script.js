@@ -18,8 +18,6 @@
   }
   styleSheet.textContent = importRules + CSSRules;
   document.head.appendChild(styleSheet);
-  console.log(styleSheet.textContent);
-
   function json2css(json, mode) {
     let cssOutput = "";
     let importCSS = "";

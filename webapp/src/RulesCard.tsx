@@ -194,7 +194,7 @@ export default function RulesCard({
                         reportBack([dataType, selector, ruleKey], liveColor);
                       }
                     }}
-                    className="relative flex-1 bg-[#0ff0] h-19 w-80"
+                    className="relative flex-1 bg-[#0ff0] h-19 w-full"
                     onMouseUp={() => {
                       if (activelyChangingSV) {
                         setActivelyChangingSV(false);
@@ -412,7 +412,7 @@ export default function RulesCard({
               className="justify-between flex flex-start m-1"
             >
               <span className="overflow-hidden text-ellipsis">
-                <span className="text-xs text-gray-300">value: &nbsp;</span>
+                <span className="text-xs text-gray-300">{dataType==='i'?'import':'value'}: &nbsp;</span>
                 <span className="overflow-hidden text-sm flex-1 min-w-0">
                   {selector}&nbsp;
                 </span>

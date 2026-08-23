@@ -6,6 +6,7 @@ async function preloadThemes(){ // loads the built in themes
         ['theme-00']:JSON.stringify(await downloadTheme(browser.runtime.getURL('themes/Onshape_light.json'))),
         ['theme-01']:JSON.stringify(await downloadTheme(browser.runtime.getURL('themes/Onshape_dark.json'))),
         ['theme-02']:JSON.stringify(await downloadTheme(browser.runtime.getURL('themes/classy.json'))),
+        ['theme-03']:JSON.stringify(await downloadTheme(browser.runtime.getURL('themes/cool_aurora.json'))),
         ['SORTED']:JSON.stringify(await downloadTheme(browser.runtime.getURL('themes/Onshape_dark.json'))),
         lightTheme:"theme-00",
         darkTheme:"theme-01",

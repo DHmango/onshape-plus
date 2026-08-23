@@ -34,9 +34,10 @@ Get user created themes by loading from a URL using that button, or by simply pa
 
 ### Making/modifying your own themes
 
-When making a theme, you should generally start from an existing preset.
+When making a theme, you usually want to start from an existing preset.
 
-For simple-ish themes, where you just want to change the main color scheme, the fastest strategy is to select all of the themes from the same color block and modify them using the 'modify selected colors' tools. To select rules click a box on the right side to select one, and shift click another to select all between them (you can also use this to deselect rules). Now, you can modify all of those rules at once. If you wanted change red colors which you selected to green, you could have the 'Add to' box say :
+For simple-ish themes, where you just want to change the main color scheme, the fastest strategy is to select all of the rules from the same color block and modify them using the 'modify selected colors' tools. To select rules click a box on the right side to select one, and shift click another to select all between them (you can also use this to deselect rules). Now, you can modify all of those rules at once. If you wanted change red colors which you selected to green, you could have the 'Add to' box say :
+
 > hue
 > 
 > Value: 120
@@ -45,11 +46,25 @@ Now, when you click the 'Add to' button, it will convert all the colors to [HSL]
 
 If you wanted to make everything a bit darker, you could do 'Move towards, lightness, 0, 0.1' which would move all selected colors 10% of the way to lightness 0. 
 
+Basic usage of this extension is simply overwriting the built-in global CSS variables Onshape uses to define things, but you can get more specific (or broad) than this using css selectors.
+
+Beyond simple color variable, you can set the values of basically any css property of any element.
+
+![Labeled rule. rule type[0],CSS selector[1], Key[2], value[3]](sample-rule.png)
+
+In this example, it selects every \<img\> element nested inside of something with class="os-select-field" and sets the CSS filter to "invert".
+
+This can be used for things like background-image, background-color, text-color, and anything else
+
+You can import other stylesheets using the import rule type, which is primarily useful for fonts
+
 A combination of these tools can be used to make cool themes.
 
 Alternatively, you *could* take the raw JSON data and run it through your own custom script, but I'll let you figure that out for yourself.
 
 ---
+
+If you are confused or need help with anything, you can message me on discord at ```dhmango``` or email me at !!?CHANGE THIS?!!
 
 If you have suggestions for improvements or found a bug, you can make an issue in github. Or, you can make a pull request, and I will try to look at it.
 

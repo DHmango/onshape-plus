@@ -1,9 +1,12 @@
 {
   "version": "0.1",
   "what": "onshape theme",
-  "name": "Class",
-  "rules": [
-    
+  "name": "Class (just a serif font)",
+  "rules": [[
+      "i","", "font","https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
+    ],[
+      "o","*, *::before, *::after","font-family", "'Playfair Display', serif;"
+    ],
     ["c", "", "--os-axis-x-color", "hsl(357 51 73 / 1)"],
     ["c", "", "--os-axis-y-color", "hsl(96 57 67 / 1)"],
     ["c", "", "--os-axis-z-color", "hsl(202 78 75 / 1)"],
@@ -12,10 +15,6 @@
       "",
       "--os-mate-connector-coordinate-system-offset-axis-color",
       "hsl(0 0 100 / 1)"
-    ],[
-      "i","", "","https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
-    ],[
-      "o","","--bs-body-font-family","*, *::before, *::after {font-family: 'Playfair Display', serif;}"
     ],
     ["c", "", "--os-mate-connector-fill-color", "hsl(0 0 100 / 0.8)"],
     ["c", "", "--os-mate-connector-stroke-color", "hsl(206 100 10.206 / 1)"],

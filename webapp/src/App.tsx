@@ -62,7 +62,7 @@ export default function App() {
   const [selectedPreset, setSelectedPreset] = useState(
     "https://raw.githubusercontent.com/DHmango/onshape-plus/main/themes/Onshape_dark.json",
   );
-  
+
   const [selectedRuleIDs, setSelectedRuleIDs] = useState<
     Record<string, boolean>
   >({});
@@ -86,6 +86,8 @@ export default function App() {
   const saveDialogRef = useRef<HTMLDialogElement>(null);
   const saveSlotsToShow = [];
 
+  const newRuleRef = useRef<HTMLDialogElement>(null);
+  const [newRule, setNewRule] = useState(["c", "", "", ""]);
   const [allSelected, setAllSelected] = useState(false);
 
   const [lightTheme, setLightTheme] = useState("");
@@ -163,7 +165,6 @@ export default function App() {
     });
   }, []);
   useEffect(() => {
-    console.log("hi");
     const sortKeyEvent = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey) {
         const key = e.key;
@@ -173,9 +174,6 @@ export default function App() {
         } else if (key === "o") {
           const newRuleVals = arrangeLikeOther(ruleValues, sortedTheme);
           setRuleValues(newRuleVals);
-          console.log(ruleValues);
-          console.log(sortedTheme);
-          console.log(newRuleVals);
           e.preventDefault();
           setTextAreaJSON(`{
 "version": "0.1",
@@ -308,8 +306,8 @@ export default function App() {
     setColorsHSL(newColorsHSL);
   }
   const selectedCount = Object.entries(selectedRuleIDs).filter((value) => {
-        return value[1];
-      }).length
+    return value[1];
+  }).length;
   const whenInputChanged = (ruleID: string[], value: string) => {
     const newRuleValues = ruleValues.map(
       (
@@ -354,7 +352,7 @@ export default function App() {
       <div className="flex w-full overflow-hidden h-screen bg-[#202020]">
         <div className="flex flex-1 place-content-between">
           <div className="relative flex-1 overflow-x-hidden overflow-y-scroll h-full mr-30 scrollbar-thumb-slate-400/50 scrollbar-track-black/50">
-            <div className="w-full h-full bg-zinc-500 text-center p-5 text-xl text-mauve-800">
+            <div className="w-full h-full bg-zinc-500 text-center p-2 text-xl text-mauve-800">
               No rules yet. Load a preset using the sidebar
             </div>
             <div className="top-0 left-0 absolute w-full z-10">
@@ -896,47 +894,93 @@ export default function App() {
               ></input>
             </div>
           </div>
-          {/* <button
-            className={`${isRearranging ? "bg-orange-200" : "bg-orange-500"}`}
-            onClick={() => {
-              if (isRearranging) {
-                setIsRearranging(false);
-                setAllSelected(false);
-                setLastSelectedID("");
-                setSelectedRuleIDs(selectAllRules(ruleValues, false));
-              } else {
-                setIsRearranging(true);
-                setAllSelected(false);
-                setLastSelectedID("");
-                setSelectedRuleIDs(selectAllRules(ruleValues, false));
-              }
-            }}
+          <button
+            className="mb-1 text-xs self-stretch hover:bg-indigo-400 bg-indigo-300 inset-ring-1 inset-ring-indigo-600 rounded-md m-1 p-1"
+            onClick={() => newRuleRef.current?.showModal()}
           >
-            Reorder rules
-          </button> */}
-          {/* <div>
-              add rule
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="size-6"
+            new rule!
+          </button>
+          <dialog
+            ref={newRuleRef}
+            className="backdrop:backdrop-brightness-50 m-auto"
+          >
+            <div
+              className="flex flex-col fixed inset-0 z-50 items-center justify-center backdrop-blur-[1px] bg-[#0003]"
+              onClick={() => {
+                newRuleRef.current?.close();
+              }}
+            >
+              <div
+                className="flex flex-col bg-gray-300 p-2 rounded-lg"
+                onClick={(e) => e.stopPropagation()}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 4.5v15m7.5-7.5h-15"
-                />
-              </svg>
-              <input className="bg-amber-400"></input>
-              <input className="bg-indigo-400"></input>
-              <select>
-                <option value={"c"}>color</option>
-                <option value={"o"}>other</option>
-              </select>
-            </div> TODO... or is it*/}
+                <div>
+                  <select
+                    value={newRule[0]}
+                    onChange={(event) => {
+                      setNewRule(newRule.with(0, event.target.value));
+                    }}
+                    className="border-[1] border-gray-600 bg-gray-400 p-0.5 m-0.5 rounded-sm"
+                  >
+                    <option value={"c"}>color</option>
+                    <option value={"i"}>import</option>
+                    <option value={"o"}>other</option>
+                  </select>
+                  <input
+                    placeholder={newRule[0]==='i'?'(unused)':'CSS selector'}
+                    value={newRule[1]}
+                    onChange={(event) =>
+                      setNewRule(newRule.with(1, String(event.target.value)))
+                    }
+                    className="border-[1] border-gray-600 bg-gray-400 p-0.5 m-0.5 rounded-sm"
+                  ></input>
+                  <input
+                    placeholder={newRule[0]==='i'?'label (unused)':'Key'}
+                    value={newRule[2]}
+                    onChange={(event) =>
+                      setNewRule(newRule.with(2, String(event.target.value)))
+                    }
+                    className="border-[1] border-gray-600 bg-gray-400 p-0.5 m-0.5 rounded-sm"
+                  ></input>
+                  <input
+                    placeholder='value'
+                    value={newRule[3]}
+                    onChange={(event) =>
+                      setNewRule(newRule.with(3, String(event.target.value)))
+                    }
+                    className="border-[1] border-gray-600 bg-gray-400 p-0.5 m-0.5 rounded-sm"
+                  ></input>
+                </div>
+                <button
+                  className="mt-1 self-stretch hover:bg-indigo-400 bg-indigo-300 inset-ring-1 inset-ring-indigo-600 rounded-md p-1"
+                  onClick={() => {
+                    if (
+                      newRule[2] &&
+                      !Object.hasOwn(
+                        selectedRuleIDs,
+                        `${newRule[0] + "_㊫_" + newRule[1] + "_㊫_" + newRule[2]}`,
+                      )
+                    ) {
+                      const newRuleVals = [newRule].concat(ruleValues);
+                      setRuleValues(newRuleVals);
+
+                      setTextAreaJSON(`{
+"version": "0.1",
+"what": "onshape theme",
+"name": "${themeName}",
+"rules": ${JSON.stringify(newRuleVals)}}`);
+                      setSelectedRuleIDs(selectAllRules(newRuleVals, false));
+                      newRuleRef.current?.close();
+                    } else {
+                      alert("invalid or duplicate rule data!");
+                    }
+                  }}
+                >
+                  Add rule!
+                </button>
+              </div>
+            </div>
+          </dialog>
         </div>
       </div>
     </>
