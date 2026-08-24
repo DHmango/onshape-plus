@@ -285,7 +285,7 @@ export default function RulesCard({
                         "--xPos": `${hueThumbPos / 3.6}%`,
                       } as React.CSSProperties
                     }
-                    className="-translate-x-1/2 -translate-y-1/2 bg-0% rounded-md h-7 w-1 border-2 border-white absolute top-[50%] left-(--xPos)"
+                    className="-translate-x-1/2 -translate-y-1/2 bg-0% rounded-md h-9 w-1 border-2 border-white absolute top-[50%] left-(--xPos)"
                   ></div>
                 </div>
                 {/* alpha */}
@@ -364,7 +364,7 @@ export default function RulesCard({
                           "--xPos": `${100 * colorRGBA[3]}%`,
                         } as React.CSSProperties
                       }
-                      className="-translate-x-1/2 -translate-y-1/2 bg-0% rounded-md h-7 w-1 border-2 border-white absolute top-[50%] left-(--xPos)"
+                      className="-translate-x-1/2 -translate-y-1/2 bg-black rounded-md h-9 w-1 border-2 border-white absolute top-[50%] left-(--xPos)"
                     ></div>
                   </div>
                 </div>

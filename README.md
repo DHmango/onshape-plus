@@ -1,12 +1,13 @@
 # Onshape plus
 
-Theme manager web extension for Onshape.
+### Theme manager web extension for Onshape.
 
-Create themes in the editor, choose from ready-to-use themes, or import user-created themes!
+Create themes in the editor, choose from ready-to-use themes, or import user-created themes, and easily apply them to Onshape!
 
 ![The editor allows for easy granular modifcation of the UI](editor-screenshot.png)
 
-![Darker theme](darker.png)
+![Darker theme](darker.png) 
+# CHOOSE A MORE OBVIOUS example image!
 
 ### Get the browser extension:
 <a href="https://example.com">
@@ -30,7 +31,7 @@ Manage your themes in the tab made by the Manage themes button
 
 Update your theme saves in the Load / Save dialog,
 
-Get user created themes by loading from a URL using that button, or by simply pasting the data into the raw data area. Then, in the Load / Save dialog, save it to a new slot. **There is no autosave**
+Get user created themes by loading from a URL using the button by that name, or by simply pasting the data into the raw data area. Then, in the Load / Save dialog, save it to a new slot. **There is no autosave**
 
 ### Making/modifying your own themes
 
@@ -58,15 +59,20 @@ This can be used for things like background-image, background-color, text-color,
 
 You can import other stylesheets using the import rule type, which is primarily useful for fonts
 
+If you're wondering how something in one of the default themes works, I recommend loading it into the editor and taking a look for yourself
+
+You can add a new rule with the new rule button, or by editing the json.
+
 A combination of these tools can be used to make cool themes.
 
-Alternatively, you *could* take the raw JSON data and run it through your own custom script, but I'll let you figure that out for yourself.
+You *can* also take the raw JSON data and run it through your own custom script, but you shouldn't need to for normal use.
+
+## Help
+
+If you are confused or need help with anything, you can read through the source code message me on discord at ```dhmango``` or email me at dhmango@dhmango.anonaddy.com
+
+If you found a bug or have suggestions for improvements, you can contact me or make an issue in github. Or, you can make a pull request, and I will try to look at it.
 
 ---
 
-If you are confused or need help with anything, you can message me on discord at ```dhmango``` or email me at !!?CHANGE THIS?!!
-
-If you have suggestions for improvements or found a bug, you can make an issue in github. Or, you can make a pull request, and I will try to look at it.
-
----
 <small> This project is not endorsed by, affiliated with, maintained, authorized, or sponsored by PTC or Onshape </small>

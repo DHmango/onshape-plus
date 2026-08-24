@@ -1,4 +1,4 @@
-// Script that runs when onshape loads
+// Script that runs each time onshape loads
 (async () => {
   const styleSheet = document.createElement("style");
   let CSSRules = "";

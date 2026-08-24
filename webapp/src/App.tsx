@@ -1,4 +1,4 @@
-//Todo: make good preset themes, reorder default jsons, make website about this? buy chrome extension? theme share? quick tutorial, sorting?? Select does more thing?? oscope
+//Todo: make good preset themes, make ReadMe, theme share? (36^6) quick tutorial?
 
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
@@ -19,7 +19,7 @@ interface hslPlusItem {
   s: number;
   l: number;
   a: number;
-} // from now i will do it this way, the right way
+} // from now i will do it this way, the right way (top 5 things that NEVER happened)
 
 async function getSaves() {
   const themesList = [];
@@ -539,7 +539,7 @@ export default function App() {
             </label>
           </div>
           <button
-            className="cursor-copy flex-row flex bg-gray-800 m-1 p-1 rounded-lg text-gray-100"
+            className="cursor-copy flex-row flex bg-gray-800 m-1 mb-0 p-1 rounded-t-lg text-gray-100"
             onClick={() => {
               navigator.clipboard.writeText(textAreaJSON);
               setJustCopied(true);
@@ -563,10 +563,11 @@ export default function App() {
               />
             </svg>
             <p className="flex-3 text-xs text-gray-300 self-center">
-              {justCopied ? "Copied!" : "Copy"}
+              {justCopied ? "Copied!" : "Copy raw"}
             </p>
           </button>
           <textarea
+            className=" ml-1 mr-1 inset-ring-1 p-px inset-ring-gray-800 bg-gray-400 break-all resize-none flex-none select-all font-mono h-20 overflow-auto tracking-tight text-[9px]/tight wrap-anywhere"
             title="Raw rule data"
             spellCheck="false"
             value={textAreaJSON}
@@ -595,7 +596,6 @@ export default function App() {
             onChange={(event) => {
               setTextAreaJSON(event.target.value);
             }}
-            className="inset-ring-1 inset-ring-taupe-500 break-all resize-none flex-none select-all font-mono bg-[#ccc] h-40 overflow-auto tracking-tight text-[9px]/tight wrap-anywhere"
           />
           <div className="flex flex-col flex-nowrap max-w-full">
             <button
@@ -634,7 +634,7 @@ export default function App() {
                   setLastSelectedID("");
                 }
               }}
-              className="text-xs text-white  mb-1 bg-indigo-600 inset-ring-1 inset-ring-indigo-800 rounded-md"
+              className="text-xs mb-1 hover:bg-indigo-400 bg-indigo-300 inset-ring-1 inset-ring-indigo-600 p-0.5 rounded-md"
             >
               Select/deselect all
             </button>
@@ -643,7 +643,7 @@ export default function App() {
             </span>
             <div className="flex items-start flex-col text-xs inset-ring-1 inset-ring-blue-950 bg-gray-400 rounded-lg p-1 mb-1">
               <button
-                className="self-stretch hover:bg-indigo-400 bg-indigo-300 inset-ring-1 inset-ring-indigo-600 rounded-md p-1"
+                className="self-stretch hover:bg-indigo-400 bg-indigo-300 inset-ring-1 inset-ring-indigo-600 rounded-md p-0.5"
                 onClick={() => {
                   let anySelected;
                   const newColors = colorsHSL.map((color) => {
@@ -733,7 +733,7 @@ export default function App() {
             <div className="flex items-start flex-col text-xs inset-ring-1 inset-ring-blue-950 bg-gray-400 rounded-lg p-1">
               {" "}
               <button
-                className="self-stretch hover:bg-indigo-400 bg-indigo-300 inset-ring-1 inset-ring-indigo-600 rounded-md p-1"
+                className="self-stretch hover:bg-indigo-400 bg-indigo-300 inset-ring-1 inset-ring-indigo-600 rounded-md p-0.5"
                 onClick={() => {
                   let anySelected = false;
                   const newColors = colorsHSL.map((color) => {
@@ -873,7 +873,7 @@ export default function App() {
           <div className="ml-1 flex items-start flex-col text-xs inset-ring-1 inset-ring-blue-950 bg-gray-400 rounded-lg p-1 mr-1">
             <button
               title="select rules that contain the substring in their name"
-              className="mb-1 self-stretch hover:bg-indigo-400 bg-indigo-300 inset-ring-1 inset-ring-indigo-600 rounded-md p-1"
+              className="mb-1 self-stretch hover:bg-indigo-400 bg-indigo-300 inset-ring-1 inset-ring-indigo-600 rounded-md p-0.5"
               onClick={() => {
                 setSelectedRuleIDs(
                   selectByName(textToSelectBy, selectedRuleIDs),
@@ -895,7 +895,7 @@ export default function App() {
             </div>
           </div>
           <button
-            className="mb-1 text-xs self-stretch hover:bg-indigo-400 bg-indigo-300 inset-ring-1 inset-ring-indigo-600 rounded-md m-1 p-1"
+            className="mb-1 text-xs self-stretch hover:bg-indigo-400 bg-indigo-300 inset-ring-1 inset-ring-indigo-600 rounded-md m-1 p-0.5"
             onClick={() => newRuleRef.current?.showModal()}
           >
             new rule!
@@ -927,7 +927,9 @@ export default function App() {
                     <option value={"o"}>other</option>
                   </select>
                   <input
-                    placeholder={newRule[0]==='i'?'(unused)':'CSS selector'}
+                    placeholder={
+                      newRule[0] === "i" ? "(unused)" : "CSS selector"
+                    }
                     value={newRule[1]}
                     onChange={(event) =>
                       setNewRule(newRule.with(1, String(event.target.value)))
@@ -935,7 +937,7 @@ export default function App() {
                     className="border-[1] border-gray-600 bg-gray-400 p-0.5 m-0.5 rounded-sm"
                   ></input>
                   <input
-                    placeholder={newRule[0]==='i'?'label (unused)':'Key'}
+                    placeholder={newRule[0] === "i" ? "label (unused)" : "Key"}
                     value={newRule[2]}
                     onChange={(event) =>
                       setNewRule(newRule.with(2, String(event.target.value)))
@@ -943,7 +945,7 @@ export default function App() {
                     className="border-[1] border-gray-600 bg-gray-400 p-0.5 m-0.5 rounded-sm"
                   ></input>
                   <input
-                    placeholder='value'
+                    placeholder="value"
                     value={newRule[3]}
                     onChange={(event) =>
                       setNewRule(newRule.with(3, String(event.target.value)))
