@@ -64,6 +64,10 @@ Alternatively, you *could* take the raw JSON data and run it through your own cu
 
 ---
 
+build the editor using Vite as configured in the repo. You can use web-ext to build the extension or just compress it.
+
+---
+
 If you are confused or need help with anything, you can message me on discord at ```dhmango``` or email me at !!?CHANGE THIS?!!
 
 If you have suggestions for improvements or found a bug, you can make an issue in github. Or, you can make a pull request, and I will try to look at it.
