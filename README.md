@@ -66,6 +66,11 @@ You can add a new rule with the new rule button, or by editing the json.
 A combination of these tools can be used to make cool themes.
 
 You *can* also take the raw JSON data and run it through your own custom script, but you shouldn't need to for normal use.
+Alternatively, you *could* take the raw JSON data and run it through your own custom script, but I'll let you figure that out for yourself.
+
+---
+
+build the editor using Vite as configured in the repo. You can use web-ext to build the extension or just compress it.
 
 ## Help
 
