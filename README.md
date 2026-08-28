@@ -7,7 +7,6 @@ Create themes in the editor, choose from ready-to-use themes, or import user-cre
 ![The editor allows for easy granular modifcation of the UI](editor-screenshot.png)
 
 ![Darker theme](darker.png) 
-# CHOOSE A MORE OBVIOUS example image!
 
 ### Get the browser extension:
 <a href="https://example.com">
@@ -68,9 +67,9 @@ A combination of these tools can be used to make cool themes.
 You *can* also take the raw JSON data and run it through your own custom script, but you shouldn't need to for normal use.
 Alternatively, you *could* take the raw JSON data and run it through your own custom script, but I'll let you figure that out for yourself.
 
----
+## build
 
-build the editor using Vite as configured in the repo. You can use web-ext to build the extension or just compress it.
+Have node.js installed. CD into webapp, and run '''npm install''' the editor webapp ed in the repo. You can use web-ext to build the extension or just compress it.
 
 ## Help
 
