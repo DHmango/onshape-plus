@@ -69,7 +69,7 @@ Alternatively, you *could* take the raw JSON data and run it through your own cu
 
 ## build
 
-Have node.js installed. CD into webapp, and run ```npm install``` to get dependencies. Now you can use ```npm run dev``` and ```npm run build```. 
+Have node.js installed. cd to webapp, and run ```npm install``` to get dependencies. Now you can use ```npm run dev``` and ```npm run build```. 
 
 ## Help
 
