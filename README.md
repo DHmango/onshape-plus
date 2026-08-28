@@ -69,7 +69,7 @@ Alternatively, you *could* take the raw JSON data and run it through your own cu
 
 ## build
 
-Have node.js installed. CD into webapp, and run '''npm install''' the editor webapp ed in the repo. You can use web-ext to build the extension or just compress it.
+Have node.js installed. CD into webapp, and run ```npm install``` to get dependencies. Now you can use ```npm run dev``` and ```npm run build```. 
 
 ## Help
 
