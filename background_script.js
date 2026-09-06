@@ -8,9 +8,9 @@ async function preloadThemes(){ // loads the built in themes
         ['theme-02']:JSON.stringify(await downloadTheme(browser.runtime.getURL('themes/cool_aurora.json'))),
         ['theme-03']:JSON.stringify(await downloadTheme(browser.runtime.getURL('themes/midnight.json'))),
         ['theme-04']:JSON.stringify(await downloadTheme(browser.runtime.getURL('themes/pretty_pink.json'))),
-        // ['theme-05']:JSON.stringify(await downloadTheme(browser.runtime.getURL('themes/classy.json'))),
+        ['theme-05']:JSON.stringify(await downloadTheme(browser.runtime.getURL('themes/classy.json'))),
         // ['theme-06']:JSON.stringify(await downloadTheme(browser.runtime.getURL('themes/bluorange.json'))),
-        ['SORTED']:JSON.stringify(await downloadTheme(browser.runtime.getURL('themes/Onshape_dark.json'))),
+        ['SORTED']:JSON.stringify(await downloadTheme(browser.runtime.getURL('themes/Onshape_light.json'))),
         lightTheme:"theme-00",
         darkTheme:"theme-01",
         allowJS:"false" // ignore?

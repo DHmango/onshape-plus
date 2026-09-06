@@ -6,14 +6,13 @@ Create themes in the editor, choose from ready-to-use themes, or import user-cre
 
 ![The editor allows for easy granular modifcation of the UI](editor-screenshot.png)
 
-![Darker theme](darker.png) 
-# CHOOSE A MORE OBVIOUS example image!
+![cool aurora theme](aurora.png) 
 
 ### Get the browser extension:
-<a href="https://example.com">
+<a href="https://addons.mozilla.org/en-US/firefox/addon/onshapeplus/">
   <img width="40" alt="firefox extension" src="firefox.png">
 </a>
-<a href="https://example.com">
+<a href="https://large-type.com/#The%20chrome%20extension%20has%20not%20been%20verified%20yet.%20Sorry.">
   <img width="40" alt="chromium extension" src="chrome.png">
 </a>
 
@@ -21,9 +20,7 @@ Create themes in the editor, choose from ready-to-use themes, or import user-cre
 
 ### Basic usage
 
-Open the theme manager popup by clicking the icon in your toolbar
-
-picture of that
+Open the theme manager popup by clicking the icon in your browser's extension toolbar
 
 Select which theme will be loaded based on Onshape's dark/light theme switch. Reload Onshape for the change to take place.
 
@@ -31,7 +28,7 @@ Manage your themes in the tab made by the Manage themes button
 
 Update your theme saves in the Load / Save dialog,
 
-Get user created themes by loading from a URL using the button by that name, or by simply pasting the data into the raw data area. Then, in the Load / Save dialog, save it to a new slot. **There is no autosave**
+Get user created themes by loading from a URL, or by simply pasting the data into the raw data area. Then, in the Load / Save dialog, save it to a new slot. **There is no autosave**
 
 ### Making/modifying your own themes
 
@@ -48,29 +45,29 @@ Now, when you click the 'Add to' button, it will convert all the colors to [HSL]
 If you wanted to make everything a bit darker, you could do 'Move towards, lightness, 0, 0.1' which would move all selected colors 10% of the way to lightness 0. 
 
 Basic usage of this extension is simply overwriting the built-in global CSS variables Onshape uses to define things, but you can get more specific (or broad) than this using css selectors.
-
-Beyond simple color variable, you can set the values of basically any css property of any element.
+You can set the values of basically any css property of any element.
 
 ![Labeled rule. rule type[0],CSS selector[1], Key[2], value[3]](sample-rule.png)
 
-In this example, it selects every \<img\> element nested inside of something with class="os-select-field" and sets the CSS filter to "invert".
+In this example, it selects every \<img\> element nested inside of something with class="os-select-field" and sets the CSS filter to "invert". 
+This can be used for things like background-image, background-color, text-color, and whatever else
 
-This can be used for things like background-image, background-color, text-color, and anything else
-
-You can import other stylesheets using the import rule type, which is primarily useful for fonts
-
-If you're wondering how something in one of the default themes works, I recommend loading it into the editor and taking a look for yourself
-
-You can add a new rule with the new rule button, or by editing the json.
+You can import other stylesheets using the import rule type, which is primarily useful for fonts. If you're wondering how something in one of the default themes works, I recommend loading it into the editor and taking a look for yourself. You can add a new rule with the new rule button, or by editing the json directly.
 
 A combination of these tools can be used to make cool themes.
 
 You *can* also take the raw JSON data and run it through your own custom script, but you shouldn't need to for normal use.
 Alternatively, you *could* take the raw JSON data and run it through your own custom script, but I'll let you figure that out for yourself.
 
----
+### I'd love to add your theme to the extension!
 
-build the editor using Vite as configured in the repo. You can use web-ext to build the extension or just compress it.
+Just send it to me/make a pr and I'll take a look.
+
+## Build
+
+The extension is fully contained in the folder, and doesn't need to be built. But, the theme editor is built using vite. Have [npm.js](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) installed, cd into /webapp, and simply run ```npm run build``` or ```npm run dev```.
+
+Additionally, the [web-ext](https://github.com/mozilla/web-ext) tool is helpful but not necessary for development (at least on Firefox)
 
 ## Help
 
