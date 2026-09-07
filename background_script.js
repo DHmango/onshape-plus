@@ -1,31 +1,52 @@
 // Put all the javascript code here, that you want to execute in background.
-browser.runtime.onInstalled.addListener(preloadThemes)
+browser.runtime.onInstalled.addListener(preloadThemes);
 
-async function preloadThemes(){ // loads the built in themes
+async function preloadThemes() {
+  // loads the built in themes
+  const sorted = await browser.storage.local.get("SORTED");
+  if (!Object.hasOwn(sorted, "SORTED")) {
     await browser.storage.local.set({
-        ['theme-00']:JSON.stringify(await downloadTheme(browser.runtime.getURL('themes/Onshape_light.json'))),
-        ['theme-01']:JSON.stringify(await downloadTheme(browser.runtime.getURL('themes/Onshape_dark.json'))),
-        ['theme-02']:JSON.stringify(await downloadTheme(browser.runtime.getURL('themes/cool_aurora.json'))),
-        ['theme-03']:JSON.stringify(await downloadTheme(browser.runtime.getURL('themes/midnight.json'))),
-        ['theme-04']:JSON.stringify(await downloadTheme(browser.runtime.getURL('themes/pretty_pink.json'))),
-        ['theme-05']:JSON.stringify(await downloadTheme(browser.runtime.getURL('themes/classy.json'))),
-        // ['theme-06']:JSON.stringify(await downloadTheme(browser.runtime.getURL('themes/bluorange.json'))),
-        ['SORTED']:JSON.stringify(await downloadTheme(browser.runtime.getURL('themes/Onshape_light.json'))),
-        lightTheme:"theme-00",
-        darkTheme:"theme-01",
-        allowJS:"false" // ignore?
-    })
-    console.log(JSON.parse(browser.storage.local.get(['theme-00'])))
+      ["theme-00"]: JSON.stringify(
+        await downloadTheme(
+          browser.runtime.getURL("themes/Onshape_light.json"),
+        ),
+      ),
+      ["theme-01"]: JSON.stringify(
+        await downloadTheme(browser.runtime.getURL("themes/Onshape_dark.json")),
+      ),
+      ["theme-02"]: JSON.stringify(
+        await downloadTheme(browser.runtime.getURL("themes/cool_aurora.json")),
+      ),
+      ["theme-03"]: JSON.stringify(
+        await downloadTheme(browser.runtime.getURL("themes/midnight.json")),
+      ),
+      ["theme-04"]: JSON.stringify(
+        await downloadTheme(browser.runtime.getURL("themes/pretty_pink.json")),
+      ),
+      ["theme-05"]: JSON.stringify(
+        await downloadTheme(browser.runtime.getURL("themes/classy.json")),
+      ),
+      // ['theme-06']:JSON.stringify(await downloadTheme(browser.runtime.getURL('themes/bluorange.json'))),
+      ["SORTED"]: JSON.stringify(
+        await downloadTheme(
+          browser.runtime.getURL("themes/Onshape_light.json"),
+        ),
+      ),
+      lightTheme: "theme-00",
+      darkTheme: "theme-01",
+      allowJS: "false", // ignore?
+    });
+  }
 }
-async function downloadTheme(address){
-    try{
-        const response = await fetch(address);
-        if (!response.ok){
-            throw new Error(response.status)
-        }
-        jsonned = await response.json()
-        return jsonned;
-    } catch(error){
-        console.log(`could not fetch theme: ${error}`)
-    }       
+async function downloadTheme(address) {
+  try {
+    const response = await fetch(address);
+    if (!response.ok) {
+      throw new Error(response.status);
+    }
+    jsonned = await response.json();
+    return jsonned;
+  } catch (error) {
+    console.log(`could not fetch theme: ${error}`);
+  }
 }

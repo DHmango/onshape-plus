@@ -2,6 +2,8 @@
 
 ### Theme manager web extension for Onshape.
 
+![basic usage gif](onshapePlus.gif)
+
 Create themes in the editor, choose from ready-to-use themes, or import user-created themes, and easily apply them to Onshape!
 
 ![The editor allows for easy granular modifcation of the UI](editor-screenshot.png)
@@ -65,7 +67,9 @@ Just send it to me/make a pr and I'll take a look.
 
 ## Build
 
-The extension is fully contained in the folder, and doesn't need to be built. But, the theme editor is built using vite. Have [npm.js](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) installed, cd into /webapp, and simply run ```npm run build``` or ```npm run dev```.
+The extension is fully contained in the folder, and doesn't need to be built. But, the theme editor is built using vite. Have [npm.js](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) (version 12.0.2+ recommended) installed, cd into /webapp, and simply run ```npm run build``` or ```npm run dev```.
+
+is compatible with modern versions of Firefox, Chrome, and other browsers which support web-ext (like Opera)
 
 Additionally, the [web-ext](https://github.com/mozilla/web-ext) tool is helpful but not necessary for development (at least on Firefox)
 
