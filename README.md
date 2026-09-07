@@ -8,7 +8,7 @@ Create themes in the editor, choose from ready-to-use themes, or import user-cre
 
 ![The editor allows for easy granular modifcation of the UI](editor-screenshot.png)
 
-![cool aurora theme](aurora.png) 
+![cool aurora theme](aurora.png)
 
 ### Get the browser extension:
 <a href="https://addons.mozilla.org/en-US/firefox/addon/onshapeplus/">
@@ -75,7 +75,7 @@ Additionally, the [web-ext](https://github.com/mozilla/web-ext) tool is helpful 
 
 ## Help
 
-If you are confused or need help with anything, you can read through the source code message me on discord at ```dhmango``` or email me at dhmango@dhmango.anonaddy.com
+If you are confused or need help with anything, you can read through the source code, message me on discord at ```dhmango```, or email me at dhmango@dhmango.anonaddy.com
 
 If you found a bug or have suggestions for improvements, you can contact me or make an issue in github. Or, you can make a pull request, and I will try to look at it.
 
