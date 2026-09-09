@@ -14,7 +14,7 @@ Create themes in the editor, choose from ready-to-use themes, or import user-cre
 <a href="https://addons.mozilla.org/en-US/firefox/addon/onshapeplus/">
   <img width="40" alt="firefox extension" src="firefox.png">
 </a>
-<a href="https://large-type.com/#The%20chrome%20extension%20has%20not%20been%20verified%20yet.%20Sorry.">
+<a href="https://chromewebstore.google.com/detail/oapbkapmemdocbckjpfkgbojookcbdnn">
   <img width="40" alt="chromium extension" src="chrome.png">
 </a>
 
