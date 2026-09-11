@@ -79,6 +79,10 @@ If you are confused or need help with anything, you can read through the source 
 
 If you found a bug or have suggestions for improvements, you can contact me or make an issue in github. Or, you can make a pull request, and I will try to look at it.
 
+## Credit
+
+Thank you to ```bzrocketcad``` on Discord for making the Purple theme.
+
 ---
 
 <small> This project is not endorsed by, affiliated with, maintained, authorized, or sponsored by PTC or Onshape </small>
