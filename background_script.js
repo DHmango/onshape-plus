@@ -73,9 +73,9 @@ async function preloadThemes() {
       ["theme-07"]: JSON.stringify(
         await downloadTheme(browser.runtime.getURL("themes/rainbow.json")),
       ),
-      // ["theme-08"]: JSON.stringify(
-      //   await downloadTheme(browser.runtime.getURL("themes/purple.json")),
-      // ),
+      ["theme-08"]: JSON.stringify(
+        await downloadTheme(browser.runtime.getURL("themes/purple.json")),
+      ),
       ["SORTED"]: JSON.stringify(
         await downloadTheme(
           browser.runtime.getURL("themes/Onshape_light.json"),

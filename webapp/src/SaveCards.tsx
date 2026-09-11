@@ -51,7 +51,7 @@ export default function SaveCards({
               />
             </svg>
           </button>
-          <div className="grid grid-cols-3">
+          <div className="h-92 overflow-auto grid grid-cols-3">
             {saveSlots.map((slot) => (
               <OneCard
                 currentTheme={currentTheme}
@@ -92,7 +92,7 @@ function OneCard({
   const [reallyClear, setReallyClear] = useState(false);
   return (
     <>
-      <div className="m-2 border-2 border-neutral-300 shadow-lg p-1 bg-stone-200 rounded-md overflow-auto flex flex-col">
+      <div className="h-22 m-2 border-2 border-neutral-300 shadow-lg p-1 bg-stone-200 rounded-md overflow-auto flex flex-col">
         <div className="font-thin">{`Slot-${number}`}</div>
         <div
           title={name}
